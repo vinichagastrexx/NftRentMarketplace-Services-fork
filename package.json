@@ -1,0 +1,16 @@
+{
+  "name": "nft-rent-marketplace",
+  "version": "1.0.0",
+  "description": "The NFT Rent Marketplace is a unique project that leverages the power of Ethereum's ERC721 standard to create a marketplace where users can rent Non-Fungible Tokens (NFTs). This project showcases how NFTs can be utilized beyond buying and selling, opening up a new realm of possibilities for NFT use-cases.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^2.0.2",
+    "hardhat": "^2.14.0"
+  }
+}
