@@ -3,7 +3,7 @@ import { env } from '../config/env';
 
 async function main() {
   const NFTRentMarketplace = await ethers.getContractFactory('NFTRentMarketplace');
-  const nftRentMarketplace = await NFTRentMarketplace.deploy(env.vrfSubId, env.nftContractAddress, env.vrfCoordinatorContractAddress);
+  const nftRentMarketplace = await NFTRentMarketplace.deploy(env.vrfSubId, env.vrfCoordinatorContractAddress, env.vrfKeyHash);
 
   await nftRentMarketplace.deployed();
   console.log(
