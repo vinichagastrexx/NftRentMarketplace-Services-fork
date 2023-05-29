@@ -1,23 +1,15 @@
-import { ethers } from "hardhat";
+import { ethers } from 'hardhat';
+import { env } from '../config/env';
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const unlockTime = currentTimestampInSeconds + 60;
+  const NFTRentMarketplace = await ethers.getContractFactory('NFTRentMarketplace');
+  const nftRentMarketplace = await NFTRentMarketplace.deploy(env.vrfSubId, env.nftContractAddress, env.vrfCoordinatorContractAddress);
 
-  const lockedAmount = ethers.utils.parseEther("0.001");
-
-  const Lock = await ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
-
-  await lock.deployed();
-
+  await nftRentMarketplace.deployed();
   console.log(
-    `Lock with ${ethers.utils.formatEther(lockedAmount)}ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`
+    `NFTRentMarketplace Deployed to: ${nftRentMarketplace.address}`
   );
 }
-
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
