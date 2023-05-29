@@ -1,9 +1,11 @@
-import { HardhatUserConfig } from "hardhat/config";
-import "@nomicfoundation/hardhat-toolbox";
+import { HardhatUserConfig } from 'hardhat/config';
+import '@nomicfoundation/hardhat-toolbox';
 import { env } from './config/env';
+import '@typechain/hardhat';
+import '@nomiclabs/hardhat-ethers';
 
 const config: HardhatUserConfig = {
-  defaultNetwork: "matic",
+  defaultNetwork: 'matic',
   networks: {
     hardhat: {
     },
@@ -13,7 +15,7 @@ const config: HardhatUserConfig = {
     }
   },
   solidity: {
-    version: "0.8.9",
+    version: '0.8.9',
     settings: {
       optimizer: {
         enabled: true,
@@ -22,10 +24,9 @@ const config: HardhatUserConfig = {
     }
   },
   paths: {
-    sources: "./contracts",
-    tests: "./test",
-    cache: "./cache",
-    artifacts: "./artifacts"
+    sources: './contracts',
+    cache: './cache',
+    artifacts: './artifacts'
   }
 };
 
