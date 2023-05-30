@@ -12,7 +12,8 @@ task("functions-sub-create", "Creates a new billing subscription for Functions c
     }
 
     const linkAmount = taskArgs.amount
-    const consumer = env.nftRentMarketplaceContract
+    // const consumer = env.nftRentMarketplaceContract
+    const consumer = null;
 
     const RegistryFactory = await ethers.getContractFactory(
       "contracts/dev/functions/FunctionsBillingRegistry.sol:FunctionsBillingRegistry"

@@ -41,13 +41,10 @@ const requestConfig = {
 
   // 1337 - 42
   args: [
-    "SELECT \n" +
-    "CASE WHEN SUM(Points) BETWEEN 100 AND 150 THEN 1 \n" +
-    "WHEN SUM(POINTS) BETWEEN 151 AND 300 THEN 2\n" +
-    "WHEN SUM(POINTS) > 300 THEN 3 ELSE 1 END AS SWORD  \n" +
-    "FROM TREXXGG.GAME_TELEMETRY_ARTHUR \n" +
-    "GROUP BY ItemId", "TREXXGG.GAME_TELEMETRY_ARTHUR"],
-
+    "SELECT Id\n" +
+    "FROM TREXXGG.CATEGORIES \n" +
+    "WHERE rarity = 'Common' AND categoryType = 'Body'",
+    "TREXXGG.CATEGORIES"],
   expectedReturnType: ReturnType.uint256,
   // Redundant URLs which point to encrypted off-chain secrets
   secretsURLs: [],

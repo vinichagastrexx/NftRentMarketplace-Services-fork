@@ -2,10 +2,11 @@ const { types } = require("hardhat/config")
 const { networks } = require("../../config/networks")
 const { addClientConsumerToSubscription } = require("../Functions-billing/add")
 const { setAutoRequest } = require("./setAutoRequest")
+const env = require("../../config/env")
 
 task("functions-deploy-auto-client", "Deploys the AutomatedFunctionsConsumer contract")
   .addParam("subid", "Billing subscription ID used to pay for Functions requests")
-  .addOptionalParam("interval", "Update interval in seconds for Automation to call performUpkeep", 300, types.int)
+  .addOptionalParam("interval", "Update interval in seconds for Automation to call performUpkeep", 60, types.int)
   .addOptionalParam("verify", "Set to true to verify client contract", false, types.boolean)
   .addOptionalParam(
     "gaslimit",
@@ -41,9 +42,12 @@ task("functions-deploy-auto-client", "Deploys the AutomatedFunctionsConsumer con
     console.log("\n__Compiling Contracts__")
     await run("compile")
 
-    const autoClientContractFactory = await ethers.getContractFactory("AutomatedFunctionsConsumer")
+    const autoClientContractFactory = await ethers.getContractFactory("NFTRentMarketplace")
     const autoClientContract = await autoClientContractFactory.deploy(
-      networks[network.name]["functionsOracleProxy"],
+      env.vrfSubId,
+      env.vrfCoordinatorContractAddress,
+      env.vrfKeyHash,
+      env.cfOracleAddress,
       taskArgs.subid,
       taskArgs.gaslimit,
       taskArgs.interval
@@ -67,10 +71,13 @@ task("functions-deploy-auto-client", "Deploys the AutomatedFunctionsConsumer con
         await run("verify:verify", {
           address: autoClientContract.address,
           constructorArguments: [
-            networks[network.name]["functionsOracleProxy"],
+            env.vrfSubId,
+            env.vrfCoordinatorContractAddress,
+            env.vrfKeyHash,
+            env.cfOracleAddress,
             taskArgs.subid,
             taskArgs.gaslimit,
-            taskArgs.interval,
+            taskArgs.interval
           ],
         })
         console.log("Contract verified")
