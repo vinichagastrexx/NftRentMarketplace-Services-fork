@@ -1,5 +1,5 @@
 const { types } = require("hardhat/config")
-const { networks } = require("../../networks")
+const { networks } = require("../../config/networks")
 const { getRequestConfig } = require("../../FunctionsSandboxLibrary")
 const { generateRequest } = require("./buildRequestJSON")
 const { RequestStore } = require("../utils/artifact")
@@ -26,7 +26,7 @@ task("functions-set-auto-request", "Updates the Functions request in a deployed 
   .addOptionalParam(
     "configpath",
     "Path to Functions request config file",
-    `${__dirname}/../../Functions-request-config.js`,
+    `${__dirname}/../../config/Functions-request-config.js`,
     types.string
   )
   .setAction(async (taskArgs) => {
@@ -126,8 +126,7 @@ const setAutoRequest = async (contract, taskArgs) => {
   }
 
   console.log(
-    `\n${create ? "Created new" : "Updated"} Functions request in AutomatedFunctionsConsumer contract ${
-      autoClientContract.address
+    `\n${create ? "Created new" : "Updated"} Functions request in AutomatedFunctionsConsumer contract ${autoClientContract.address
     } on ${network.name}`
   )
 }

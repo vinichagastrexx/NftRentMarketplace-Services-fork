@@ -1,5 +1,5 @@
 const { types } = require("hardhat/config")
-const { networks } = require("../../networks")
+const { networks } = require("../../config/networks")
 const env = require("../../config/env")
 
 task("functions-deploy-client", "Deploys the FunctionsConsumer contract")

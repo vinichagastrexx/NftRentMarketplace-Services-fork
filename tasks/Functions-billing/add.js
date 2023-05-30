@@ -1,4 +1,4 @@
-const { networks } = require("../../networks")
+const { networks } = require("../../config/networks")
 
 task("functions-sub-add", "Adds a client contract to the Functions billing subscription")
   .addParam("subid", "Subscription ID")
@@ -52,8 +52,7 @@ const addClientConsumerToSubscription = async (subscriptionId, consumer) => {
   // Print information about the subscription
   const postSubInfo = await registry.getSubscription(subscriptionId)
   console.log(
-    `${postSubInfo[2].length} authorized consumer contract${
-      postSubInfo[2].length === 1 ? "" : "s"
+    `${postSubInfo[2].length} authorized consumer contract${postSubInfo[2].length === 1 ? "" : "s"
     } for subscription ${subscriptionId}:`
   )
   console.log(postSubInfo[2])

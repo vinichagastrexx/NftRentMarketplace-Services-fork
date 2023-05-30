@@ -3,7 +3,7 @@ require("hardhat-contract-sizer")
 require("@openzeppelin/hardhat-upgrades")
 require("./tasks")
 require("@chainlink/env-enc").config()
-const { networks } = require("./networks")
+const { networks } = require("./config/networks")
 
 // Enable gas reporting (optional)
 const REPORT_GAS = process.env.REPORT_GAS?.toLowerCase() === "true" ? true : false

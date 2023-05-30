@@ -1,6 +1,6 @@
 const { getDecodedResultLog, getRequestConfig } = require("../../FunctionsSandboxLibrary")
 const { generateRequest } = require("./buildRequestJSON")
-const { networks } = require("../../networks")
+const { networks } = require("../../config/networks")
 const utils = require("../utils")
 const chalk = require("chalk")
 const { deleteGist } = require("../utils/github")
@@ -26,7 +26,7 @@ task("functions-request", "Initiates a request from a Functions client contract"
   .addOptionalParam(
     "configpath",
     "Path to Functions request config file",
-    `${__dirname}/../../Functions-request-config.js`,
+    `${__dirname}/../../config/Functions-request-config.js`,
     types.string
   )
   .setAction(async (taskArgs, hre) => {

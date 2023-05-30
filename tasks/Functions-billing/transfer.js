@@ -1,4 +1,4 @@
-const { networks } = require("../../networks")
+const { networks } = require("../../config/networks")
 const utils = require("../utils")
 
 task("functions-sub-transfer", "Request ownership of an Functions subscription be transferred to a new address")

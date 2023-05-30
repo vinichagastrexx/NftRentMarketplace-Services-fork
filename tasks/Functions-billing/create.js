@@ -1,4 +1,4 @@
-const { networks } = require("../../networks")
+const { networks } = require("../../config/networks")
 const env = require("../../config/env")
 
 task("functions-sub-create", "Creates a new billing subscription for Functions consumer contracts")

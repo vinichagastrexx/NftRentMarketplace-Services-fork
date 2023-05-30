@@ -1,4 +1,4 @@
-const { networks } = require("../../networks")
+const { networks } = require("../../config/networks")
 const fs = require("fs")
 const { generateOffchainSecrets } = require("../utils/generateOffchainSecrets")
 const path = require("path")
@@ -12,7 +12,7 @@ task(
   .addOptionalParam(
     "configpath",
     "Path to Functions request config file",
-    `${__dirname}/../../Functions-request-config.js`,
+    `${__dirname}/../../config/Functions-request-config.js`,
     types.string
   )
   .setAction(async (taskArgs) => {
@@ -25,8 +25,7 @@ task(
       : path.join(process.cwd(), taskArgs.configpath))
 
     console.log(
-      `Using public keys from FunctionsOracle contract ${networks[network.name]["functionsOracleProxy"]} on network ${
-        network.name
+      `Using public keys from FunctionsOracle contract ${networks[network.name]["functionsOracleProxy"]} on network ${network.name
       }`
     )
     const OracleFactory = await ethers.getContractFactory("contracts/dev/functions/FunctionsOracle.sol:FunctionsOracle")

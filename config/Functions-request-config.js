@@ -31,7 +31,7 @@ const requestConfig = {
   // String containing the source code to be executed
   // location of secrets (Inline or Remote)
   secretsLocation: Location.Inline,
-  source: fs.readFileSync("./query-SxT-update-NFT.js").toString(),
+  source: fs.readFileSync("./chainlinkFunctionsCode/query-SxT-update-NFT.js").toString(),
   // Secrets can be accessed within the source code with `secrets.varName` (ie: secrets.apiKey). The secrets object can only contain string values.
   // Per-node secrets objects assigned to each DON member. When using per-node secrets, nodes can only use secrets which they have been assigned.
   perNodeSecrets: [],

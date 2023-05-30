@@ -10,7 +10,7 @@ task(
   .addOptionalParam(
     "configpath",
     "Path to Functions request config file",
-    `${__dirname}/../../Functions-request-config.js`,
+    `${__dirname}/../../config/Functions-request-config.js`,
     types.string
   )
   .setAction(async (taskArgs) => {

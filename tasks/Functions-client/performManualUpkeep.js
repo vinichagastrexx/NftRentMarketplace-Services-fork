@@ -1,4 +1,4 @@
-const { networks } = require("../../networks")
+const { networks } = require("../../config/networks")
 
 task("functions-perform-upkeep", "Manually call performUpkeep in an Automation compatible contract")
   .addParam("contract", "Address of the contract to call")
@@ -22,8 +22,7 @@ task("functions-perform-upkeep", "Manually call performUpkeep in an Automation c
     const performData = taskArgs.data ?? []
 
     console.log(
-      `Calling performUpkeep for Automation client contract ${taskArgs.contract} on network ${network.name}${
-        taskArgs.data ? ` with data ${performData}` : ""
+      `Calling performUpkeep for Automation client contract ${taskArgs.contract} on network ${network.name}${taskArgs.data ? ` with data ${performData}` : ""
       }`
     )
     const autoClientContractFactory = await ethers.getContractFactory("AutomatedFunctionsConsumer")

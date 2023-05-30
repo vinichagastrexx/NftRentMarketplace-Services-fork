@@ -1,6 +1,6 @@
 const { simulateRequest, buildRequest, getRequestConfig } = require("../../FunctionsSandboxLibrary")
 const { generateOffchainSecrets } = require("../utils/generateOffchainSecrets")
-const { networks } = require("../../networks")
+const { networks } = require("../../config/networks")
 const utils = require("../utils")
 const axios = require("axios")
 const fs = require("fs")
@@ -19,7 +19,7 @@ task("functions-build-request", "Creates a JSON file with Functions request para
   .addOptionalParam(
     "configpath",
     "Path to Functions request config file",
-    `${__dirname}/../../Functions-request-config.js`,
+    `${__dirname}/../../config/Functions-request-config.js`,
     types.string
   )
   .setAction(async (taskArgs, hre) => {
