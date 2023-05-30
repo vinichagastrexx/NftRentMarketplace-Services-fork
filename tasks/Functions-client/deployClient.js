@@ -40,7 +40,10 @@ task("functions-deploy-client", "Deploys the FunctionsConsumer contract")
         await nftRentMarketplace.deployTransaction.wait(Math.max(6 - networks[network.name].confirmations, 0))
         await run("verify:verify", {
           address: nftRentMarketplace.address,
-          constructorArguments: [oracleAddress],
+          constructorArguments: [env.vrfSubId,
+          env.vrfCoordinatorContractAddress,
+          env.vrfKeyHash,
+          env.cfOracleAddress],
         })
         console.log("Contract verified")
       } catch (error) {
