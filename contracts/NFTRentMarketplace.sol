@@ -7,6 +7,7 @@ import "@chainlink/contracts/src/v0.8/ConfirmedOwner.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receiver {
   //VRF Settings
@@ -32,8 +33,10 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
 
   //Marketplace
   using Counters for Counters.Counter;
+  using SafeMath for uint256;
   Counters.Counter private _itemIds;
   Counters.Counter private _rentsIds;
+  uint256 public marketVolumeFactor = 1;
 
   struct Item {
     uint256 id;
@@ -186,6 +189,17 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     return pools[categoryId];
   }
 
+  function getRentQuote(uint256 categoryId, uint256 rentTime) public view returns (uint256 rentQuote) {
+    Pool storage pool = pools[categoryId];
+    require(pool.isActive, "Pool with the given category ID does not exist or is not active");
+
+    uint256 basePrice = pool.basePrice;
+    uint256 poolSupply = pool.availableItems.length;
+
+    rentQuote = calculateRentPrice(basePrice, rentTime, poolSupply);
+    return rentQuote;
+  }
+
   function getItemByNftId(uint256 _nftId) public view returns (Item memory) {
     uint256 itemId = nftIdToItemId[_nftId];
     require(itemId != 0, "Item with the given NFT ID does not exist");
@@ -237,6 +251,11 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     Pool storage pool = pools[_categoryId];
     require(pool.isActive, "Pool with the given category ID does not exist or is not active");
     require(pool.availableItems.length > 0, "Pool with the given category ID has no available items to rent");
+    uint256 poolSupply = pool.availableItems.length;
+    uint256 poolBasePrice = pool.basePrice;
+    uint256 rentPrice = calculateRentPrice(poolBasePrice, _duration, poolSupply);
+    require(msg.value >= rentPrice, "The price is not enough. Get quote again!");
+    require(randomNumberList.length > 0, "There is no random number in list");
 
     uint256 randomNumber = randomNumberList[randomNumberList.length - 1];
     randomNumberList.pop();
@@ -265,7 +284,7 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
       finishDate: 0,
       owner: item.owner,
       rentee: msg.sender,
-      price: 0,
+      price: rentPrice,
       poolId: _categoryId,
       itemId: item.id,
       randomNumber: randomNumber,
@@ -294,16 +313,22 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     item.rentee = address(0);
     rent.status = RentStatus.FINISHED;
     rent.finishDate = block.timestamp;
-    // uint256 remainingDays = (rent.expirationDate - rent.finishDate) / 1 days;
-    // if (remainingDays > 1) {
-    //   uint256 refundAmount = (remainingDays * rent.price) / (rent.finishDate - rent.initDate);
-    //   uint256 paymentAmount = rent.price - refundAmount;
-    //   payable(item.rentee).transfer(refundAmount);
-    //   payable(item.owner).transfer(paymentAmount);
-    // } else {
-    //   payable(item.owner).transfer(rent.price);
-    // }
+    payable(item.owner).transfer(rent.price);
     emit RentFinished(rent.id, pool.categoryId, msg.sender, item.id);
+  }
+
+  function calculateRentPrice(uint256 basePrice, uint256 rentTime, uint256 poolSupply) internal view returns (uint256) {
+    uint256 timeAdjustedPrice = basePrice.mul(rentTime);
+    uint256 supplyAdjustedPrice = timeAdjustedPrice.mul(100).mul(10 ** 20).div(poolSupply.add(100));
+
+    supplyAdjustedPrice = supplyAdjustedPrice.div(10 ** 18);
+    uint256 finalPrice = supplyAdjustedPrice.mul(marketVolumeFactor);
+
+    return finalPrice;
+  }
+
+  function adjustMarketVolumeFactor(uint256 newFactor) public onlyOwner {
+    marketVolumeFactor = newFactor;
   }
 
   function findIndex(uint256[] storage array, uint256 value) internal view returns (uint256) {
