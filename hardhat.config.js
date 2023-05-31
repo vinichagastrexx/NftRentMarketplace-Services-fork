@@ -29,6 +29,10 @@ module.exports = {
         settings: SOLC_SETTINGS,
       },
       {
+        version: "0.8.0",
+        settings: SOLC_SETTINGS,
+      },
+      {
         version: "0.7.0",
         settings: SOLC_SETTINGS,
       },
@@ -44,15 +48,6 @@ module.exports = {
   },
   networks: {
     hardhat: {
-      allowUnlimitedContractSize: true,
-      accounts: process.env.PRIVATE_KEY
-        ? [
-          {
-            privateKey: process.env.PRIVATE_KEY,
-            balance: "10000000000000000000000",
-          },
-        ]
-        : [],
     },
     ...networks,
   },

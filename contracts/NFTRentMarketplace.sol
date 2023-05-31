@@ -1,175 +1,319 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import {Functions, FunctionsClient} from "./dev/functions/FunctionsClient.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 import "@chainlink/contracts/src/v0.8/ConfirmedOwner.sol";
-import {AutomationCompatibleInterface} from "@chainlink/contracts/src/v0.8/AutomationCompatible.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 
-contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, FunctionsClient, AutomationCompatibleInterface {
-  //AutomationSettings
-  bytes32 public latestRequestId;
-  uint32 public fulfillGasLimit;
-  bytes public requestCBOR;
-  uint64 public cfSubscriptionId;
-  uint256 public responseCounter;
-  uint256 public upkeepCounter;
-  uint256 public updateInterval;
-  uint256 public lastUpkeepTimeStamp;
-
+contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receiver {
   //VRF Settings
   VRFCoordinatorV2Interface public vrfCoordinator;
   uint64 private vrfSubscriptionId;
   bytes32 internal vrfkeyHash;
-  uint32 private vrfCallbackGasLimit = 100000;
+  uint32 private vrfCallbackGasLimit = 500000;
   uint16 private vrfRequestConfirmations = 3;
-  uint32 private vrfNumWordsRequested = 1;
-  uint256 public vrfRandomNumberResult;
+  uint32 private vrfNumWordsRequested = 10;
 
-  //vrf Events
-  event VrfRequestSent(uint256 requestId, uint32 numWords);
-  event VrfRequestFulfilled(uint256 requestId, uint256[] randomWords);
+  //VRF Events
+  event vrfRequestSent(uint256 requestId, uint32 numWords);
+  event vrfRequestFulfilled(uint256 requestId);
 
-  //vrf Data
-  struct VrfRequestStatus {
-    bool fulfilled;
+  //VRF Data
+  struct vrfRequestStatus {
     bool exists;
-    uint256[] randomWords;
+    bool fulfilled;
+    uint256 requestId;
   }
-  uint256[] public vrfRequestIds;
-  uint256 public vrfLastRequestId;
+  uint256[] public randomNumberList;
+  mapping(uint256 => vrfRequestStatus) public randomNumberRequests;
 
-  //vrf Mappings
-  mapping(uint256 => VrfRequestStatus) public vrfRequests;
+  //Marketplace
+  using Counters for Counters.Counter;
+  Counters.Counter private _itemIds;
+  Counters.Counter private _rentsIds;
 
-  //CF Settings
-  using Functions for Functions.Request;
+  struct Item {
+    uint256 id;
+    uint256 nftId;
+    bool isRented;
+    uint256 categoryId;
+    address payable owner;
+    address rentee;
+    bool isInPool;
+  }
 
-  bytes32 public cflatestRequestId;
-  bytes public cflatestResponse;
-  bytes public cflatestError;
+  struct Pool {
+    uint256 categoryId;
+    bool isActive;
+    uint256 basePrice;
+    uint256[] availableItems;
+    uint256[] rentedItems;
+  }
 
-  event OCRResponse(bytes32 indexed requestId, bytes result, bytes err);
+  struct Rent {
+    uint256 id;
+    uint256 initDate;
+    uint256 expirationDate;
+    uint256 finishDate;
+    uint256 price;
+    address owner;
+    address rentee;
+    uint256 poolId;
+    uint256 randomNumber;
+    uint256 itemId;
+    RentStatus status;
+  }
+
+  enum RentStatus {
+    ACTIVE,
+    FINISHED
+  }
+
+  //Mappings
+  mapping(uint256 => Pool) private pools;
+  mapping(uint256 => Item) private items;
+  mapping(uint256 => Rent) public rents;
+  mapping(uint256 => uint256) private nftIdToItemId;
+
+  //Rent Events
+  event RentStarted(uint256 indexed requestId, uint256 poolId, address rentee, uint256 itemId);
+  event RentFinished(uint256 indexed requestId, uint256 poolId, address rentee, uint256 itemId);
+
+  //Pool Events
+  event PoolEnabled(uint256 poolId);
+  event PoolDisabled(uint256 poolId);
+  event PoolCreated(uint256 indexed poolId);
+
+  //Item Events
+  event ItemAddedToPool(uint256 indexed itemId, uint256 poolId);
+  event ItemRemovedFromPool(uint256 indexed itemId, uint256 poolId);
+  event ItemCreated(uint256 indexed itemId, uint256 indexed nftId, uint256 categoryId, address owner);
+  address public nftContractAddress;
 
   constructor(
     uint64 _vrfSubscriptionId,
     address _vrfCoordinator,
     bytes32 _vrfkeyHash,
-    address _cfOracle,
-    uint64 _cfSubscriptionId,
-    uint32 _fulfillGasLimit,
-    uint256 _updateInterval
-  ) VRFConsumerBaseV2(_vrfCoordinator) FunctionsClient(_cfOracle) ConfirmedOwner(msg.sender) {
+    address _nftContractAddress
+  ) VRFConsumerBaseV2(_vrfCoordinator) ConfirmedOwner(msg.sender) {
     vrfCoordinator = VRFCoordinatorV2Interface(_vrfCoordinator);
     vrfSubscriptionId = _vrfSubscriptionId;
     vrfkeyHash = _vrfkeyHash;
-    cfSubscriptionId = _cfSubscriptionId;
-    fulfillGasLimit = _fulfillGasLimit;
-    lastUpkeepTimeStamp = block.timestamp;
+    nftContractAddress = _nftContractAddress;
   }
 
-  function requestRandomNumbers() external onlyOwner returns (uint256 requestId) {
-    requestId = vrfCoordinator.requestRandomWords(
+  modifier onlyNftOwner(uint256 _itemNftId) {
+    uint256 itemId = nftIdToItemId[_itemNftId];
+    Item storage item = items[itemId];
+    require(msg.sender == item.owner, "Only the NFT owner can perform this operation");
+    _;
+  }
+
+  function fillRandomNumberList() public onlyOwner {
+    uint256 requestId = vrfCoordinator.requestRandomWords(
       vrfkeyHash,
       vrfSubscriptionId,
       vrfRequestConfirmations,
       vrfCallbackGasLimit,
       vrfNumWordsRequested
     );
-    vrfRequests[requestId] = VrfRequestStatus({randomWords: new uint256[](0), exists: true, fulfilled: false});
-    vrfRequestIds.push(requestId);
-    vrfLastRequestId = requestId;
-    emit VrfRequestSent(requestId, vrfNumWordsRequested);
-    return requestId;
+    randomNumberRequests[requestId] = vrfRequestStatus({exists: true, fulfilled: false, requestId: requestId});
+    emit vrfRequestSent(requestId, vrfNumWordsRequested);
   }
 
   function fulfillRandomWords(uint256 _requestId, uint256[] memory _randomWords) internal override {
-    vrfRequests[_requestId].fulfilled = true;
-    vrfRequests[_requestId].randomWords = _randomWords;
-    emit VrfRequestFulfilled(_requestId, _randomWords);
-  }
-
-  function executeRequest(
-    string calldata source,
-    bytes calldata secrets,
-    string[] calldata args,
-    uint64 subscriptionId,
-    uint32 gasLimit
-  ) public onlyOwner returns (bytes32) {
-    //já recebe todos os parametros;
-    //o worker vai no SxT e pega os analytics e ele chama o npx hardhat request, passando a lambda;
-    //pegar o preço da pool
-    //no fullfill inicia o aluguel
-    Functions.Request memory req;
-    req.initializeRequest(Functions.Location.Inline, Functions.CodeLanguage.JavaScript, source);
-    if (secrets.length > 0) {
-      req.addRemoteSecrets(secrets);
+    require(randomNumberRequests[_requestId].exists, "request not found");
+    for (uint256 i = 0; i < _randomWords.length; i++) {
+      randomNumberList.push(_randomWords[i]);
     }
-    if (args.length > 0) req.addArgs(args);
-
-    bytes32 assignedReqID = sendRequest(req, subscriptionId, gasLimit);
-    cflatestRequestId = assignedReqID;
-    return assignedReqID;
+    randomNumberRequests[_requestId].fulfilled = true;
+    emit vrfRequestFulfilled(_requestId);
   }
 
-  function fulfillRequest(bytes32 requestId, bytes memory response, bytes memory err) internal override {
-    cflatestResponse = response;
-    cflatestError = err;
-    responseCounter = responseCounter + 1;
-    emit OCRResponse(requestId, response, err);
+  function createPool(uint256 _categoryId, uint256 _basePrice) public onlyOwner {
+    require(_categoryId > 0, "category ID must be greater than 0");
+    require(pools[_categoryId].categoryId == 0, "Pool with this category ID already exists");
+
+    Pool storage newPool = pools[_categoryId];
+    newPool.categoryId = _categoryId;
+    newPool.basePrice = _basePrice;
+    newPool.isActive = true;
+
+    emit PoolCreated(_categoryId);
   }
 
-  function updateOracleAddress(address oracle) public onlyOwner {
-    setOracle(oracle);
+  function disablePool(uint256 _categoryId) public onlyOwner {
+    require(pools[_categoryId].isActive, "Pool already inactive");
+    pools[_categoryId].isActive = false;
+    emit PoolDisabled(_categoryId);
   }
 
-  function addSimulatedRequestId(address oracleAddress, bytes32 requestId) public onlyOwner {
-    addExternalRequest(oracleAddress, requestId);
+  function enablePool(uint256 _categoryId) public onlyOwner {
+    require(pools[_categoryId].isActive == false, "Pool already inactive");
+    pools[_categoryId].isActive = true;
+    emit PoolEnabled(_categoryId);
   }
 
-  function generateRequest(
-    string calldata source,
-    bytes calldata secrets,
-    string[] calldata args
-  ) public pure returns (bytes memory) {
-    Functions.Request memory req;
-    req.initializeRequest(Functions.Location.Inline, Functions.CodeLanguage.JavaScript, source);
-    if (secrets.length > 0) {
-      req.addRemoteSecrets(secrets);
+  function createItem(uint256 _nftId, uint256 _categoryId) public {
+    _itemIds.increment();
+    uint256 newItemId = _itemIds.current();
+
+    items[newItemId] = Item({
+      id: newItemId,
+      nftId: _nftId,
+      owner: payable(msg.sender),
+      categoryId: _categoryId,
+      rentee: address(0),
+      isRented: false,
+      isInPool: false
+    });
+    nftIdToItemId[_nftId] = newItemId;
+    emit ItemCreated(newItemId, _nftId, _categoryId, msg.sender);
+  }
+
+  function getRent(uint256 requestId) public view returns (Rent memory) {
+    return rents[requestId];
+  }
+
+  function getItem(uint256 itemId) public view returns (Item memory) {
+    return items[itemId];
+  }
+
+  function getPool(uint256 categoryId) public view returns (Pool memory) {
+    return pools[categoryId];
+  }
+
+  function getItemByNftId(uint256 _nftId) public view returns (Item memory) {
+    uint256 itemId = nftIdToItemId[_nftId];
+    require(itemId != 0, "Item with the given NFT ID does not exist");
+    return items[itemId];
+  }
+
+  function addItemToPool(uint256 _nftId, uint256 _categoryId) public {
+    Pool storage pool = pools[_categoryId];
+    uint256 itemId = nftIdToItemId[_nftId];
+    Item storage item = items[itemId];
+
+    require(item.id != 0, "Item does not exist");
+    require(pool.isActive, "Pool with the given category ID does not exist or is not active");
+    require(items[item.id].isInPool == false, "Item is already in a pool");
+    require(item.owner == msg.sender, "Only item owner can add it to a pool");
+
+    ERC721 erc721 = ERC721(nftContractAddress);
+    erc721.safeTransferFrom(msg.sender, address(this), item.nftId);
+    pools[_categoryId].availableItems.push(item.id);
+    item.isInPool = true;
+    emit ItemAddedToPool(item.id, _categoryId);
+  }
+
+  function removeItemFromPool(uint256 _nftId) public onlyNftOwner(_nftId) {
+    uint256 itemId = nftIdToItemId[_nftId];
+    Item storage item = items[itemId];
+    uint256 poolId = item.categoryId;
+    Pool storage pool = pools[poolId];
+
+    require(item.id != 0, "Item does not exist");
+    require(item.isRented == false, "Item is rented and cannot be removed from pool");
+    require(item.isInPool == true, "Item is not in Pool");
+
+    uint256 availableIndex = findIndex(pool.availableItems, item.id);
+    require(availableIndex < pool.availableItems.length, "Item not found in available items");
+    pool.availableItems[availableIndex] = pool.availableItems[pool.availableItems.length - 1];
+    pool.availableItems.pop();
+    ERC721 erc721 = ERC721(nftContractAddress);
+    erc721.safeTransferFrom(address(this), msg.sender, item.nftId);
+    item.isInPool = false;
+    emit ItemRemovedFromPool(item.id, poolId);
+  }
+
+  function onERC721Received(address, address, uint256, bytes calldata) public pure override returns (bytes4) {
+    return this.onERC721Received.selector;
+  }
+
+  function startRent(uint256 _categoryId, uint256 _duration) public payable {
+    Pool storage pool = pools[_categoryId];
+    require(pool.isActive, "Pool with the given category ID does not exist or is not active");
+    require(pool.availableItems.length > 0, "Pool with the given category ID has no available items to rent");
+
+    uint256 randomNumber = randomNumberList[randomNumberList.length - 1];
+    randomNumberList.pop();
+    if (randomNumberList.length < 5) {
+      fillRandomNumberList();
     }
-    if (args.length > 0) req.addArgs(args);
 
-    return req.encodeCBOR();
+    uint256 index = randomNumber % pool.availableItems.length;
+    uint256 selectedItemId = pool.availableItems[index];
+
+    Item storage item = items[selectedItemId];
+    item.isRented = true;
+    item.rentee = msg.sender;
+
+    pool.rentedItems.push(selectedItemId);
+
+    pool.availableItems[index] = pool.availableItems[pool.availableItems.length - 1];
+    pool.availableItems.pop();
+
+    _rentsIds.increment();
+    uint256 newRentId = _rentsIds.current();
+    Rent memory newRent = Rent({
+      id: newRentId,
+      initDate: block.timestamp,
+      expirationDate: block.timestamp + _duration,
+      finishDate: 0,
+      owner: item.owner,
+      rentee: msg.sender,
+      price: 0,
+      poolId: _categoryId,
+      itemId: item.id,
+      randomNumber: randomNumber,
+      status: RentStatus.ACTIVE
+    });
+    rents[newRentId] = newRent;
+    emit RentStarted(newRentId, _categoryId, msg.sender, item.nftId);
   }
 
-  function setRequest(
-    uint64 _cfSubscriptionId,
-    uint32 _fulfillGasLimit,
-    uint256 _updateInterval,
-    bytes calldata newRequestCBOR
-  ) external onlyOwner {
-    updateInterval = _updateInterval;
-    cfSubscriptionId = _cfSubscriptionId;
-    fulfillGasLimit = _fulfillGasLimit;
-    requestCBOR = newRequestCBOR;
+  function finishRent(uint256 rentId) public {
+    require(rents[rentId].status == RentStatus.ACTIVE, "This Rent is not Active");
+    Rent storage rent = rents[rentId];
+    Item storage item = items[rent.itemId];
+    Pool storage pool = pools[rent.poolId];
+
+    require(item.isRented, "Item is not currently rented");
+    require(item.rentee == msg.sender, "Only the rentee can finish the rent");
+
+    uint256 rentedIndex = findIndex(pool.rentedItems, item.id);
+    require(rentedIndex < pool.rentedItems.length, "Item not found in rented items");
+
+    pool.rentedItems[rentedIndex] = pool.rentedItems[pool.rentedItems.length - 1];
+    pool.rentedItems.pop();
+    pool.availableItems.push(item.id);
+    item.isRented = false;
+    item.rentee = address(0);
+    rent.status = RentStatus.FINISHED;
+    rent.finishDate = block.timestamp;
+    // uint256 remainingDays = (rent.expirationDate - rent.finishDate) / 1 days;
+    // if (remainingDays > 1) {
+    //   uint256 refundAmount = (remainingDays * rent.price) / (rent.finishDate - rent.initDate);
+    //   uint256 paymentAmount = rent.price - refundAmount;
+    //   payable(item.rentee).transfer(refundAmount);
+    //   payable(item.owner).transfer(paymentAmount);
+    // } else {
+    //   payable(item.owner).transfer(rent.price);
+    // }
+    emit RentFinished(rent.id, pool.categoryId, msg.sender, item.id);
   }
 
-  function checkUpkeep(bytes memory) public view override returns (bool upkeepNeeded, bytes memory) {
-    upkeepNeeded = (block.timestamp - lastUpkeepTimeStamp) > updateInterval;
+  function findIndex(uint256[] storage array, uint256 value) internal view returns (uint256) {
+    for (uint256 i = 0; i < array.length; i++) {
+      if (array[i] == value) {
+        return i;
+      }
+    }
+    return array.length;
   }
-
-  function performUpkeep(bytes calldata) external override {
-    (bool upkeepNeeded, ) = checkUpkeep("");
-    require(upkeepNeeded, "Time interval not met");
-    lastUpkeepTimeStamp = block.timestamp;
-    upkeepCounter = upkeepCounter + 1;
-
-    bytes32 requestId = s_oracle.sendRequest(cfSubscriptionId, requestCBOR, fulfillGasLimit);
-
-    s_pendingRequests[requestId] = s_oracle.getRegistry();
-    emit RequestSent(requestId);
-    latestRequestId = requestId;
-  }
-  //o automation deve ser usado pra chamar uma função do contrato, que uma vez por dia remove todos os rents que estão expirados
 }
+
+//testar o rentRquestFullfiled + worker + sendRequest(Js)Functiosn Client + StartRent on requestFullfilled

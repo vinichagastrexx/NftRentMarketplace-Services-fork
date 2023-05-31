@@ -50,7 +50,8 @@ task("functions-deploy-auto-client", "Deploys the AutomatedFunctionsConsumer con
       env.cfOracleAddress,
       taskArgs.subid,
       taskArgs.gaslimit,
-      taskArgs.interval
+      taskArgs.interval,
+      env.nftContractAddress
     )
 
     console.log(`\nWaiting 1 block for transaction ${autoClientContract.deployTransaction.hash} to be confirmed...`)
@@ -77,7 +78,8 @@ task("functions-deploy-auto-client", "Deploys the AutomatedFunctionsConsumer con
             env.cfOracleAddress,
             taskArgs.subid,
             taskArgs.gaslimit,
-            taskArgs.interval
+            taskArgs.interval,
+            env.nftContractAddress
           ],
         })
         console.log("Contract verified")

@@ -1,4 +1,4 @@
-const env = require("../config/env")
+const env = require("../../config/env")
 const { ethers } = require("hardhat")
 
 async function main() {
@@ -9,7 +9,7 @@ async function main() {
     env.vrfSubId,
     env.vrfCoordinatorContractAddress,
     env.vrfKeyHash,
-    env.cfOracleAddress
+    env.nftContractAddress
   )
 
   await nftRentMarketplace.deployed()
