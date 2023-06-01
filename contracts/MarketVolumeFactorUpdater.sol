@@ -5,13 +5,9 @@ import {Functions, FunctionsClient} from "./dev/functions/FunctionsClient.sol";
 // import "@chainlink/contracts/src/v0.8/dev/functions/FunctionsClient.sol"; // Once published
 import {ConfirmedOwner} from "@chainlink/contracts/src/v0.8/ConfirmedOwner.sol";
 import {AutomationCompatibleInterface} from "@chainlink/contracts/src/v0.8/AutomationCompatible.sol";
+import {NFTRentMarketplace} from "./NFTRentMarketplace.sol"; // Import NFTRentMarketplace
 
-/**
- * @title Automated Functions Consumer contract
- * @notice This contract is a demonstration of using Functions.
- * @notice NOT FOR PRODUCTION USE
- */
-contract AutomatedFunctionsConsumer is FunctionsClient, ConfirmedOwner, AutomationCompatibleInterface {
+contract MarketVolumeFactorUpdater is FunctionsClient, ConfirmedOwner, AutomationCompatibleInterface {
   using Functions for Functions.Request;
 
   bytes public requestCBOR;
@@ -24,7 +20,7 @@ contract AutomatedFunctionsConsumer is FunctionsClient, ConfirmedOwner, Automati
   uint256 public lastUpkeepTimeStamp;
   uint256 public upkeepCounter;
   uint256 public responseCounter;
-
+  NFTRentMarketplace public nftRentMarketplace;
   event OCRResponse(bytes32 indexed requestId, bytes result, bytes err);
 
   /**
@@ -39,8 +35,10 @@ contract AutomatedFunctionsConsumer is FunctionsClient, ConfirmedOwner, Automati
     address oracle,
     uint64 _subscriptionId,
     uint32 _fulfillGasLimit,
-    uint256 _updateInterval
+    uint256 _updateInterval,
+    address _nftRentMarketplaceContract
   ) FunctionsClient(oracle) ConfirmedOwner(msg.sender) {
+    nftRentMarketplace = NFTRentMarketplace(_nftRentMarketplaceContract); // Add this line
     updateInterval = _updateInterval;
     subscriptionId = _subscriptionId;
     fulfillGasLimit = _fulfillGasLimit;
@@ -133,6 +131,8 @@ contract AutomatedFunctionsConsumer is FunctionsClient, ConfirmedOwner, Automati
     latestResponse = response;
     latestError = err;
     responseCounter = responseCounter + 1;
+    uint256 volumeFactor = uint256(bytes32(response));
+    nftRentMarketplace.adjustMarketVolumeFactor(volumeFactor);
     emit OCRResponse(requestId, response, err);
   }
 

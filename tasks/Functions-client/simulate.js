@@ -5,7 +5,6 @@ const {
   getRequestConfig,
 } = require("../../FunctionsSandboxLibrary")
 const { networks, SHARED_DON_PUBLIC_KEY } = require("../../config/networks")
-
 const path = require("path")
 const process = require("process")
 
@@ -17,7 +16,7 @@ task("functions-simulate", "Simulates an end-to-end fulfillment locally for the 
   .addOptionalParam(
     "configpath",
     "Path to Functions request config file",
-    `${__dirname}/../../config/Functions-request-config.js`,
+    `${__dirname}/../../Functions-request-config.js`,
     types.string
   )
   .setAction(async (taskArgs, hre) => {

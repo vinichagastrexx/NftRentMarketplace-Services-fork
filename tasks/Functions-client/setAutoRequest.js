@@ -26,7 +26,7 @@ task("functions-set-auto-request", "Updates the Functions request in a deployed 
   .addOptionalParam(
     "configpath",
     "Path to Functions request config file",
-    `${__dirname}/../../config/Functions-request-config.js`,
+    `${__dirname}/../../Functions-request-config.js`,
     types.string
   )
   .setAction(async (taskArgs) => {
@@ -46,7 +46,7 @@ const setAutoRequest = async (contract, taskArgs) => {
 
   console.log(`Setting the Functions request in AutomatedFunctionsConsumer contract ${contract} on ${network.name}`)
 
-  const autoClientContractFactory = await ethers.getContractFactory("AutomatedFunctionsConsumer")
+  const autoClientContractFactory = await ethers.getContractFactory("MarketVolumeFactorUpdater")
   const autoClientContract = await autoClientContractFactory.attach(contract)
 
   const unvalidatedRequestConfig = require(path.isAbsolute(taskArgs.configpath)

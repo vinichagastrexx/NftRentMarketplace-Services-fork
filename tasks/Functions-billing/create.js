@@ -1,5 +1,4 @@
 const { networks } = require("../../config/networks")
-const env = require("../../config/env")
 
 task("functions-sub-create", "Creates a new billing subscription for Functions consumer contracts")
   .addOptionalParam("amount", "Initial amount used to fund the subscription in LINK")
@@ -12,8 +11,7 @@ task("functions-sub-create", "Creates a new billing subscription for Functions c
     }
 
     const linkAmount = taskArgs.amount
-    // const consumer = env.nftRentMarketplaceContract
-    const consumer = null;
+    const consumer = taskArgs.contract
 
     const RegistryFactory = await ethers.getContractFactory(
       "contracts/dev/functions/FunctionsBillingRegistry.sol:FunctionsBillingRegistry"

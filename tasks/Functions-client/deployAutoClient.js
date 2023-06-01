@@ -6,7 +6,7 @@ const env = require("../../config/env")
 
 task("functions-deploy-auto-client", "Deploys the AutomatedFunctionsConsumer contract")
   .addParam("subid", "Billing subscription ID used to pay for Functions requests")
-  .addOptionalParam("interval", "Update interval in seconds for Automation to call performUpkeep", 60, types.int)
+  .addOptionalParam("interval", "Update interval in seconds for Automation to call performUpkeep", 300, types.int)
   .addOptionalParam("verify", "Set to true to verify client contract", false, types.boolean)
   .addOptionalParam(
     "gaslimit",
@@ -42,16 +42,13 @@ task("functions-deploy-auto-client", "Deploys the AutomatedFunctionsConsumer con
     console.log("\n__Compiling Contracts__")
     await run("compile")
 
-    const autoClientContractFactory = await ethers.getContractFactory("NFTRentMarketplace")
+    const autoClientContractFactory = await ethers.getContractFactory("MarketVolumeFactorUpdater")
     const autoClientContract = await autoClientContractFactory.deploy(
-      env.vrfSubId,
-      env.vrfCoordinatorContractAddress,
-      env.vrfKeyHash,
-      env.cfOracleAddress,
+      networks[network.name]["functionsOracleProxy"],
       taskArgs.subid,
       taskArgs.gaslimit,
       taskArgs.interval,
-      env.nftContractAddress
+      env.nftRentMarketplaceContract
     )
 
     console.log(`\nWaiting 1 block for transaction ${autoClientContract.deployTransaction.hash} to be confirmed...`)
@@ -72,14 +69,11 @@ task("functions-deploy-auto-client", "Deploys the AutomatedFunctionsConsumer con
         await run("verify:verify", {
           address: autoClientContract.address,
           constructorArguments: [
-            env.vrfSubId,
-            env.vrfCoordinatorContractAddress,
-            env.vrfKeyHash,
-            env.cfOracleAddress,
+            networks[network.name]["functionsOracleProxy"],
             taskArgs.subid,
             taskArgs.gaslimit,
             taskArgs.interval,
-            env.nftContractAddress
+            env.nftRentMarketplaceContract
           ],
         })
         console.log("Contract verified")

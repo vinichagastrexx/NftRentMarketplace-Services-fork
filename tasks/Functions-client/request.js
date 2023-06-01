@@ -7,9 +7,10 @@ const { deleteGist } = require("../utils/github")
 const { RequestStore } = require("../utils/artifact")
 const path = require("path")
 const process = require("process")
-const env = require("../../config/env")
 
 task("functions-request", "Initiates a request from a Functions client contract")
+  .addParam("contract", "Address of the client contract to call")
+  .addParam("subid", "Billing subscription ID used to pay for the request")
   .addOptionalParam(
     "simulate",
     "Flag indicating if simulation should be run before making an on-chain request",
@@ -26,7 +27,7 @@ task("functions-request", "Initiates a request from a Functions client contract"
   .addOptionalParam(
     "configpath",
     "Path to Functions request config file",
-    `${__dirname}/../../config/Functions-request-config.js`,
+    `${__dirname}/../../Functions-request-config.js`,
     types.string
   )
   .setAction(async (taskArgs, hre) => {
@@ -43,8 +44,8 @@ task("functions-request", "Initiates a request from a Functions client contract"
     }
 
     // Get the required parameters
-    const contractAddr = env.nftRentMarketplaceContract
-    const subscriptionId = env.cfSubId
+    const contractAddr = taskArgs.contract
+    const subscriptionId = taskArgs.subid
     const gasLimit = taskArgs.gaslimit
     if (gasLimit > 300000) {
       throw Error("Gas limit must be less than or equal to 300,000")
