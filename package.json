@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "description": "The NFT Rent Marketplace is a unique project that leverages the power of Ethereum's ERC721 standard to create a marketplace where users can rent Non-Fungible Tokens (NFTs). This project showcases how NFTs can be utilized beyond buying and selling, opening up a new realm of possibilities for NFT use-cases.",
   "scripts": {
+    "start:dev": "nodemon api/server.js",
+    "start": "node api/server.js",
     "compile": "hardhat compile",
     "build": "npx thirdweb@latest detect",
     "deploy": "npx thirdweb@latest deploy",
@@ -52,11 +54,13 @@
     "@openzeppelin/contracts": "4.9.0",
     "@openzeppelin/contracts-upgradeable": "4.9.0",
     "@thirdweb-dev/contracts": "^3.5.4",
-    "axios": "^1.1.3",
+    "axios": "^1.4.0",
     "crypto-js": "^4.1.1",
     "dotenv": "^16.0.3",
+    "express": "^4.18.2",
     "is-http-url": "^2.0.0",
     "jsrsasign": "^10.6.0",
+    "nodemon": "^2.0.22",
     "ora": "5.4.1",
     "readline": "^1.3.0",
     "vm2": "^3.9.18"
