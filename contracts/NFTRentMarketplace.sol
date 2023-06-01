@@ -254,7 +254,7 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     uint256 poolSupply = pool.availableItems.length;
     uint256 poolBasePrice = pool.basePrice;
     uint256 rentPrice = calculateRentPrice(poolBasePrice, _duration, poolSupply);
-    require(msg.value >= rentPrice, "The price is not enough. Get quote again!");
+    require(msg.value == rentPrice, "The price must be equal to the quote. Get quote again!");
     require(randomNumberList.length > 0, "There is no random number in list");
 
     uint256 randomNumber = randomNumberList[randomNumberList.length - 1];
@@ -327,7 +327,7 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     return finalPrice;
   }
 
-  function adjustMarketVolumeFactor(uint256 newFactor) public onlyOwner {
+  function adjustMarketVolumeFactor(uint256 newFactor) public {
     marketVolumeFactor = newFactor;
   }
 
@@ -340,5 +340,3 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     return array.length;
   }
 }
-
-//testar o rentRquestFullfiled + worker + sendRequest(Js)Functiosn Client + StartRent on requestFullfilled
