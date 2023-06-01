@@ -15,5 +15,6 @@ module.exports = {
   sxtPubKey: process.env.SXT_PUB_KEY ?? "",
   sxtUserId: process.env.SXT_USER_ID ?? "",
   sxtCLIPath: process.env.SXT_CLI_PATH ?? "",
-  sxtOrgCode: process.env.SXT_ORG_CODE ?? ""
+  sxtOrgCode: process.env.SXT_ORG_CODE ?? "",
+  biscuitItems: process.env.BISCUIT_ITEMS ?? ""
 }
