@@ -8,14 +8,14 @@ export default function PoolGrid({
   emptyText = "No pools found"
 }) {
   return (
-    <SimpleGrid columns={4} spacing={6} maxW={"75%"} padding={2.5} my={5}>
+    <SimpleGrid columns={{ sm: 2, md: 3, lg: 4 }} spacing={'40px'} maxW={"1280px"} padding={2.5} my={5}>
       {isLoading ? (
         [...Array(12)].map((_, index) => (
           <Skeleton key={index} height={"312px"} width={"100%"} />
         ))
       ) : data && data.length > 0 ? (
         data.map((pool) => !overrideOnclickBehaviour ? (
-          <Link href={`/pool/${pool.id}`} key={pool.id}>
+          <Link href={`/pool/${pool.ID}`} key={pool.ID}>
             <PoolCard pool={pool}></PoolCard>
           </Link>
         ) : (

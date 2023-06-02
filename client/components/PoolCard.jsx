@@ -5,7 +5,7 @@ export default function PoolCard({ pool }) {
   return (
     <Flex direction={"column"} maxWidth={250} justifyContent={"center"}>
       <Box overflow={"hidden"} >
-        <Image src={pool.IMAGEURL} alt={pool.name} width={"100%"} objectFit="cover" />
+        <Image src={pool.IMAGEURL} alt={pool.ID} width={"100%"} objectFit="cover" />
       </Box>
       <Box background="linear-gradient(to right, #ffafbd, #ffc3a0)" p={4}>
         <Text>{pool.CATEGORYTYPE} Pool</Text>
