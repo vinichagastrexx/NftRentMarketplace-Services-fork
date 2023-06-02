@@ -16,6 +16,9 @@ export function Navbar() {
           <Link as={NextLink} href={'/inventory'} mx={2.5} fontFamily={"Bayon"} fontSize={"30"}>
             <Text>Inventory</Text>
           </Link>
+          <Link as={NextLink} href={'https://boomboogers.com.br/'} mx={2.5} fontFamily={"Bayon"} fontSize={"30"}>
+            <Text>Know the game!</Text>
+          </Link>
         </Flex>
         <Flex direction={"row"} alignItems={"center"}>
           <ConnectWallet />
