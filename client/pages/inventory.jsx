@@ -14,7 +14,7 @@ export default function Inventory() {
 
   return (
     <Container maxW={"75%"} p={5}>
-      <Heading fontSize={50} fontFamily={"Bayon"}>Inventory</Heading>
+      <Heading fontSize={40} fontFamily={"Bayon"}>Your Items</Heading>
       <Text fontSize={25} fontFamily={"Big Shoulders Text"}>Here are your Game Items. Add them to a pool and earn some money!</Text>
       <NFTGrid
         isLoading={isLoading}

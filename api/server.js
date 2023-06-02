@@ -1,8 +1,12 @@
 const express = require('express');
 const app = express();
+const cors = require('cors');
 const itemRoutes = require('./routes/itemRoutes');
+const poolRoutes = require('./routes/poolRoutes');
 const { sxtAuthenticate } = require('./helpers/sxtAuth');
+require('dotenv').config();
 
+app.use(cors())
 app.use(express.json())
 app.use(async (req, res, next) => {
   try {
@@ -15,7 +19,8 @@ app.use(async (req, res, next) => {
   }
 });
 app.use('/items', itemRoutes);
+app.use('/pools', poolRoutes);
 
-app.listen(3000, () => {
-  console.log('Server is running on port 3000');
+app.listen(process.env.PORT || 3001, () => {
+  console.log('Server is running on port 3001');
 });
