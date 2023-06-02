@@ -1,6 +1,5 @@
 import { SimpleGrid, Skeleton, Link } from "@chakra-ui/react";
 import NFTCard from "./NFTCard";
-import NextLink from "next/link"
 import { NFT_ADDRESS } from "../const/addresses";
 
 export default function NFTGrid({
@@ -12,7 +11,7 @@ export default function NFTGrid({
   return (
     <SimpleGrid columns={4} spacing={6} w={"100%"} padding={2.5} my={5}>
       {isLoading ? (
-        [...Array(20)].map((_, index) => (
+        [...Array(12)].map((_, index) => (
           <Skeleton key={index} height={"312px"} width={"100%"} />
         ))
       ) : data && data.length > 0 ? (
