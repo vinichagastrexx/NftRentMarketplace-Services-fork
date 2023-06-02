@@ -1,11 +1,10 @@
-import { Avatar, Box, Container, Flex, Input, SimpleGrid, Skeleton, Stack, Text } from "@chakra-ui/react";
-import { ThirdwebNftMedia, useContract } from "@thirdweb-dev/react";
+import { Box, Container, Flex, SimpleGrid, Skeleton, Stack, Text } from "@chakra-ui/react";
+import { ThirdwebNftMedia } from "@thirdweb-dev/react";
 import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 import React from "react";
 import {
   NFT_ADDRESS
 } from "../../../const/addresses";
-import Link from "next/link";
 
 
 export default function TokenPage({ nft }) {
@@ -14,13 +13,11 @@ export default function TokenPage({ nft }) {
       <SimpleGrid columns={2} spacing={6}>
         <Stack spacing={"20px"}>
           <Box borderRadius={"6px"} overflow={"hidden"}>
-            {/* <Skeleton isLoaded={!loadingMarketplace && !loadingDirectListing}> */}
             <ThirdwebNftMedia
               metadata={nft.metadata}
               width="100%"
               height="100%"
             />
-            {/* </Skeleton> */}
           </Box>
           <Box>
             <Text fontWeight={"bold"}>Description:</Text>
@@ -44,14 +41,6 @@ export default function TokenPage({ nft }) {
         <Stack spacing={"20px"}>
           <Box mx={2.5}>
             <Text fontSize={"4xl"} fontWeight={"bold"}>{nft.metadata.name}</Text>
-            <Link
-              href={`/profile/${nft.owner}`}
-            >
-              <Flex direction={"row"} alignItems={"center"}>
-                <Avatar src='https://bit.ly/broken-link' h={"24px"} w={"24px"} mr={"10px"} />
-                <Text fontSize={"small"}>{nft.owner.slice(0, 6)}...{nft.owner.slice(-4)}</Text>
-              </Flex>
-            </Link>
           </Box>
         </Stack>
       </SimpleGrid>
