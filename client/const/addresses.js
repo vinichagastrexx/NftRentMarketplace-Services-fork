@@ -1,0 +1,3 @@
+export const NFT_RENT_MARKETPLACE_ADDRESS = "";
+export const NFT_ADDRESS = "0xdE00E6c8B2d719f1F0eee9f001887D085bd1846C";
+

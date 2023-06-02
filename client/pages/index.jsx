@@ -11,6 +11,9 @@ export default function Home() {
           <Button as={NextLink} href='/rent'>
             Rent NFTs
           </Button>
+          <Button as={NextLink} href='/inventory'>
+            Check your game inventory
+          </Button>
         </Stack>
       </Flex>
     </Container>
