@@ -1,42 +1,55 @@
-import { Box, Button, Container, Flex, SimpleGrid, Skeleton, Stack, Text } from "@chakra-ui/react";
-import { ThirdwebNftMedia, useContract } from "@thirdweb-dev/react";
+import { Box, Button, Container, Image, Heading, SimpleGrid, Skeleton, Stack, Text } from "@chakra-ui/react";
+import { useSigner, useAddress } from "@thirdweb-dev/react";
 import { ThirdwebSDK, } from "@thirdweb-dev/sdk";
-import React from "react";
+import React, { useState } from "react";
 import {
-  NFT_RENT_MARKETPLACE_ADDRESS
+  NFT_RENT_MARKETPLACE_ADDRESS,
+  NFT_RENT_MARKETPLACE_ABI
 } from "../../const/addresses";
-
+import { config } from '../../config'
 
 export default function PoolPage({ pool }) {
-  const { NFTRentMarketplace } = useContract(NFT_RENT_MARKETPLACE_ADDRESS);
+  const signer = useSigner();
+  let sdk;
+  if (signer) {
+    sdk = ThirdwebSDK.fromSigner(signer);
+  }
+  const [isLoading, setIsLoading] = useState(false);
+  // const [nft, setNft] = useState(null);
 
   const rentItem = async () => {
-    // Aqui você pode adicionar a lógica para interagir com o contrato NFTRentMarketplace
-    // e adicionar um item à pool.
+    setIsLoading(true);
+    const contract = await sdk.getContract(NFT_RENT_MARKETPLACE_ADDRESS, NFT_RENT_MARKETPLACE_ABI)
+    const result = await contract.call("startRent", [1, 1]);
+    console.log(result);
+    setIsLoading(false);
   };
 
   return (
     <Container maxW={"1200px"} p={5} my={5}>
       <SimpleGrid columns={2} spacing={6}>
-        <Stack spacing={"20px"}>
-          <Box borderRadius={"6px"} overflow={"hidden"}>
-            {pool.IMAGEURL}
-          </Box>
-          <Box>
-            <Text fontWeight={"bold"}>Description:</Text>
-            <Text>{pool.description}</Text>
-          </Box>
-        </Stack>
+        <Box>
+          <Image src={pool.IMAGEURL} alt={pool.NAME} borderRadius={"6px"} />
+          <Heading size="lg" mt={2}>{pool.NAME}</Heading>
+        </Box>
+        <Box>
+          <Text fontWeight={"bold"}>Description:</Text>
+          <Text>{pool.DESCRIPTION}</Text>
+          <Text fontWeight={"bold"} mt={2}>Base Price:</Text>
+          <Text>{pool.BASEPRICE}</Text>
+          <Button isLoading={isLoading} colorScheme="teal" size="md" mt={4} onClick={rentItem}>Rent Item</Button>
+        </Box>
       </SimpleGrid>
-      <Button onClick={rentItem}>Rent Item</Button>
+      {/* {nft && <NFTCard nft={nft} />} */}
     </Container >
   )
 };
 
 export const getStaticProps = async (context) => {
   const poolId = context.params?.poolId;
-  const response = await fetch(`http://localhost:3001/pools/${poolId}`);
+  const response = await fetch(`${config.apiBaseUrl}pools/${poolId}`);
   const { pool } = await response.json();
+
   return {
     props: {
       pool,
@@ -46,7 +59,7 @@ export const getStaticProps = async (context) => {
 };
 
 export const getStaticPaths = async () => {
-  const response = await fetch('http://localhost:3001/pools/get-all');
+  const response = await fetch(`${config.apiBaseUrl}pools/get-all`);
   const data = await response.json()
   const paths = data?.pools?.map((pool) => {
     return {
