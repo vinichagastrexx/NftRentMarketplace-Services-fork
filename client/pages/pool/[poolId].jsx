@@ -18,13 +18,16 @@ export default function PoolPage({ pool }) {
   }
   const [isLoading, setIsLoading] = useState(false);
   const [nft, setNft] = useState(null);
-
+  const [poolPrice, setPoolPrice] = useState(0);
 
   const rentItem = async () => {
     setIsLoading(true);
     const contract = await sdk.getContract(NFT_RENT_MARKETPLACE_ADDRESS, NFT_RENT_MARKETPLACE_ABI)
-    const result = await contract.call("startRent", [1, 1]);
-    const nftId = result.receipt.events[0].args.itemId.toNumber();
+    const price = await contract.call("getRentQuote", [1, 1]);
+    setPoolPrice(Number(`${price._hex}`))
+    const result = await contract.call("startRent", [1, 1], { value: price });
+    console.log(result);
+    const nftId = result.receipt.events[1].args.itemNftId.toNumber();
     const nft = await getNft(nftId);
     setNft(nft);
     setIsLoading(false);
@@ -48,6 +51,8 @@ export default function PoolPage({ pool }) {
           <Text fontFamily={"Big Shoulders Text"}>{pool.DESCRIPTION}</Text>
           <Text fontSize={40} fontFamily={"Bayon"} fontWeight={"bold"} mt={2}>Base Price:</Text>
           <Text fontFamily={"Big Shoulders Text"}>{pool.BASEPRICE}</Text>
+          <Text fontSize={40} fontFamily={"Bayon"} fontWeight={"bold"} mt={2}>Current Price:</Text>
+          <Text fontFamily={"Big Shoulders Text"}>{poolPrice}</Text>
           <Button fontFamily={"Bayon"} isLoading={isLoading} colorScheme="teal" size="md" mt={4} onClick={rentItem}>Rent Item</Button>
         </Box>
       </SimpleGrid>

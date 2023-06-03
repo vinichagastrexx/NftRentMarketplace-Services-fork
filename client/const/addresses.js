@@ -1,4 +1,4 @@
-export const NFT_RENT_MARKETPLACE_ADDRESS = "0xc7cE67463384f1104d4C9932C0E0b7473EFc49d4";
+export const NFT_RENT_MARKETPLACE_ADDRESS = "0x78Fcba79C2EC420Fa94Fdc742345D6CAF3E63a95";
 export const NFT_RENT_MARKETPLACE_ABI = [
   {
     "inputs": [
@@ -157,6 +157,12 @@ export const NFT_RENT_MARKETPLACE_ABI = [
         "internalType": "uint256",
         "name": "poolId",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "basePrice",
+        "type": "uint256"
       }
     ],
     "name": "PoolCreated",
@@ -194,7 +200,7 @@ export const NFT_RENT_MARKETPLACE_ABI = [
       {
         "indexed": true,
         "internalType": "uint256",
-        "name": "requestId",
+        "name": "rentId",
         "type": "uint256"
       },
       {
@@ -225,7 +231,7 @@ export const NFT_RENT_MARKETPLACE_ABI = [
       {
         "indexed": true,
         "internalType": "uint256",
-        "name": "requestId",
+        "name": "rentId",
         "type": "uint256"
       },
       {
@@ -243,7 +249,25 @@ export const NFT_RENT_MARKETPLACE_ABI = [
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "itemId",
+        "name": "itemNftId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "initDate",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "expirationDate",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "price",
         "type": "uint256"
       }
     ],
@@ -619,7 +643,7 @@ export const NFT_RENT_MARKETPLACE_ABI = [
           },
           {
             "internalType": "uint256",
-            "name": "itemId",
+            "name": "itemNftId",
             "type": "uint256"
           },
           {
@@ -869,7 +893,7 @@ export const NFT_RENT_MARKETPLACE_ABI = [
       },
       {
         "internalType": "uint256",
-        "name": "itemId",
+        "name": "itemNftId",
         "type": "uint256"
       },
       {

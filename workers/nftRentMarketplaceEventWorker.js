@@ -21,7 +21,6 @@ class NFTRentMarketplaceEventWorker {
   }
 
   async onRentStarted(event) {
-    console.log(event.data);
     const payload = {
       rentId: Number(`${event.data.rentId._hex}`),
       poolId: Number(`${event.data.poolId._hex}`),
@@ -31,8 +30,6 @@ class NFTRentMarketplaceEventWorker {
       expirationDate: new Date(Number(`${event.data.expirationDate._hex}`) * 1000),
       initDate: new Date(Number(`${event.data.initDate._hex}`) * 1000),
     }
-    console.log('******************', payload);
-
     try {
       await axios.post('http://localhost:3001/rents/start-rent', payload);
     } catch (error) {

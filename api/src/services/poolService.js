@@ -33,8 +33,8 @@ class PoolService {
       sqlText,
       accessToken,
     });
-    console.log(response);
-    // return response[0];
+
+    return response[0];
   }
 
 
