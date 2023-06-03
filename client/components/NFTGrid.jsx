@@ -9,7 +9,7 @@ export default function NFTGrid({
   emptyText = "No NFTs found"
 }) {
   return (
-    <SimpleGrid columns={4} spacing={6} w={"100%"} padding={2.5} my={5}>
+    <SimpleGrid columns={[5, null, 3]} spacing={6} maxW={"1280px"} padding={2.5} my={5}>
       {isLoading ? (
         [...Array(12)].map((_, index) => (
           <Skeleton key={index} height={"312px"} width={"100%"} />

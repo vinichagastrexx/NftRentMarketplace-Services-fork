@@ -1,13 +1,32 @@
-import { Box, Container, Flex, SimpleGrid, Skeleton, Stack, Text } from "@chakra-ui/react";
+import { Box, Container, Flex, SimpleGrid, Button, Stack, Text } from "@chakra-ui/react";
 import { ThirdwebNftMedia } from "@thirdweb-dev/react";
+import { useSigner } from "@thirdweb-dev/react";
 import { ThirdwebSDK } from "@thirdweb-dev/sdk";
-import React from "react";
+import {
+  NFT_RENT_MARKETPLACE_ADDRESS,
+  NFT_RENT_MARKETPLACE_ABI
+} from "../../../const/addresses";
+import React, { useState } from "react";
 import {
   NFT_ADDRESS
 } from "../../../const/addresses";
 
 
 export default function TokenPage({ nft }) {
+  const signer = useSigner();
+  let sdk;
+  if (signer) {
+    sdk = ThirdwebSDK.fromSigner(signer);
+  }
+
+  const [isLoading, setIsLoading] = useState(false);
+  const addItemToPool = async () => {
+    setIsLoading(true);
+    const contract = await sdk.getContract(NFT_RENT_MARKETPLACE_ADDRESS, NFT_RENT_MARKETPLACE_ABI)
+    await contract.call("addItemToPool", [parseInt(nft.metadata.id), 1]);
+    setIsLoading(false);
+  };
+
   return (
     <Container maxW={"1200px"} p={5} my={5}>
       <SimpleGrid columns={2} spacing={6}>
@@ -41,6 +60,9 @@ export default function TokenPage({ nft }) {
         <Stack spacing={"20px"}>
           <Box mx={2.5}>
             <Text fontSize={"4xl"} fontWeight={"bold"}>{nft.metadata.name}</Text>
+          </Box>
+          <Box mx={2.5}>
+            <Button isLoading={isLoading} colorScheme="teal" size="md" mt={4} onClick={addItemToPool}>Add Item to Pool</Button>
           </Box>
         </Stack>
       </SimpleGrid>

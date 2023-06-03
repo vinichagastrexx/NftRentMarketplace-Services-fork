@@ -1,12 +1,14 @@
-import { Box, Button, Container, Image, Heading, SimpleGrid, Skeleton, Stack, Text } from "@chakra-ui/react";
-import { useSigner, useAddress } from "@thirdweb-dev/react";
+import { Box, Button, Container, Image, Heading, SimpleGrid, Text } from "@chakra-ui/react";
+import { useSigner } from "@thirdweb-dev/react";
 import { ThirdwebSDK, } from "@thirdweb-dev/sdk";
 import React, { useState } from "react";
 import {
   NFT_RENT_MARKETPLACE_ADDRESS,
-  NFT_RENT_MARKETPLACE_ABI
+  NFT_RENT_MARKETPLACE_ABI,
+  NFT_ADDRESS
 } from "../../const/addresses";
 import { config } from '../../config'
+import NFTCard from "../../components/NFTCard";
 
 export default function PoolPage({ pool }) {
   const signer = useSigner();
@@ -15,15 +17,24 @@ export default function PoolPage({ pool }) {
     sdk = ThirdwebSDK.fromSigner(signer);
   }
   const [isLoading, setIsLoading] = useState(false);
-  // const [nft, setNft] = useState(null);
+  const [nft, setNft] = useState(null);
+
 
   const rentItem = async () => {
     setIsLoading(true);
     const contract = await sdk.getContract(NFT_RENT_MARKETPLACE_ADDRESS, NFT_RENT_MARKETPLACE_ABI)
     const result = await contract.call("startRent", [1, 1]);
-    console.log(result);
+    const nftId = result.receipt.events[0].args.itemId.toNumber();
+    const nft = await getNft(nftId);
+    setNft(nft);
     setIsLoading(false);
   };
+
+  const getNft = async (nftId) => {
+    const contract = await sdk.getContract(NFT_ADDRESS);
+    const nft = await contract.erc721.get(nftId);
+    return nft;
+  }
 
   return (
     <Container maxW={"1200px"} p={5} my={5}>
@@ -40,7 +51,7 @@ export default function PoolPage({ pool }) {
           <Button isLoading={isLoading} colorScheme="teal" size="md" mt={4} onClick={rentItem}>Rent Item</Button>
         </Box>
       </SimpleGrid>
-      {/* {nft && <NFTCard nft={nft} />} */}
+      {nft && <NFTCard nft={nft} />}
     </Container >
   )
 };
