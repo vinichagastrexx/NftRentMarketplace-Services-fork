@@ -62,7 +62,7 @@ export default function TokenPage({ nft }) {
             <Text fontSize={"4xl"} fontWeight={"bold"}>{nft.metadata.name}</Text>
           </Box>
           <Box mx={2.5}>
-            <Button isLoading={isLoading} colorScheme="teal" size="md" mt={4} onClick={addItemToPool}>Add Item to Pool</Button>
+            <Button fontFamily={"Bayon"} isLoading={isLoading} colorScheme="teal" size="md" mt={4} onClick={addItemToPool}>Add Item to Pool</Button>
           </Box>
         </Stack>
       </SimpleGrid>

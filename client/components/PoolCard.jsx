@@ -8,9 +8,9 @@ export default function PoolCard({ pool }) {
         <Image src={pool.IMAGEURL} alt={pool.ID} width={"100%"} objectFit="cover" />
       </Box>
       <Box background="linear-gradient(to right, #ffafbd, #ffc3a0)" p={4}>
-        <Text>{pool.CATEGORYTYPE} Pool</Text>
-        <Text>Base Price: {pool.BASEPRICE}</Text>
-        <Text>Rarity: {pool.RARITY}</Text>
+        <Text fontSize={18} fontFamily={"Big Shoulders Text"}>{pool.CATEGORYTYPE} Pool</Text>
+        <Text fontSize={18} fontFamily={"Big Shoulders Text"}>Base Price: {pool.BASEPRICE}</Text>
+        <Text fontSize={18} fontFamily={"Big Shoulders Text"}>Rarity: {pool.RARITY}</Text>
       </Box>
     </Flex>
   )

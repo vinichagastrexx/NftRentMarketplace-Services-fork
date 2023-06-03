@@ -44,11 +44,11 @@ export default function PoolPage({ pool }) {
           <Heading size="lg" mt={2}>{pool.NAME}</Heading>
         </Box>
         <Box>
-          <Text fontWeight={"bold"}>Description:</Text>
-          <Text>{pool.DESCRIPTION}</Text>
-          <Text fontWeight={"bold"} mt={2}>Base Price:</Text>
-          <Text>{pool.BASEPRICE}</Text>
-          <Button isLoading={isLoading} colorScheme="teal" size="md" mt={4} onClick={rentItem}>Rent Item</Button>
+          <Text fontSize={40} fontFamily={"Bayon"} fontWeight={"bold"}>Description:</Text>
+          <Text fontFamily={"Big Shoulders Text"}>{pool.DESCRIPTION}</Text>
+          <Text fontSize={40} fontFamily={"Bayon"} fontWeight={"bold"} mt={2}>Base Price:</Text>
+          <Text fontFamily={"Big Shoulders Text"}>{pool.BASEPRICE}</Text>
+          <Button fontFamily={"Bayon"} isLoading={isLoading} colorScheme="teal" size="md" mt={4} onClick={rentItem}>Rent Item</Button>
         </Box>
       </SimpleGrid>
       {nft && <NFTCard nft={nft} />}
