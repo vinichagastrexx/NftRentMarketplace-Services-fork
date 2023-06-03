@@ -66,7 +66,7 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     address rentee;
     uint256 poolId;
     uint256 randomNumber;
-    uint256 itemId;
+    uint256 itemNftId;
     RentStatus status;
   }
 
@@ -82,8 +82,16 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
   mapping(uint256 => uint256) private nftIdToItemId;
 
   //Rent Events
-  event RentStarted(uint256 indexed requestId, uint256 poolId, address rentee, uint256 itemId);
-  event RentFinished(uint256 indexed requestId, uint256 poolId, address rentee, uint256 itemId);
+  event RentStarted(
+    uint256 indexed rentId,
+    uint256 poolId,
+    address rentee,
+    uint256 itemNftId,
+    uint256 initDate,
+    uint256 expirationDate,
+    uint256 price
+  );
+  event RentFinished(uint256 indexed rentId, uint256 poolId, address rentee, uint256 itemId);
 
   //Pool Events
   event PoolEnabled(uint256 poolId);
@@ -251,32 +259,33 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     Pool storage pool = pools[_categoryId];
     require(pool.isActive, "Pool with the given category ID does not exist or is not active");
     require(pool.availableItems.length > 0, "Pool with the given category ID has no available items to rent");
-    uint256 poolSupply = pool.availableItems.length;
-    uint256 poolBasePrice = pool.basePrice;
-    uint256 rentPrice = calculateRentPrice(poolBasePrice, _duration, poolSupply);
+
+    uint256 rentPrice = calculateRentPrice(pool.basePrice, _duration, pool.availableItems.length);
+
     require(msg.value == rentPrice, "The price must be equal to the quote. Get quote again!");
-    require(randomNumberList.length > 0, "There is no random number in list");
 
-    uint256 randomNumber = randomNumberList[randomNumberList.length - 1];
-    randomNumberList.pop();
-    if (randomNumberList.length < 5) {
-      fillRandomNumberList();
-    }
-
-    uint256 index = randomNumber % pool.availableItems.length;
-    uint256 selectedItemId = pool.availableItems[index];
+    uint256 randomNumber = getRandomNumber();
+    uint256 itemRandomIndex = randomNumber % pool.availableItems.length;
+    uint256 selectedItemId = pool.availableItems[itemRandomIndex];
 
     Item storage item = items[selectedItemId];
     item.isRented = true;
     item.rentee = msg.sender;
 
-    pool.rentedItems.push(selectedItemId);
+    updatePoolAfterRent(pool, selectedItemId, itemRandomIndex);
+    createNewRent(_categoryId, _duration, rentPrice, randomNumber, item);
+  }
 
-    pool.availableItems[index] = pool.availableItems[pool.availableItems.length - 1];
-    pool.availableItems.pop();
-
+  function createNewRent(
+    uint256 _categoryId,
+    uint256 _duration,
+    uint256 rentPrice,
+    uint256 randomNumber,
+    Item storage item
+  ) private {
     _rentsIds.increment();
     uint256 newRentId = _rentsIds.current();
+
     Rent memory newRent = Rent({
       id: newRentId,
       initDate: block.timestamp,
@@ -286,18 +295,43 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
       rentee: msg.sender,
       price: rentPrice,
       poolId: _categoryId,
-      itemId: item.id,
+      itemNftId: item.nftId,
       randomNumber: randomNumber,
       status: RentStatus.ACTIVE
     });
+
     rents[newRentId] = newRent;
-    emit RentStarted(newRentId, _categoryId, msg.sender, item.nftId);
+    emit RentStarted(
+      newRentId,
+      _categoryId,
+      msg.sender,
+      item.nftId,
+      newRent.initDate,
+      newRent.expirationDate,
+      rentPrice
+    );
+  }
+
+  function getRandomNumber() private returns (uint256 randomNumber) {
+    randomNumber = randomNumberList[randomNumberList.length - 1];
+    randomNumberList.pop();
+    if (randomNumberList.length < 5) {
+      fillRandomNumberList();
+    }
+    return randomNumber;
+  }
+
+  function updatePoolAfterRent(Pool storage pool, uint256 selectedItemId, uint256 index) private {
+    pool.rentedItems.push(selectedItemId);
+    pool.availableItems[index] = pool.availableItems[pool.availableItems.length - 1];
+    pool.availableItems.pop();
   }
 
   function finishRent(uint256 rentId) public {
     require(rents[rentId].status == RentStatus.ACTIVE, "This Rent is not Active");
     Rent storage rent = rents[rentId];
-    Item storage item = items[rent.itemId];
+    uint256 itemId = nftIdToItemId[rent.itemNftId];
+    Item storage item = items[itemId];
     Pool storage pool = pools[rent.poolId];
 
     require(item.isRented, "Item is not currently rented");

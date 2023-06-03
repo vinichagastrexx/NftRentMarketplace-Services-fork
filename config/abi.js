@@ -200,7 +200,7 @@ module.exports = {
         {
           "indexed": true,
           "internalType": "uint256",
-          "name": "requestId",
+          "name": "rentId",
           "type": "uint256"
         },
         {
@@ -231,7 +231,7 @@ module.exports = {
         {
           "indexed": true,
           "internalType": "uint256",
-          "name": "requestId",
+          "name": "rentId",
           "type": "uint256"
         },
         {
@@ -249,7 +249,25 @@ module.exports = {
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "itemId",
+          "name": "itemNftId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "initDate",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "expirationDate",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "price",
           "type": "uint256"
         }
       ],
@@ -625,7 +643,7 @@ module.exports = {
             },
             {
               "internalType": "uint256",
-              "name": "itemId",
+              "name": "itemNftId",
               "type": "uint256"
             },
             {
@@ -875,7 +893,7 @@ module.exports = {
         },
         {
           "internalType": "uint256",
-          "name": "itemId",
+          "name": "itemNftId",
           "type": "uint256"
         },
         {
