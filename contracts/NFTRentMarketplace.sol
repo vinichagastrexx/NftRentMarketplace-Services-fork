@@ -88,7 +88,7 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
   //Pool Events
   event PoolEnabled(uint256 poolId);
   event PoolDisabled(uint256 poolId);
-  event PoolCreated(uint256 indexed poolId);
+  event PoolCreated(uint256 indexed poolId, uint256 basePrice);
 
   //Item Events
   event ItemAddedToPool(uint256 indexed itemId, uint256 poolId);
@@ -145,7 +145,7 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     newPool.basePrice = _basePrice;
     newPool.isActive = true;
 
-    emit PoolCreated(_categoryId);
+    emit PoolCreated(_categoryId, newPool.basePrice);
   }
 
   function disablePool(uint256 _categoryId) public onlyOwner {

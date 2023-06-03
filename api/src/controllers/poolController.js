@@ -14,5 +14,13 @@ class PoolController {
 
     res.status(200).json({ pool });
   }
+
+  static async createPool(req, res) {
+    const accessToken = req.accessToken;
+    const { poolId, basePrice } = req.body;
+    const pool = await PoolService.createPool({ accessToken, poolId, basePrice });
+
+    res.status(200).json({ pool });
+  }
 }
 module.exports = PoolController;

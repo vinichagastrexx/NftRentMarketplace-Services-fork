@@ -23,6 +23,21 @@ class PoolService {
     return response[0];
   }
 
+
+  static async createPool({ accessToken, poolId, basePrice }) {
+    const resourceId = "TREXXGG.POOLS"
+    const sqlText = `INSERT INTO TREXXGG.POOLS (Id, categoryId, isActive, basePrice, ImageUrl) VALUES (${poolId}, ${poolId}, true, ${basePrice}, 'https://nft-rent-marketplace.s3.us-east-2.amazonaws.com/categories/${poolId}.png');
+    `;
+    const response = await SxTApi.dml({
+      resourceId,
+      sqlText,
+      accessToken,
+    });
+    console.log(response);
+    // return response[0];
+  }
+
+
 }
 
 module.exports = PoolService;
