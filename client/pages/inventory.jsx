@@ -1,4 +1,4 @@
-import { Container, Heading, Text, useDisclosure, Drawer, DrawerOverlay, DrawerContent, DrawerCloseButton, DrawerHeader, DrawerBody, SimpleGrid, Skeleton } from '@chakra-ui/react';
+import { Container, Heading, Text, useDisclosure, Drawer, DrawerOverlay, DrawerContent, DrawerCloseButton, DrawerHeader, DrawerBody, SimpleGrid, Skeleton, Button } from '@chakra-ui/react';
 import { useContract, useOwnedNFTs, useAddress, useNFT } from '@thirdweb-dev/react';
 import React from 'react';
 import NFTGrid from '../components/NFT/NFTGrid';
@@ -6,6 +6,7 @@ import NFTCard from '../components/NFT/NFTCard';
 import NFTRentedOrder from '../components/NFT/NFTRentedOrder';
 import { NFT_ADDRESS } from '../const/addresses';
 import useSWR from 'swr';
+import NextLink from 'next/link'
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
@@ -44,18 +45,25 @@ export default function Inventory() {
   return (
     <Container maxW={"75%"} p={5}>
       <Heading fontSize={40} fontFamily={"Bayon"}>Your Items</Heading>
-      <Text fontSize={25} fontFamily={"Big Shoulders Text"}>Here are your Game Items. Add them to a pool and earn some money!</Text>
+      {ownedNfts ? (
+        <Text fontSize={25} fontFamily={"Big Shoulders Text"}>Here are your Game Items. Add them to a pool and earn some money!</Text>
+      ) : (
+        <div>
+          <Text fontSize={25} fontFamily={"Big Shoulders Text"}>You don't have any Items! Check the available Pools and Rent some items to play!</Text>
+          <Button marginTop={5} size={'lg'} as={NextLink} href='/pools'>
+            Rent incredible Items
+          </Button>
+        </div>)}
       <NFTGrid
         isLoading={isLoading}
         data={ownedNfts}
-        emptyText={"You have no Items"}
       />
       <Heading fontSize={40} fontFamily={"Bayon"}>Items that you Rented</Heading>
-      <Text fontSize={25} fontFamily={"Big Shoulders Text"}>Here are Items that you have rented and can use in game</Text>
+      {rentedItems?.rents.length > 0 ? <Text fontSize={25} fontFamily={"Big Shoulders Text"}>Here are Items that you have rented and can use in game</Text> : <></>}
       <SimpleGrid minChildWidth='200px' spacing={2} maxW={"100%"} padding={2} my={4}>
         {rentedItemsLoading ? [...Array(3)].map((_, index) => (
           <Skeleton key={index} height={"150px"} width={"250px"} />
-        )) : rentedItems?.rents.length > 0 ? rentedItems?.rents?.map(rentedItem => <RentedNFT key={rentedItem.NFTID} nftId={rentedItem.NFTID} rentData={rentedItem} isLoading={rentedItemsLoading} />) : (<Text fontSize={18} fontFamily={"Big Shoulders Text"}>0 items found</Text>)}
+        )) : rentedItems?.rents.length > 0 ? rentedItems?.rents?.map(rentedItem => <RentedNFT key={rentedItem.NFTID} nftId={rentedItem.NFTID} rentData={rentedItem} isLoading={rentedItemsLoading} />) : (<Text fontSize={24} fontFamily={"Big Shoulders Text"}>0 items found</Text>)}
       </SimpleGrid>
     </Container >
   )

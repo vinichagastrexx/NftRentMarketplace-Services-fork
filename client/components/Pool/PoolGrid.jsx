@@ -6,9 +6,7 @@ import PoolOrder from "./PoolOrder";
 
 export default function PoolGrid({
   isLoading,
-  data,
-  overrideOnclickBehaviour,
-  emptyText = "No pools found"
+  data
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedPool, setSelectedPool] = useState(null);
@@ -32,7 +30,7 @@ export default function PoolGrid({
             </div>
           ))
         ) : (
-          <Text>{emptyText}</Text>
+          <Text fontSize={25} fontFamily={"Big Shoulders Text"}>0 pools found</Text>
         )}
       </SimpleGrid>
       <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="xs">

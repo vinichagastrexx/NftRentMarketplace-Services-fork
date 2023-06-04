@@ -5,8 +5,7 @@ import { useState } from 'react';
 
 export default function NFTGrid({
   isLoading,
-  data,
-  emptyText = "No NFTs found"
+  data
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedNft, setSelectedNft] = useState(null);
@@ -27,10 +26,9 @@ export default function NFTGrid({
             <div key={nft.metadata.id} onClick={() => handleNFTClick(nft)}>
               <NFTCard nft={nft}></NFTCard>
             </div>
-
           ))
         ) : (
-          <Text>{emptyText}</Text>
+          <Text fontSize={25} fontFamily={"Big Shoulders Text"}>You don't have any NFTs, what about Renting from a pool?</Text>
         )}
       </SimpleGrid>
       <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="xs">
