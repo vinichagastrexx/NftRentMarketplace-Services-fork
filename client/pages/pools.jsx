@@ -1,5 +1,5 @@
 import React from 'react';
-import PoolGrid from '../components/PoolGrid';
+import PoolGrid from '../components/Pool/PoolGrid';
 import useSWR from 'swr';
 import { Container } from '@chakra-ui/react';
 
