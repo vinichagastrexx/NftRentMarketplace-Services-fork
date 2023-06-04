@@ -40,7 +40,7 @@ export default function Inventory() {
     nftCollection,
     address
   );
-  const { data: rentedItems, isLoading: rentedItemsLoading } = useSWR(`http://localhost:3001/rents/get-by-rentee/${address}`, fetcher);
+  const { data: rentedItems, isLoading: rentedItemsLoading } = useSWR(`http://localhost:3001/rents/get-active-by-rentee/${address}`, fetcher);
   return (
     <Container maxW={"75%"} p={5}>
       <Heading fontSize={40} fontFamily={"Bayon"}>Your Items</Heading>
@@ -55,7 +55,7 @@ export default function Inventory() {
       <SimpleGrid columns={[5, null, 3]} spacing={6} maxW={"1280px"} padding={2.5} my={5}>
         {rentedItemsLoading ? [...Array(3)].map((_, index) => (
           <Skeleton key={index} height={"312px"} width={"100%"} />
-        )) : rentedItems?.rents.map(rentedItem => <RentedNFT key={rentedItem.NFTID} nftId={rentedItem.NFTID} rentData={rentedItem} isLoading={rentedItemsLoading} />)}
+        )) : rentedItems?.rents?.map(rentedItem => <RentedNFT key={rentedItem.NFTID} nftId={rentedItem.NFTID} rentData={rentedItem} isLoading={rentedItemsLoading} />)}
       </SimpleGrid>
     </Container>
   )

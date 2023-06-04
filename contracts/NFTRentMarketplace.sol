@@ -91,7 +91,7 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     uint256 expirationDate,
     uint256 price
   );
-  event RentFinished(uint256 indexed rentId, uint256 poolId, address rentee, uint256 itemId);
+  event RentFinished(uint256 indexed rentId, uint256 finishDate);
 
   //Pool Events
   event PoolEnabled(uint256 poolId);
@@ -169,6 +169,8 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
   }
 
   function createItem(uint256 _nftId, uint256 _categoryId) public {
+    require(nftIdToItemId[_nftId] == 0, "Item with this NFT ID already exists");
+
     _itemIds.increment();
     uint256 newItemId = _itemIds.current();
 
@@ -348,7 +350,7 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     rent.status = RentStatus.FINISHED;
     rent.finishDate = block.timestamp;
     payable(item.owner).transfer(rent.price);
-    emit RentFinished(rent.id, pool.categoryId, msg.sender, item.id);
+    emit RentFinished(rent.id, rent.finishDate);
   }
 
   function calculateRentPrice(uint256 basePrice, uint256 rentTime, uint256 poolSupply) internal view returns (uint256) {

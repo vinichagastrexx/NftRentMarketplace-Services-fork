@@ -1,26 +1,32 @@
 const RentService = require('../services/rentService');
+const ItemService = require('../services/itemService');
 
 class RentController {
   static async startRent(req, res) {
     const { rentId, nftId, poolId, rentee, price, expirationDate, initDate } = req.body;
     const accessToken = req.accessToken;
     await RentService.startRent({ accessToken, rentId, nftId, poolId, rentee, price, expirationDate, initDate });
-
-    res.status(201).json({ message: 'Item added successfully' });
+    res.status(201).json({ message: 'Rent started successfully' });
   }
 
   static async finishRent(req, res) {
-    const { nftId, category, id, owner } = req.body;
+    const { rentId, finishDate } = req.body;
     const accessToken = req.accessToken;
-    await RentService.rentItem({ accessToken, nftId, category, id, owner });
+    await RentService.finishRent({ accessToken, rentId, finishDate });
 
-    res.status(201).json({ message: 'Item added successfully' });
+    res.status(201).json({ message: 'Rent finished successfully' });
   }
 
-  static async getByRentee(req, res) {
-    console.log(req.body);
+  static async getActiveByRentee(req, res) {
     const accessToken = req.accessToken;
-    const rents = await RentService.getByRentee({ accessToken, rentee: req.params.rentee });
+    const rents = await RentService.getActiveByRentee({ accessToken, rentee: req.params.rentee });
+
+    res.status(200).json({ rents });
+  }
+
+  static async getAllByRentee(req, res) {
+    const accessToken = req.accessToken;
+    const rents = await RentService.getAllByRentee({ accessToken, rentee: req.params.rentee });
 
     res.status(200).json({ rents });
   }

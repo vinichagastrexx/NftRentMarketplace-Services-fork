@@ -206,19 +206,7 @@ module.exports = {
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "poolId",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "address",
-          "name": "rentee",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "itemId",
+          "name": "finishDate",
           "type": "uint256"
         }
       ],

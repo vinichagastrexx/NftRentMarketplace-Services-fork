@@ -1,4 +1,4 @@
-export const NFT_RENT_MARKETPLACE_ADDRESS = "0x78Fcba79C2EC420Fa94Fdc742345D6CAF3E63a95";
+export const NFT_RENT_MARKETPLACE_ADDRESS = "0xDD648FeAEa90113dcc5bA2dBc7Df1E5d7Ce02335";
 export const NFT_RENT_MARKETPLACE_ABI = [
   {
     "inputs": [
@@ -206,19 +206,7 @@ export const NFT_RENT_MARKETPLACE_ABI = [
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "poolId",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "rentee",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "itemId",
+        "name": "finishDate",
         "type": "uint256"
       }
     ],

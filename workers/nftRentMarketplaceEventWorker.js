@@ -18,6 +18,7 @@ class NFTRentMarketplaceEventWorker {
     this.contract = await this.sdk.getContract(this.contractAddress, NFT_RENT_MARKETPLACE_ABI);
     this.contract.events.addEventListener('RentStarted', this.onRentStarted.bind(this));
     this.contract.events.addEventListener('PoolCreated', this.onPoolCreated.bind(this));
+    this.contract.events.addEventListener('RentFinished', this.onRentFinished.bind(this));
   }
 
   async onRentStarted(event) {
@@ -36,8 +37,18 @@ class NFTRentMarketplaceEventWorker {
       console.error('Error:', error);
     }
   }
+  async onRentFinished(event) {
+    const payload = {
+      rentId: Number(`${event.data.rentId._hex}`),
+      finishDate: new Date(Number(`${event.data.finishDate._hex}`) * 1000),
+    }
+    try {
+      await axios.post('http://localhost:3001/rents/finish-rent', payload);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
   async onPoolCreated(event) {
-    console.log(event.data);
     try {
       const payload = {
         poolId: Number(`${event.data.poolId._hex}`),

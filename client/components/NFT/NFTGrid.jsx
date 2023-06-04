@@ -1,9 +1,7 @@
-import { SimpleGrid, Skeleton, Link, useDisclosure, Drawer, DrawerOverlay, DrawerContent, DrawerCloseButton, DrawerBody } from "@chakra-ui/react";
+import { SimpleGrid, Skeleton, useDisclosure, Drawer, DrawerOverlay, DrawerContent, DrawerCloseButton, DrawerBody } from "@chakra-ui/react";
 import NFTCard from "./NFTCard";
-import { NFT_ADDRESS } from "../../const/addresses";
-// import NFTRentedOrder from "./NFTRentedOrder";
+import NFTOwnedOrder from './NFTOwnedOrder';
 import { useState } from 'react';
-import NFTOwnedOrder from './NFTOwnedOrder'
 
 export default function NFTGrid({
   isLoading,
@@ -21,7 +19,7 @@ export default function NFTGrid({
     <>
       <SimpleGrid columns={[5, null, 3]} spacing={6} maxW={"1280px"} padding={2.5} my={5}>
         {isLoading ? (
-          [...Array(6)].map((_, index) => (
+          [...Array(3)].map((_, index) => (
             <Skeleton key={index} height={"312px"} width={"100%"} />
           ))
         ) : data && data.length > 0 ? (

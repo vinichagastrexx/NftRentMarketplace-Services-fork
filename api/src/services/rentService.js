@@ -11,7 +11,29 @@ class RentService {
     });
     return response;
   }
-  static async getByRentee({ accessToken, rentee }) {
+  static async finishRent({ accessToken, rentId, finishDate }) {
+    const resourceId = "TREXXGG.RENTS"
+    const sqlText = `UPDATE TREXXGG.RENTS SET finishDate = '${finishDate}' WHERE Id = ${rentId};`;
+    const response = await SxTApi.dml({
+      resourceId,
+      sqlText,
+      accessToken,
+    });
+    return response;
+  }
+
+  static async getActiveByRentee({ accessToken, rentee }) {
+    const resourceId = "TREXXGG.RENTS"
+    const sqlText = `SELECT * FROM TREXXGG.RENTS WHERE TREXXGG.RENTS.RENTEE = '${rentee}' AND TREXXGG.RENTS.FINISHDATE IS NULL;`;
+    const response = await SxTApi.dql({
+      resourceId,
+      sqlText,
+      accessToken,
+    });
+    return response;
+  }
+
+  static async getAllByRentee({ accessToken, rentee }) {
     const resourceId = "TREXXGG.RENTS"
     const sqlText = `SELECT * FROM TREXXGG.RENTS WHERE TREXXGG.RENTS.RENTEE = '${rentee}';`;
     const response = await SxTApi.dql({

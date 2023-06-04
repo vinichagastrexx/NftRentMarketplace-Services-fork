@@ -6,7 +6,7 @@ class SxTApi {
     const data = {
       resourceId,
       sqlText,
-      biscuit: [env.biscuitItems, env.biscuitPools, env.biscuitRents]
+      biscuits: [env.biscuitItems, env.biscuitPools, env.biscuitRents]
     };
 
     const headers = {
@@ -27,7 +27,7 @@ class SxTApi {
     const data = {
       resourceId,
       sqlText,
-      biscuit: [env.biscuitItems]
+      biscuits: [env.biscuitItems, env.biscuitPools, env.biscuitRents]
     };
 
     const headers = {
