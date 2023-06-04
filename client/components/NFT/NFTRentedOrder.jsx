@@ -1,18 +1,17 @@
-import { Box, Container, Flex, SimpleGrid, Button, Stack, Text } from "@chakra-ui/react";
+import { Box, Heading, Container, Flex, SimpleGrid, Button, Stack, VStack, Text } from "@chakra-ui/react";
 import { ThirdwebNftMedia } from "@thirdweb-dev/react";
 import { useSigner } from "@thirdweb-dev/react";
 import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 import {
   NFT_RENT_MARKETPLACE_ADDRESS,
-  NFT_RENT_MARKETPLACE_ABI
-} from "../../../const/addresses";
-import React, { useState } from "react";
-import {
+  NFT_RENT_MARKETPLACE_ABI,
   NFT_ADDRESS
-} from "../../../const/addresses";
+} from "../../const/addresses";
+import React, { useState } from "react";
 
 
-export default function TokenPage({ nft }) {
+export default function NFTRentedOrder({ nft, rentId }) {
+  console.log(rentId)
   const signer = useSigner();
   let sdk;
   if (signer) {
@@ -23,13 +22,16 @@ export default function TokenPage({ nft }) {
   const addItemToPool = async () => {
     setIsLoading(true);
     const contract = await sdk.getContract(NFT_RENT_MARKETPLACE_ADDRESS, NFT_RENT_MARKETPLACE_ABI)
-    await contract.call("addItemToPool", [parseInt(nft.metadata.id), 1]);
+    await contract.call("finishRent", [rentId]);
     setIsLoading(false);
   };
 
   return (
     <Container maxW={"1200px"} p={5} my={5}>
-      <SimpleGrid columns={2} spacing={6}>
+      <VStack columns={2} spacing={6}>
+        <Box marginTop={"20%"}>
+          <Heading fontFamily={"Bayon"} size="xl" mt={2}>{nft.metadata.name}</Heading>
+        </Box>
         <Stack spacing={"20px"}>
           <Box borderRadius={"6px"} overflow={"hidden"}>
             <ThirdwebNftMedia
@@ -59,13 +61,10 @@ export default function TokenPage({ nft }) {
 
         <Stack spacing={"20px"}>
           <Box mx={2.5}>
-            <Text fontSize={"4xl"} fontWeight={"bold"}>{nft.metadata.name}</Text>
-          </Box>
-          <Box mx={2.5}>
-            <Button fontFamily={"Bayon"} isLoading={isLoading} colorScheme="teal" size="md" mt={4} onClick={addItemToPool}>Add Item to Pool</Button>
+            <Button fontFamily={"Bayon"} isLoading={isLoading} colorScheme="teal" size="md" mt={4} onClick={addItemToPool}>Finish Rent</Button>
           </Box>
         </Stack>
-      </SimpleGrid>
+      </VStack>
 
     </Container >
   )
