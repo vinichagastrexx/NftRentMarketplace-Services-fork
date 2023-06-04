@@ -1,6 +1,6 @@
-import { Container, Heading, Text, useDisclosure, Drawer, DrawerOverlay, DrawerContent, DrawerCloseButton, DrawerHeader, DrawerBody } from '@chakra-ui/react';
+import { Container, Heading, Text, useDisclosure, Drawer, DrawerOverlay, DrawerContent, DrawerCloseButton, DrawerHeader, DrawerBody, SimpleGrid, Skeleton } from '@chakra-ui/react';
 import { useContract, useOwnedNFTs, useAddress, useNFT } from '@thirdweb-dev/react';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import NFTGrid from '../components/NFT/NFTGrid';
 import NFTCard from '../components/NFT/NFTCard';
 import NFTRentedOrder from '../components/NFT/NFTRentedOrder';
@@ -9,11 +9,11 @@ import useSWR from 'swr';
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
-function RentedNFT({ nftId, rentData }) {
+function RentedNFT({ nftId, rentData, isLoading }) {
   const { contract: nftCollection } = useContract(NFT_ADDRESS);
   const { data: rentedNft } = useNFT(nftCollection, nftId);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  console.log(rentData)
+
   return rentedNft ? (
     <>
       <div onClick={onOpen}>
@@ -40,7 +40,7 @@ export default function Inventory() {
     nftCollection,
     address
   );
-  const { data: rentedItems, isLoading: getRentedItems } = useSWR(`http://localhost:3001/rents/get-by-rentee/${address}`, fetcher);
+  const { data: rentedItems, isLoading: rentedItemsLoading } = useSWR(`http://localhost:3001/rents/get-by-rentee/${address}`, fetcher);
   return (
     <Container maxW={"75%"} p={5}>
       <Heading fontSize={40} fontFamily={"Bayon"}>Your Items</Heading>
@@ -52,7 +52,11 @@ export default function Inventory() {
       />
       <Heading fontSize={40} fontFamily={"Bayon"}>Items that you Rented</Heading>
       <Text fontSize={25} fontFamily={"Big Shoulders Text"}>Here are Items that you have rented and can use in game</Text>
-      {rentedItems?.rents.map(rentedItem => <RentedNFT key={rentedItem.NFTID} nftId={rentedItem.NFTID} rentData={rentedItem} />)}
+      <SimpleGrid columns={[5, null, 3]} spacing={6} maxW={"1280px"} padding={2.5} my={5}>
+        {rentedItemsLoading ? [...Array(3)].map((_, index) => (
+          <Skeleton key={index} height={"312px"} width={"100%"} />
+        )) : rentedItems?.rents.map(rentedItem => <RentedNFT key={rentedItem.NFTID} nftId={rentedItem.NFTID} rentData={rentedItem} isLoading={rentedItemsLoading} />)}
+      </SimpleGrid>
     </Container>
   )
 }
