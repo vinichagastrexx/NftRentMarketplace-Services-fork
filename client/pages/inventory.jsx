@@ -52,11 +52,11 @@ export default function Inventory() {
       />
       <Heading fontSize={40} fontFamily={"Bayon"}>Items that you Rented</Heading>
       <Text fontSize={25} fontFamily={"Big Shoulders Text"}>Here are Items that you have rented and can use in game</Text>
-      <SimpleGrid columns={[5, null, 3]} spacing={6} maxW={"1280px"} padding={2.5} my={5}>
+      <SimpleGrid minChildWidth='200px' spacing={2} maxW={"100%"} padding={2} my={4}>
         {rentedItemsLoading ? [...Array(3)].map((_, index) => (
-          <Skeleton key={index} height={"312px"} width={"100%"} />
-        )) : rentedItems?.rents?.map(rentedItem => <RentedNFT key={rentedItem.NFTID} nftId={rentedItem.NFTID} rentData={rentedItem} isLoading={rentedItemsLoading} />)}
+          <Skeleton key={index} height={"150px"} width={"250px"} />
+        )) : rentedItems?.rents.length > 0 ? rentedItems?.rents?.map(rentedItem => <RentedNFT key={rentedItem.NFTID} nftId={rentedItem.NFTID} rentData={rentedItem} isLoading={rentedItemsLoading} />) : (<Text fontSize={18} fontFamily={"Big Shoulders Text"}>0 items found</Text>)}
       </SimpleGrid>
-    </Container>
+    </Container >
   )
 }

@@ -20,10 +20,10 @@ export default function PoolGrid({
 
   return (
     <>
-      <SimpleGrid columns={{ sm: 2, md: 3, lg: 4 }} spacing={'40px'} maxW={"1280px"} padding={2.5} my={5}>
+      <SimpleGrid minChildWidth='200px' spacing={2} maxW={"100%"} padding={2} my={4}>
         {isLoading ? (
-          [...Array(12)].map((_, index) => (
-            <Skeleton key={index} height={"312px"} width={"100%"} />
+          [...Array(3)].map((_, index) => (
+            <Skeleton key={index} height={"150px"} width={"250px"} />
           ))
         ) : data && data.length > 0 ? (
           data.map((pool) => (
