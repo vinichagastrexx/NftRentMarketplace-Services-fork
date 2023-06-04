@@ -1,6 +1,6 @@
 import { ConnectWallet } from "@thirdweb-dev/react";
 import NextLink from "next/link";
-import { Link, Text, Box, Flex, Heading, Image } from "@chakra-ui/react";
+import { Link, Text, Box, Flex, Image } from "@chakra-ui/react";
 
 export function Navbar() {
   return (
