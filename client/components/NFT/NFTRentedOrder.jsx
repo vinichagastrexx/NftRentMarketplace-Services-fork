@@ -1,4 +1,4 @@
-import { Box, Heading, Container, Flex, SimpleGrid, Button, Stack, VStack, Text } from "@chakra-ui/react";
+import { Box, Heading, Container, Flex, SimpleGrid, Button, Stack, VStack, Text, useToast } from "@chakra-ui/react";
 import { ThirdwebNftMedia } from "@thirdweb-dev/react";
 import { useSigner } from "@thirdweb-dev/react";
 import { ThirdwebSDK } from "@thirdweb-dev/sdk";
@@ -12,7 +12,7 @@ import { darken } from "@chakra-ui/theme-tools"
 
 
 export default function NFTRentedOrder({ nft, rentId }) {
-  console.log(rentId)
+  const toast = useToast();
   const signer = useSigner();
   let sdk;
   if (signer) {
@@ -20,12 +20,31 @@ export default function NFTRentedOrder({ nft, rentId }) {
   }
 
   const [isLoading, setIsLoading] = useState(false);
-  const addItemToPool = async () => {
-    setIsLoading(true);
-    // const contract = await sdk.getContract(NFT_RENT_MARKETPLACE_ADDRESS, NFT_RENT_MARKETPLACE_ABI)
-    const contract = await sdk.getContract(NFT_RENT_MARKETPLACE_ADDRESS)
-    await contract.call("finishRent", [rentId]);
-    setIsLoading(false);
+  const finishRent = async () => {
+    try {
+      setIsLoading(true);
+      // const contract = await sdk.getContract(NFT_RENT_MARKETPLACE_ADDRESS, NFT_RENT_MARKETPLACE_ABI)
+      const contract = await sdk.getContract(NFT_RENT_MARKETPLACE_ADDRESS)
+      await contract.call("finishRent", [rentId]);
+      toast({
+        title: "Success!",
+        description: "Your rent is finished.",
+        status: "success",
+        duration: 5000,
+        isClosable: true
+      })
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Unable to finish rent",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      })
+      console.error('Error', error)
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -70,10 +89,11 @@ export default function NFTRentedOrder({ nft, rentId }) {
               }}
               backgroundColor={'#FBAA0B'}
               fontFamily={"Bayon"}
-              colorScheme="teal"
+              color={"white"}
+              isLoading={isLoading}
               size="md"
               mt={4}
-              onClick={addItemToPool}
+              onClick={finishRent}
             >
               Finish Rent
             </Button>
