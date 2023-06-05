@@ -38,7 +38,7 @@ class RecommendationService {
     }
 
     if (userHasItems.length > 0 && userHasItemRented.length === 0) {
-      userRecommendations.push(recommendations.rentItem)
+      userRecommendations.push(recommendations.earnMoney)
     }
 
     //checking if there is only one rent to avoid repeating recommendations
@@ -46,10 +46,10 @@ class RecommendationService {
     if (userIsRentee.length === 1) {
       const lastUserRentPool = await PoolService.getById({ accessToken, poolId: userIsRentee[0].POOLID })
       if (lastUserRentPool?.ID === 1) {
-        userRecommendations.push(recommendations.rentItem)
+        userRecommendations.push(recommendations.rentFromAnotherPool)
       }
       if (lastUserRentPool?.ID === 2) {
-        userRecommendations.push(recommendations.rentItem)
+        userRecommendations.push(recommendations.rentFromAnotherPool)
       }
     }
     return userRecommendations;
