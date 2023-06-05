@@ -37,7 +37,7 @@ class NFTRentMarketplaceEventWorker {
     try {
       await axios.post('http://localhost:3001/rents/start-rent', payload);
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error:', error.message);
     }
   }
   async onRentFinished(event) {
@@ -48,7 +48,7 @@ class NFTRentMarketplaceEventWorker {
     try {
       await axios.post('http://localhost:3001/rents/finish-rent', payload);
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error:', error.message);
     }
   }
   async onPoolCreated(event) {
@@ -59,7 +59,7 @@ class NFTRentMarketplaceEventWorker {
       }
       await axios.post('http://localhost:3001/pools/create-pool', payload);
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error:', error.message);
     }
   }
   async onItemCreated(event) {
@@ -72,7 +72,7 @@ class NFTRentMarketplaceEventWorker {
       }
       await axios.post('http://localhost:3001/items/create-item', payload);
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error:', error.message);
     }
   }
   async onItemAddedToPool(event) {
@@ -81,7 +81,7 @@ class NFTRentMarketplaceEventWorker {
       const nftId = Number(`${event.data.nftId._hex}`)
       await axios.post(`http://localhost:3001/items/add-to-pool/${nftId}`);
     } catch (error) {
-      // console.error('Error:', error);
+      console.error('Error:', error.message);
     }
   }
 }

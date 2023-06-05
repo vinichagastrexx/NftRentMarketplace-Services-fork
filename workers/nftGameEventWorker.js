@@ -22,10 +22,9 @@ class NFTGameEventWorker {
   async onTransfer(event) {
     const tokenId = Number(`${event.data.tokenId._hex}`);
     try {
-      const tx = await this.nftRentMarketplaceContract.call("createItem", [tokenId, 1]);
-      console.log(tx)
+      await this.nftRentMarketplaceContract.call("createItem", [tokenId, 1]);
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error:', error.message);
     }
   }
 }
