@@ -67,6 +67,11 @@ export function Navbar() {
             mx={2.5}
             fontFamily={'Bayon'}
             fontSize={'22'}
+            _hover={{
+              color: '#FBAA0B',
+              textDecoration: 'underline',
+              transition: 'color 0.2s',
+            }}
           >
             <Text>Pools</Text>
           </Link>
@@ -76,6 +81,11 @@ export function Navbar() {
             mx={2.5}
             fontFamily={'Bayon'}
             fontSize={'22'}
+            _hover={{
+              color: '#FBAA0B',
+              textDecoration: 'underline',
+              transition: 'color 0.2s',
+            }}
           >
             <Text>Inventory</Text>
           </Link>
@@ -85,6 +95,11 @@ export function Navbar() {
             mx={2.5}
             fontFamily={'Bayon'}
             fontSize={'22'}
+            _hover={{
+              color: '#FBAA0B',
+              textDecoration: 'underline',
+              transition: 'color 0.2s',
+            }}
           >
             <Text>Know the game!</Text>
           </Link>
