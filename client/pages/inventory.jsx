@@ -68,7 +68,7 @@ export default function Inventory() {
     fetcher,
   );
   return (
-    <Container maxW={'75%'} p={5}>
+    <Container maxW={'90%'} p={5}>
       <Accordion allowToggle>
         <AccordionItem>
           <AccordionButton
