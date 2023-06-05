@@ -1,5 +1,5 @@
-import { Heading, VStack, Text, Box, Flex, useDisclosure, Image, useToast, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, SlideFade, Button } from "@chakra-ui/react";
-import { useSetIsWalletModalOpen, useSigner } from "@thirdweb-dev/react";
+import { Heading, VStack, Text, Box, useDisclosure, Image, useToast, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, SlideFade, Button } from "@chakra-ui/react";
+import { useSigner } from "@thirdweb-dev/react";
 import { ThirdwebSDK, } from "@thirdweb-dev/sdk";
 import { darken } from "@chakra-ui/theme-tools"
 import React, { useState } from "react";
@@ -34,13 +34,6 @@ export default function PoolOrder({ pool }) {
       const nft = await getNft(nftId);
       setNft(nft);
       onOpen()
-      // toast({
-      //   title: "Success!",
-      //   description: "Your rented item is ready to play! Check it out.",
-      //   status: "success",
-      //   duration: 5000,
-      //   isClosable: true
-      // })
     } catch (error) {
       toast({
         title: "Error",
@@ -90,10 +83,10 @@ export default function PoolOrder({ pool }) {
           Rent Item
         </Button>
       </Box>
-      {nft && <Modal isOpen={isOpen} onClose={onClose} motionPreset="slideInBottom">
-        <ModalOverlay />
-        <SlideFade in={isOpen} offsetY="20px">
-          <ModalContent padding={4}>
+      {nft &&
+        <Modal isOpen={isOpen} onClose={onClose} motionPreset="slideInBottom">
+          <ModalOverlay />
+          <ModalContent padding={20}>
             <ModalHeader
               fontSize="xl"
               fontWeight="bold"
@@ -105,8 +98,7 @@ export default function PoolOrder({ pool }) {
               <NFTCard nft={nft} />
             </ModalBody>
           </ModalContent>
-        </SlideFade>
-      </Modal >}
+        </Modal >}
     </VStack>
   )
 };
