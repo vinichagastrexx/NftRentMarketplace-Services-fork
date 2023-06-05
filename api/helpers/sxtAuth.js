@@ -27,7 +27,7 @@ async function requestAuthCode(userId) {
   const response = await axios.post(url, payload);
 
   if (response.status !== 200) {
-    console.error('Non 200 response from the auth/code endpoint! Stopping.');
+    // console.error('Non 200 response from the auth/code endpoint! Stopping.');s
     process.exit();
   }
 
@@ -57,8 +57,8 @@ async function requestToken(userId, authCode, signedAuthCode) {
   const response = await axios.post(url, payload);
 
   if (response.status !== 200) {
-    console.error('Failed to request token from the API!');
-    console.error(response.status, response.data);
+    // console.error('Failed to request token from the API!');
+    // console.error(response.status, response.data);
     process.exit();
   }
 
