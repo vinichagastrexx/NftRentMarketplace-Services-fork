@@ -1,8 +1,9 @@
 import { ConnectWallet, useAddress } from "@thirdweb-dev/react";
 import NextLink from "next/link";
-import { Link, Text, Box, Flex, Image, useDisclosure, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, ModalFooter, Button } from "@chakra-ui/react";
+import { Link, Icon, Text, Box, Flex, Image, useDisclosure, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, ModalFooter, Button } from "@chakra-ui/react";
 import { useEffect, useState } from 'react';
 import { darken } from "@chakra-ui/theme-tools"
+import { HiChartPie } from 'react-icons/hi'
 
 export function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -46,6 +47,11 @@ export function Navbar() {
         </Flex>
         <Flex direction={"row"} alignItems={"center"}>
           <ConnectWallet />
+          {address && (
+            <Link as={NextLink} href={`/profile/${address}`}>
+              <Icon as={HiChartPie} boxSize={8} ml={"30px"} />
+            </Link>
+          )}
         </Flex>
       </Flex>
 
@@ -83,6 +89,7 @@ export function Navbar() {
               color={"white"}
               mr={3}
               as={NextLink}
+              letterSpacing={0.5}
               href={recommendation.type === 3 ? '/inventory' : '/pools'}
               onClick={onClose}
             >

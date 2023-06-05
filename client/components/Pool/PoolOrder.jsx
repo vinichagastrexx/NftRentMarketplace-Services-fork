@@ -69,6 +69,7 @@ export default function PoolOrder({ pool }) {
         <Text fontSize={20} fontFamily={"Bayon"} fontWeight={"bold"} mt={2}>Base Price:</Text>
         <Text fontFamily={"Big Shoulders Text"}>{pool.BASEPRICE}</Text>
         <Button
+          letterSpacing={0.5}
           _hover={{ bg: darken('#FBAA0B', 15), transition: 'background-color 0.2s' }}
           _active={{
             transform: 'scale(0.98)'

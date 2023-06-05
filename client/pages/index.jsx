@@ -25,8 +25,11 @@ export default function Home() {
           <Flex h={"100%"} alignItems={"center"} justifyContent={"center"}>
             <Stack spacing={4} align={"center"}>
               <Button
+                letterSpacing={0.5}
+                fontFamily={"Bayon"}
                 size={'lg'}
                 as={NextLink}
+                letterSpacing={0.5}
                 href='/pools'
                 color={"white"}
                 colorScheme="teal"
@@ -36,6 +39,8 @@ export default function Home() {
               <Button
                 size={'lg'}
                 as={NextLink}
+                fontFamily={"Bayon"}
+                letterSpacing={0.5}
                 href='/inventory'
                 color={"white"}
                 colorScheme="teal"

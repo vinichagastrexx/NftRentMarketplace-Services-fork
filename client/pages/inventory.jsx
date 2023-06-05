@@ -51,9 +51,11 @@ export default function Inventory() {
         <div>
           <Text fontSize={25} fontFamily={"Big Shoulders Text"}>You don't have any Items! Check the available Pools and rent some items to play!</Text>
           <Button
+            letterSpacing={0.5}
             marginTop={5}
             size={'lg'}
             as={NextLink}
+            colorScheme='teal'
             href='/pools'
             color={"white"}
           >

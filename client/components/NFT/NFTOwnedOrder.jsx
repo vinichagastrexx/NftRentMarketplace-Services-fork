@@ -88,6 +88,7 @@ export default function NFTOwnedOrder({ nft }) {
               }}
               backgroundColor={'#FBAA0B'}
               fontFamily={"Bayon"}
+              letterSpacing={0.5}
               isLoading={isLoading}
               color={"white"}
               size="md"

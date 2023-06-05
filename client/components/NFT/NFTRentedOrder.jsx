@@ -84,6 +84,7 @@ export default function NFTRentedOrder({ nft, rentId }) {
           <Box mx={2.5}>
             <Button
               _hover={{ bg: darken('#FBAA0B', 15), transition: 'background-color 0.2s' }}
+              letterSpacing={0.5}
               _active={{
                 transform: 'scale(0.98)'
               }}
