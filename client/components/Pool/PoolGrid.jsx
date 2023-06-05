@@ -1,13 +1,16 @@
-import { SimpleGrid, Skeleton, Text, useDisclosure } from "@chakra-ui/react";
-import PoolCard from "./PoolCard";
-import { Drawer, DrawerOverlay, DrawerContent, DrawerCloseButton, DrawerBody } from "@chakra-ui/react";
+import { SimpleGrid, Skeleton, Text, useDisclosure } from '@chakra-ui/react';
+import PoolCard from './PoolCard';
+import {
+  Drawer,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerCloseButton,
+  DrawerBody,
+} from '@chakra-ui/react';
 import { useState } from 'react';
-import PoolOrder from "./PoolOrder";
+import PoolOrder from './PoolOrder';
 
-export default function PoolGrid({
-  isLoading,
-  data
-}) {
+export default function PoolGrid({ isLoading, data }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedPool, setSelectedPool] = useState(null);
 
@@ -18,10 +21,16 @@ export default function PoolGrid({
 
   return (
     <>
-      <SimpleGrid minChildWidth='200px' spacing={2} maxW={"100%"} padding={2} my={4}>
+      <SimpleGrid
+        minChildWidth="200px"
+        spacing={2}
+        maxW={'100%'}
+        padding={2}
+        my={4}
+      >
         {isLoading ? (
           [...Array(3)].map((_, index) => (
-            <Skeleton key={index} height={"150px"} width={"250px"} />
+            <Skeleton key={index} height={'150px'} width={'250px'} />
           ))
         ) : data && data.length > 0 ? (
           data.map((pool) => (
@@ -30,7 +39,9 @@ export default function PoolGrid({
             </div>
           ))
         ) : (
-          <Text fontSize={25} fontFamily={"Big Shoulders Text"}>0 pools found</Text>
+          <Text fontSize={25} fontFamily={'Big Shoulders Text'}>
+            0 pools found
+          </Text>
         )}
       </SimpleGrid>
       <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="xs">
@@ -44,5 +55,5 @@ export default function PoolGrid({
         </DrawerOverlay>
       </Drawer>
     </>
-  )
+  );
 }

@@ -1,10 +1,10 @@
-import { ThirdwebProvider } from "@thirdweb-dev/react";
-import "../styles/globals.css";
+import { ThirdwebProvider } from '@thirdweb-dev/react';
+import '../styles/globals.css';
 import { ChakraProvider } from '@chakra-ui/react';
-import { Navbar } from "../components/Navbar";
-import Head from 'next/head'
+import { Navbar } from '../components/Navbar';
+import Head from 'next/head';
 
-const activeChain = "mumbai";
+const activeChain = 'mumbai';
 
 function MyApp({ Component, pageProps }) {
   return (
