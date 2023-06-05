@@ -1,7 +1,8 @@
-import { Box, Button, VStack, Image, Heading, Text } from "@chakra-ui/react";
+import { Box, Button, VStack, Image, Heading, Text, useToast } from "@chakra-ui/react";
 import { useSigner } from "@thirdweb-dev/react";
 import { ThirdwebSDK, } from "@thirdweb-dev/sdk";
-import React, { useState, useEffect } from "react";
+import { darken } from "@chakra-ui/theme-tools"
+import React, { useState } from "react";
 import {
   NFT_RENT_MARKETPLACE_ADDRESS,
   NFT_RENT_MARKETPLACE_ABI,
@@ -11,6 +12,7 @@ import NFTCard from "../NFT/NFTCard";
 
 export default function PoolOrder({ pool }) {
   const signer = useSigner();
+  const toast = useToast();
   let sdk;
   if (signer) {
     sdk = ThirdwebSDK.fromSigner(signer);
@@ -21,15 +23,35 @@ export default function PoolOrder({ pool }) {
 
   const rentItem = async () => {
     setIsLoading(true);
-    const contract = await sdk.getContract(NFT_RENT_MARKETPLACE_ADDRESS, NFT_RENT_MARKETPLACE_ABI)
-    const price = await contract.call("getRentQuote", [1, 1]);
-    setPoolPrice(Number(`${price._hex}`))
-    const result = await contract.call("startRent", [1, 1], { value: price });
-    console.log(result);
-    const nftId = result.receipt.events[1].args.itemNftId.toNumber();
-    const nft = await getNft(nftId);
-    setNft(nft);
-    setIsLoading(false);
+    // const contract = await sdk.getContract(NFT_RENT_MARKETPLACE_ADDRESS, NFT_RENT_MARKETPLACE_ABI)
+    try {
+      const contract = await sdk.getContract(NFT_RENT_MARKETPLACE_ADDRESS)
+      const price = await contract.call("getRentQuote", [1, 1]);
+      setPoolPrice(Number(`${price._hex}`))
+      const result = await contract.call("startRent", [1, 1], { value: price });
+      const nftId = result.receipt.events[1].args.itemNftId.toNumber();
+      const nft = await getNft(nftId);
+      setNft(nft);
+      toast({
+        title: "Item rented",
+        description: "You item is available to play!",
+        status: "success",
+        duration: 5000,
+        isClosable: true
+      })
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Unable to rent from pool",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      })
+      console.error('Error', error)
+    } finally {
+      setIsLoading(false);
+    }
+
   };
 
   const getNft = async (nftId) => {
@@ -52,7 +74,20 @@ export default function PoolOrder({ pool }) {
         <Text fontFamily={"Big Shoulders Text"}>{pool.DESCRIPTION}</Text>
         <Text fontSize={20} fontFamily={"Bayon"} fontWeight={"bold"} mt={2}>Base Price:</Text>
         <Text fontFamily={"Big Shoulders Text"}>{pool.BASEPRICE}</Text>
-        <Button fontFamily={"Bayon"} isLoading={isLoading} colorScheme="teal" size="sm" mt={2} onClick={rentItem}>Rent Item</Button>
+        <Button
+          _hover={{ bg: darken('#FBAA0B', 15), transition: 'background-color 0.2s' }}
+          _active={{
+            transform: 'scale(0.98)'
+          }}
+          backgroundColor={'#FBAA0B'}
+          fontFamily={"Bayon"}
+          isLoading={isLoading}
+          colorScheme="teal"
+          size="md"
+          mt={4}
+          onClick={rentItem}>
+          Rent Item
+        </Button>
       </Box>
       {nft && <NFTCard nft={nft} />}
     </VStack>

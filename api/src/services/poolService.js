@@ -12,9 +12,9 @@ class PoolService {
     return response;
   }
 
-  static async getById({ accessToken, id }) {
+  static async getById({ accessToken, poolId }) {
     const resourceId = "TREXXGG.POOLS"
-    const sqlText = `SELECT * FROM TREXXGG.POOLS INNER JOIN TREXXGG.CATEGORIES ON TREXXGG.POOLS.CATEGORYID = TREXXGG.CATEGORIES.ID WHERE TREXXGG.POOLS.ID = ${id};`;
+    const sqlText = `SELECT * FROM TREXXGG.POOLS INNER JOIN TREXXGG.CATEGORIES ON TREXXGG.POOLS.CATEGORYID = TREXXGG.CATEGORIES.ID WHERE TREXXGG.POOLS.CATEGORYID = ${poolId};`;
     const response = await SxTApi.dql({
       resourceId,
       sqlText,
@@ -26,8 +26,7 @@ class PoolService {
 
   static async createPool({ accessToken, poolId, basePrice }) {
     const resourceId = "TREXXGG.POOLS"
-    const sqlText = `INSERT INTO TREXXGG.POOLS (Id, categoryId, isActive, basePrice, ImageUrl) VALUES (${poolId}, ${poolId}, true, ${basePrice}, 'https://nft-rent-marketplace.s3.us-east-2.amazonaws.com/categories/${poolId}.png');
-    `;
+    const sqlText = `INSERT INTO TREXXGG.POOLS (categoryId, isActive, basePrice, ImageUrl) VALUES (${poolId}, true, ${basePrice}, 'https://nft-rent-marketplace.s3.us-east-2.amazonaws.com/categories/${poolId}.png');`;
     const response = await SxTApi.dml({
       resourceId,
       sqlText,
@@ -36,8 +35,6 @@ class PoolService {
 
     return response[0];
   }
-
-
 }
 
 module.exports = PoolService;

@@ -1,4 +1,4 @@
-import { SimpleGrid, Skeleton, useDisclosure, Drawer, DrawerOverlay, DrawerContent, DrawerCloseButton, DrawerBody } from "@chakra-ui/react";
+import { SimpleGrid, Skeleton, useDisclosure, Drawer, DrawerOverlay, DrawerContent, DrawerCloseButton, DrawerBody, Text } from "@chakra-ui/react";
 import NFTCard from "./NFTCard";
 import NFTOwnedOrder from './NFTOwnedOrder';
 import { useState } from 'react';
@@ -21,13 +21,13 @@ export default function NFTGrid({
           [...Array(3)].map((_, index) => (
             <Skeleton key={index} height={"150px"} width={"250px"} />
           ))
-        ) : data && data.length > 0(
+        ) : data && data.length > 0 ? (
           data.map((nft) => (
             <div key={nft.metadata.id} onClick={() => handleNFTClick(nft)}>
               <NFTCard nft={nft}></NFTCard>
             </div>
           ))
-        )}
+        ) : <Text>0 items found</Text>}
       </SimpleGrid>
       <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="xs">
         <DrawerOverlay>

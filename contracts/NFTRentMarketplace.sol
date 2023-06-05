@@ -89,7 +89,8 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     uint256 itemNftId,
     uint256 initDate,
     uint256 expirationDate,
-    uint256 price
+    uint256 price,
+    address owner
   );
   event RentFinished(uint256 indexed rentId, uint256 finishDate);
 
@@ -99,9 +100,9 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
   event PoolCreated(uint256 indexed poolId, uint256 basePrice);
 
   //Item Events
-  event ItemAddedToPool(uint256 indexed itemId, uint256 poolId);
+  event ItemAddedToPool(uint256 indexed nftId, uint256 poolId);
   event ItemRemovedFromPool(uint256 indexed itemId, uint256 poolId);
-  event ItemCreated(uint256 indexed itemId, uint256 indexed nftId, uint256 categoryId, address owner);
+  event ItemCreated(uint256 indexed nftId, uint256 categoryId, address owner);
   address public nftContractAddress;
 
   constructor(
@@ -184,7 +185,7 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
       isInPool: false
     });
     nftIdToItemId[_nftId] = newItemId;
-    emit ItemCreated(newItemId, _nftId, _categoryId, msg.sender);
+    emit ItemCreated(_nftId, _categoryId, msg.sender);
   }
 
   function getRent(uint256 requestId) public view returns (Rent memory) {
@@ -230,7 +231,7 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     erc721.safeTransferFrom(msg.sender, address(this), item.nftId);
     pools[_categoryId].availableItems.push(item.id);
     item.isInPool = true;
-    emit ItemAddedToPool(item.id, _categoryId);
+    emit ItemAddedToPool(item.nftId, _categoryId);
   }
 
   function removeItemFromPool(uint256 _nftId) public onlyNftOwner(_nftId) {
@@ -310,7 +311,8 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
       item.nftId,
       newRent.initDate,
       newRent.expirationDate,
-      rentPrice
+      rentPrice,
+      item.owner
     );
   }
 

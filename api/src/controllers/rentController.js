@@ -3,9 +3,9 @@ const ItemService = require('../services/itemService');
 
 class RentController {
   static async startRent(req, res) {
-    const { rentId, nftId, poolId, rentee, price, expirationDate, initDate } = req.body;
+    const { rentId, nftId, poolId, rentee, price, expirationDate, initDate, owner } = req.body;
     const accessToken = req.accessToken;
-    await RentService.startRent({ accessToken, rentId, nftId, poolId, rentee, price, expirationDate, initDate });
+    await RentService.startRent({ accessToken, rentId, nftId, poolId, rentee, price, expirationDate, initDate, owner });
     res.status(201).json({ message: 'Rent started successfully' });
   }
 

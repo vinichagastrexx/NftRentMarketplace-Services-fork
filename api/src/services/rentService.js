@@ -1,9 +1,9 @@
 const SxTApi = require('./sxtApi');
 
 class RentService {
-  static async startRent({ accessToken, rentId, nftId, poolId, rentee, price, expirationDate, initDate }) {
+  static async startRent({ accessToken, rentId, nftId, poolId, rentee, price, expirationDate, initDate, owner }) {
     const resourceId = "TREXXGG.RENTS"
-    const sqlText = `INSERT INTO TREXXGG.RENTS (Id, initDate,      expirationDate, finishDate, price, rentee, poolId, nftId) VALUES (${rentId}, '${initDate}', '${expirationDate}', null, ${price}, '${rentee}', ${poolId}, ${nftId});`;
+    const sqlText = `INSERT INTO TREXXGG.RENTS (Id, initDate, expirationDate, finishDate, rentPrice, rentee, poolId, nftId, owner) VALUES (${rentId}, '${initDate}', '${expirationDate}', null, ${price}, '${rentee}', ${poolId}, ${nftId}, '${owner}');`;
     const response = await SxTApi.dml({
       resourceId,
       sqlText,
@@ -33,6 +33,17 @@ class RentService {
     return response;
   }
 
+  static async getActiveByOwner({ accessToken, owner }) {
+    const resourceId = "TREXXGG.RENTS"
+    const sqlText = `SELECT * FROM TREXXGG.RENTS WHERE TREXXGG.RENTS.OWNER = '${owner}' AND TREXXGG.RENTS.FINISHDATE IS NULL;`;
+    const response = await SxTApi.dql({
+      resourceId,
+      sqlText,
+      accessToken,
+    });
+    return response;
+  }
+
   static async getAllByRentee({ accessToken, rentee }) {
     const resourceId = "TREXXGG.RENTS"
     const sqlText = `SELECT * FROM TREXXGG.RENTS WHERE TREXXGG.RENTS.RENTEE = '${rentee}';`;
@@ -42,6 +53,10 @@ class RentService {
       accessToken,
     });
     return response;
+  }
+
+  static async checkRentPool({ accessToken, rentId }) {
+
   }
 }
 

@@ -8,6 +8,7 @@ import {
   NFT_ADDRESS
 } from "../../const/addresses";
 import React, { useState } from "react";
+import { darken } from "@chakra-ui/theme-tools"
 
 
 export default function NFTRentedOrder({ nft, rentId }) {
@@ -21,7 +22,8 @@ export default function NFTRentedOrder({ nft, rentId }) {
   const [isLoading, setIsLoading] = useState(false);
   const addItemToPool = async () => {
     setIsLoading(true);
-    const contract = await sdk.getContract(NFT_RENT_MARKETPLACE_ADDRESS, NFT_RENT_MARKETPLACE_ABI)
+    // const contract = await sdk.getContract(NFT_RENT_MARKETPLACE_ADDRESS, NFT_RENT_MARKETPLACE_ABI)
+    const contract = await sdk.getContract(NFT_RENT_MARKETPLACE_ADDRESS)
     await contract.call("finishRent", [rentId]);
     setIsLoading(false);
   };
@@ -61,7 +63,20 @@ export default function NFTRentedOrder({ nft, rentId }) {
 
         <Stack spacing={"20px"}>
           <Box mx={2.5}>
-            <Button fontFamily={"Bayon"} isLoading={isLoading} colorScheme="teal" size="md" mt={4} onClick={addItemToPool}>Finish Rent</Button>
+            <Button
+              _hover={{ bg: darken('#FBAA0B', 15), transition: 'background-color 0.2s' }}
+              _active={{
+                transform: 'scale(0.98)'
+              }}
+              backgroundColor={'#FBAA0B'}
+              fontFamily={"Bayon"}
+              colorScheme="teal"
+              size="md"
+              mt={4}
+              onClick={addItemToPool}
+            >
+              Finish Rent
+            </Button>
           </Box>
         </Stack>
       </VStack>

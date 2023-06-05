@@ -1,4 +1,5 @@
-import { Box, Heading, Container, Flex, SimpleGrid, Button, Stack, VStack, Text } from "@chakra-ui/react";
+import { Box, Heading, Container, Flex, SimpleGrid, Button, Stack, VStack, Text, useToast } from "@chakra-ui/react";
+import { darken } from "@chakra-ui/theme-tools"
 import { ThirdwebNftMedia } from "@thirdweb-dev/react";
 import { useSigner } from "@thirdweb-dev/react";
 import { ThirdwebSDK } from "@thirdweb-dev/sdk";
@@ -11,6 +12,7 @@ import React, { useState } from "react";
 
 
 export default function NFTOwnedOrder({ nft }) {
+  const toast = useToast();
   const signer = useSigner();
   let sdk;
   if (signer) {
@@ -20,9 +22,29 @@ export default function NFTOwnedOrder({ nft }) {
   const [isLoading, setIsLoading] = useState(false);
   const addItemToPool = async () => {
     setIsLoading(true);
-    const contract = await sdk.getContract(NFT_RENT_MARKETPLACE_ADDRESS, NFT_RENT_MARKETPLACE_ABI)
-    await contract.call("addItemToPool", [parseInt(nft.metadata.id), 1]);
-    setIsLoading(false);
+    // const contract = await sdk.getContract(NFT_RENT_MARKETPLACE_ADDRESS, NFT_RENT_MARKETPLACE_ABI)
+    try {
+      const contract = await sdk.getContract(NFT_RENT_MARKETPLACE_ADDRESS)
+      await contract.call("addItemToPool", [parseInt(nft.metadata.id), 1]);
+      toast({
+        title: "Success",
+        description: "Your item is in pool for rent!",
+        status: "sucess",
+        duration: 5000,
+        isClosable: true,
+      })
+    } catch (error) {
+      toast({
+        title: "An error occurred.",
+        description: "Unable to add item to pool.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      })
+      console.error('Error adding item to pool:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -57,10 +79,23 @@ export default function NFTOwnedOrder({ nft }) {
             </SimpleGrid>
           </Box>
         </Stack>
-
         <Stack spacing={"20px"}>
           <Box mx={2.5}>
-            <Button fontFamily={"Bayon"} isLoading={isLoading} colorScheme="teal" size="md" mt={4} onClick={addItemToPool}>Add Item to Pool</Button>
+            <Button
+              _hover={{ bg: darken('#FBAA0B', 15), transition: 'background-color 0.2s' }}
+              _active={{
+                transform: 'scale(0.98)'
+              }}
+              backgroundColor={'#FBAA0B'}
+              fontFamily={"Bayon"}
+              isLoading={isLoading}
+              colorScheme="teal"
+              size="md"
+              mt={4}
+              onClick={addItemToPool}
+            >
+              Add Item to Pool
+            </Button>
           </Box>
         </Stack>
       </VStack>

@@ -10,7 +10,7 @@ class PoolController {
 
   static async getById(req, res) {
     const accessToken = req.accessToken;
-    const pool = await PoolService.getById({ accessToken, id: req.params.poolId });
+    const pool = await PoolService.getById({ accessToken, poolId: req.params.poolId });
 
     res.status(200).json({ pool });
   }
