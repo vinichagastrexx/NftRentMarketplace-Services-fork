@@ -2,9 +2,28 @@ const PoolService = require('./poolService');
 const RentService = require('./rentService');
 const ItemService = require('./itemService');
 
+const recommendations = {
+  rentItem: {
+    type: 1,
+    text: "You don't own any game items yet. Why not rent one from a pool and start playing?",
+    callToAction: "Explore Pools",
+  },
+  rentFromAnotherPool: {
+    type: 2,
+    text: `You've recently rented from Pool {poolId}. Have you considered checking out other pools too?`,
+    callToAction: "Discover More Pools",
+  },
+  earnMoney: {
+    type: 3,
+    text: "Did you know you can earn money by renting out your idle game assets? Give it a try!",
+    callToAction: "Visit Your Inventory",
+  }
+}
+
+
 class RecommendationService {
   static async getByUser({ userAddress, accessToken }) {
-    let recommendations = [];
+    let userRecommendations = [];
     // check if user is renting some item
     const userIsRentee = await RentService.getActiveByRentee({ accessToken, rentee: userAddress })
 
@@ -15,11 +34,11 @@ class RecommendationService {
     const userHasItems = await ItemService.getByOwner({ accessToken, userAddress })
 
     if (userHasItems.length === 0 && userIsRentee.length === 0) {
-      recommendations.push('You do not own any NFTs. Consider renting from a pool to play.')
+      userRecommendations.push(recommendations.rentItem)
     }
 
     if (userHasItems.length > 0 && userHasItemRented.length === 0) {
-      recommendations.push('Earn money renting your idle assets')
+      userRecommendations.push(recommendations.rentItem)
     }
 
     //checking if there is only one rent to avoid repeating recommendations
@@ -27,13 +46,13 @@ class RecommendationService {
     if (userIsRentee.length === 1) {
       const lastUserRentPool = await PoolService.getById({ accessToken, poolId: userIsRentee[0].POOLID })
       if (lastUserRentPool?.ID === 1) {
-        recommendations.push('Rent from pool 2')
+        userRecommendations.push(recommendations.rentItem)
       }
       if (lastUserRentPool?.ID === 2) {
-        recommendations.push('Rent from pool 1')
+        userRecommendations.push(recommendations.rentItem)
       }
     }
-    return recommendations;
+    return userRecommendations;
   }
 }
 
