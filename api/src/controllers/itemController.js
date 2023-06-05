@@ -32,6 +32,14 @@ class ItemController {
 
     res.status(200).json({ itemsRented });
   }
+
+  static async getItemsOwnedByUser(req, res) {
+    const owner = req.params.owner;
+    const accessToken = req.accessToken;
+    const itemsOwned = await ItemService.getByOwner({ accessToken, owner });
+
+    res.status(200).json({ itemsOwned });
+  }
 }
 
 module.exports = ItemController;

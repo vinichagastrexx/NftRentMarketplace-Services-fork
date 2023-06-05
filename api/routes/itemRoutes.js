@@ -6,6 +6,7 @@ router.post('/create-item', ItemController.createItem);
 router.post('/add-to-pool/:nftId', ItemController.addToPool);
 router.get('/get-in-pool/:owner', ItemController.getItemsInPoolByUser);
 router.get('/get-rented/:owner', ItemController.getItemsRentedByUser);
-// router.post('/rent-item', ItemController.addItem);
+router.get('/get-owned/:owner', ItemController.getItemsOwnedByUser);
+
 
 module.exports = router;

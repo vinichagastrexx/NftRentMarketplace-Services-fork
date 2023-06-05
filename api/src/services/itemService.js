@@ -1,9 +1,9 @@
 const SxTApi = require('./sxtApi');
 
 class ItemService {
-  static async getByOwner({ accessToken, userAddress }) {
+  static async getByOwner({ accessToken, owner }) {
     const resourceId = "TREXXGG.ITEMS"
-    const sqlText = `SELECT * FROM TREXXGG.ITEMS WHERE TREXXGG.ITEMS.OWNER = '${userAddress}'`;
+    const sqlText = `SELECT * FROM TREXXGG.ITEMS WHERE TREXXGG.ITEMS.OWNER = '${owner}'`;
     const response = await SxTApi.dql({
       resourceId,
       sqlText,

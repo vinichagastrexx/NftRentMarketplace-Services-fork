@@ -10,6 +10,9 @@ import {
   AccordionButton,
   AccordionPanel,
   AccordionIcon,
+  Stat,
+  StatLabel,
+  StatNumber,
 } from '@chakra-ui/react';
 import { useContract, useNFT, useAddress } from '@thirdweb-dev/react';
 import React from 'react';
@@ -29,18 +32,43 @@ function RentedNFT({ nftId }) {
 export default function ProfilePage() {
   const address = useAddress();
 
-  const { data: rentedItems, isLoading: rentedItemsLoading } = useSWR(
+  const { data: rentedOutItems, isLoading: rentedItemsLoading } = useSWR(
     `http://localhost:3001/items/get-rented/${address}`,
     fetcher,
   );
 
-  const { data: poolItems, isLoading: poolItemsLoading } = useSWR(
+  const { data: inPoolItems, isLoading: poolItemsLoading } = useSWR(
     `http://localhost:3001/items/get-in-pool/${address}`,
     fetcher,
   );
 
+  const { data: ownedItems, isLoading: ownedItemsLoading } = useSWR(
+    `http://localhost:3001/items/get-owned/${address}`,
+    fetcher,
+  );
+
+  console.log(ownedItems)
+
   return (
     <Container maxW={'90%'} p={5}>
+      <SimpleGrid padding={10} columns={5} spacing={5}>
+        <Stat>
+          <StatLabel fontSize={30} fontFamily={'Bayon'}>Items in Pools</StatLabel>
+          <StatNumber fontSize={30} fontFamily={'Bayon'}>{inPoolItems?.itemsInPool?.length}</StatNumber>
+        </Stat>
+        <Stat>
+          <StatLabel fontSize={30} fontFamily={'Bayon'}>Items Rented Out</StatLabel>
+          <StatNumber fontSize={30} fontFamily={'Bayon'}>{rentedOutItems?.itemsRented?.length}</StatNumber>
+        </Stat>
+        <Stat>
+          <StatLabel fontSize={30} fontFamily={'Bayon'}>Owned Items</StatLabel>
+          <StatNumber fontSize={30} fontFamily={'Bayon'}>{ownedItems?.itemsOwned?.length}</StatNumber>
+        </Stat>
+        {/* <Stat>
+          <StatLabel fontSize={30} fontFamily={'Bayon'}>Total Earnings</StatLabel>
+          <StatNumber fontSize={30} fontFamily={'Bayon'}>100</StatNumber>
+        </Stat> */}
+      </SimpleGrid>
       <Accordion allowToggle>
         <AccordionItem>
           <AccordionButton
@@ -74,8 +102,8 @@ export default function ProfilePage() {
                 [...Array(3)].map((_, index) => (
                   <Skeleton key={index} height={'150px'} width={'250px'} />
                 ))
-              ) : rentedItems?.itemsRented?.length > 0 ? (
-                rentedItems?.itemsRented?.map((rentedItem) => (
+              ) : rentedOutItems?.itemsRented?.length > 0 ? (
+                rentedOutItems?.itemsRented?.map((rentedItem) => (
                   <RentedNFT key={rentedItem.NFTID} nftId={rentedItem.NFTID} />
                 ))
               ) : (
@@ -119,8 +147,8 @@ export default function ProfilePage() {
                 [...Array(3)].map((_, index) => (
                   <Skeleton key={index} height={'150px'} width={'250px'} />
                 ))
-              ) : poolItems?.itemsInPool?.length > 0 ? (
-                poolItems?.itemsInPool?.map((poolItem) => (
+              ) : inPoolItems?.itemsInPool?.length > 0 ? (
+                inPoolItems?.itemsInPool?.map((poolItem) => (
                   <RentedNFT key={poolItem.NFTID} nftId={poolItem.NFTID} />
                 ))
               ) : (
