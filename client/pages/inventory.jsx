@@ -10,7 +10,7 @@ import NextLink from 'next/link'
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
-function RentedNFT({ nftId, rentData, isLoading }) {
+function RentedNFT({ nftId, rentData }) {
   const { contract: nftCollection } = useContract(NFT_ADDRESS);
   const { data: rentedNft } = useNFT(nftCollection, nftId);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -45,25 +45,26 @@ export default function Inventory() {
   return (
     <Container maxW={"75%"} p={5}>
       <Heading fontSize={40} fontFamily={"Bayon"}>Your Items</Heading>
-      {ownedNfts ? (
+      {isLoading ? <></> : ownedNfts?.length > 0 ? (
         <Text fontSize={25} fontFamily={"Big Shoulders Text"}>Here are your Game Items. Add them to a pool and earn some money!</Text>
       ) : (
         <div>
-          <Text fontSize={25} fontFamily={"Big Shoulders Text"}>You don't have any Items! Check the available Pools and Rent some items to play!</Text>
+          <Text fontSize={25} fontFamily={"Big Shoulders Text"}>You don't have any Items! Check the available Pools and rent some items to play!</Text>
           <Button marginTop={5} size={'lg'} as={NextLink} href='/pools'>
             Rent incredible Items
           </Button>
-        </div>)}
+        </div>
+      )}
       <NFTGrid
         isLoading={isLoading}
         data={ownedNfts}
       />
       <Heading fontSize={40} fontFamily={"Bayon"}>Items that you Rented</Heading>
-      {rentedItems?.rents.length > 0 ? <Text fontSize={25} fontFamily={"Big Shoulders Text"}>Here are Items that you have rented and can use in game</Text> : <></>}
+      {rentedItems?.rents.length > 0 ? (<Text fontSize={25} fontFamily={"Big Shoulders Text"}>Here are Items that you have rented and can use in game</Text>) : <></>}
       <SimpleGrid minChildWidth='200px' spacing={2} maxW={"100%"} padding={2} my={4}>
         {rentedItemsLoading ? [...Array(3)].map((_, index) => (
           <Skeleton key={index} height={"150px"} width={"250px"} />
-        )) : rentedItems?.rents.length > 0 ? rentedItems?.rents?.map(rentedItem => <RentedNFT key={rentedItem.NFTID} nftId={rentedItem.NFTID} rentData={rentedItem} isLoading={rentedItemsLoading} />) : (<Text fontSize={24} fontFamily={"Big Shoulders Text"}>0 items found</Text>)}
+        )) : rentedItems?.rents.length > 0 ? rentedItems?.rents?.map(rentedItem => <RentedNFT key={rentedItem.NFTID} nftId={rentedItem.NFTID} rentData={rentedItem} />) : (<Text fontSize={24} fontFamily={"Big Shoulders Text"}>0 items found</Text>)}
       </SimpleGrid>
     </Container >
   )
