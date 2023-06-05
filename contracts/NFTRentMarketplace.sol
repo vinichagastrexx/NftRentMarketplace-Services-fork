@@ -118,9 +118,8 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
   }
 
   modifier onlyNftOwner(uint256 _itemNftId) {
-    uint256 itemId = nftIdToItemId[_itemNftId];
-    Item storage item = items[itemId];
-    require(msg.sender == item.owner, "Only the NFT owner can perform this operation");
+    ERC721 erc721 = ERC721(nftContractAddress);
+    require(msg.sender == erc721.ownerOf(_itemNftId), "Only the NFT owner can perform this operation");
     _;
   }
 
@@ -169,7 +168,7 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     emit PoolEnabled(_categoryId);
   }
 
-  function createItem(uint256 _nftId, uint256 _categoryId) public {
+  function createItem(uint256 _nftId, uint256 _categoryId) public onlyNftOwner(_nftId) {
     require(nftIdToItemId[_nftId] == 0, "Item with this NFT ID already exists");
 
     _itemIds.increment();
@@ -217,7 +216,7 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     return items[itemId];
   }
 
-  function addItemToPool(uint256 _nftId, uint256 _categoryId) public {
+  function addItemToPool(uint256 _nftId, uint256 _categoryId) public onlyNftOwner(_nftId) {
     Pool storage pool = pools[_categoryId];
     uint256 itemId = nftIdToItemId[_nftId];
     Item storage item = items[itemId];
@@ -225,7 +224,10 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     require(item.id != 0, "Item does not exist");
     require(pool.isActive, "Pool with the given category ID does not exist or is not active");
     require(items[item.id].isInPool == false, "Item is already in a pool");
-    require(item.owner == msg.sender, "Only item owner can add it to a pool");
+    // Update the owner of the item if the current owner is not the sender
+    if (item.owner != msg.sender) {
+      item.owner = payable(msg.sender);
+    }
 
     ERC721 erc721 = ERC721(nftContractAddress);
     erc721.safeTransferFrom(msg.sender, address(this), item.nftId);
@@ -262,6 +264,7 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     Pool storage pool = pools[_categoryId];
     require(pool.isActive, "Pool with the given category ID does not exist or is not active");
     require(pool.availableItems.length > 0, "Pool with the given category ID has no available items to rent");
+    require(randomNumberList.length > 0, "There is no random number available to select item");
 
     uint256 rentPrice = calculateRentPrice(pool.basePrice, _duration, pool.availableItems.length);
 
