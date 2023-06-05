@@ -1,3 +1,4 @@
+const ItemService = require('./itemService');
 const SxTApi = require('./sxtApi');
 
 class RentService {
@@ -9,6 +10,7 @@ class RentService {
       sqlText,
       accessToken,
     });
+    await ItemService.rentItem({ accessToken, nftId, rentee })
     return response;
   }
   static async finishRent({ accessToken, rentId, finishDate }) {

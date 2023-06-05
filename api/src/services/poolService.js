@@ -12,9 +12,9 @@ class PoolService {
     return response;
   }
 
-  static async getById({ accessToken, poolId }) {
+  static async getById({ accessToken }) {
     const resourceId = "TREXXGG.POOLS"
-    const sqlText = `SELECT * FROM TREXXGG.POOLS INNER JOIN TREXXGG.CATEGORIES ON TREXXGG.POOLS.CATEGORYID = TREXXGG.CATEGORIES.ID WHERE TREXXGG.POOLS.CATEGORYID = ${poolId};`;
+    const sqlText = `SELECT * FROM TREXXGG.POOLS INNER JOIN TREXXGG.CATEGORIES ON TREXXGG.POOLS.CATEGORYID = TREXXGG.CATEGORIES.ID;`;
     const response = await SxTApi.dql({
       resourceId,
       sqlText,

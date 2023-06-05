@@ -3,7 +3,7 @@ const SxTApi = require('./sxtApi');
 class ItemService {
   static async getByOwner({ accessToken, userAddress }) {
     const resourceId = "TREXXGG.ITEMS"
-    const sqlText = `SELECT * FROM TREXXGG.ITEMS WHERE TREXXGG.ITEMS.OWNER = ${userAddress}`;
+    const sqlText = `SELECT * FROM TREXXGG.ITEMS WHERE TREXXGG.ITEMS.OWNER = '${userAddress}'`;
     const response = await SxTApi.dql({
       resourceId,
       sqlText,
@@ -24,7 +24,6 @@ class ItemService {
     return response;
   }
 
-
   static async getItemByNftId({ accessToken, nftId }) {
     const resourceId = "TREXXGG.ITEMS"
     const sqlText = `SELECT * FROM TREXXGG.ITEMS WHERE nftId = '${nftId}';`;
@@ -38,7 +37,7 @@ class ItemService {
 
   static async rentItem({ accessToken, nftId, rentee }) {
     const resourceId = "TREXXGG.ITEMS"
-    const sqlText = `UPDATE TREXXGG.ITEMS SET isRented = true, rentee = '${rentee}' WHERE nftId = ${nftId};`;
+    const sqlText = `UPDATE TREXXGG.ITEMS SET rentee = '${rentee}' WHERE nftId = ${nftId};`;
     const response = await SxTApi.dml({
       resourceId,
       sqlText,
