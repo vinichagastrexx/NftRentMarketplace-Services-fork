@@ -1,5 +1,5 @@
-import { Box, Button, VStack, Image, Heading, Text, useToast } from "@chakra-ui/react";
-import { useSigner } from "@thirdweb-dev/react";
+import { Heading, VStack, Text, Box, Flex, useDisclosure, Image, useToast, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, SlideFade, Button } from "@chakra-ui/react";
+import { useSetIsWalletModalOpen, useSigner } from "@thirdweb-dev/react";
 import { ThirdwebSDK, } from "@thirdweb-dev/sdk";
 import { darken } from "@chakra-ui/theme-tools"
 import React, { useState } from "react";
@@ -11,6 +11,7 @@ import {
 import NFTCard from "../NFT/NFTCard";
 
 export default function PoolOrder({ pool }) {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const signer = useSigner();
   const toast = useToast();
   let sdk;
@@ -32,13 +33,14 @@ export default function PoolOrder({ pool }) {
       const nftId = result.receipt.events[1].args.itemNftId.toNumber();
       const nft = await getNft(nftId);
       setNft(nft);
-      toast({
-        title: "Item rented",
-        description: "You item is available to play!",
-        status: "success",
-        duration: 5000,
-        isClosable: true
-      })
+      onOpen()
+      // toast({
+      //   title: "Success!",
+      //   description: "Your rented item is ready to play! Check it out.",
+      //   status: "success",
+      //   duration: 5000,
+      //   isClosable: true
+      // })
     } catch (error) {
       toast({
         title: "Error",
@@ -51,7 +53,6 @@ export default function PoolOrder({ pool }) {
     } finally {
       setIsLoading(false);
     }
-
   };
 
   const getNft = async (nftId) => {
@@ -82,14 +83,30 @@ export default function PoolOrder({ pool }) {
           backgroundColor={'#FBAA0B'}
           fontFamily={"Bayon"}
           isLoading={isLoading}
-          colorScheme="teal"
+          color={"white"}
           size="md"
           mt={4}
           onClick={rentItem}>
           Rent Item
         </Button>
       </Box>
-      {nft && <NFTCard nft={nft} />}
+      {nft && <Modal isOpen={isOpen} onClose={onClose} motionPreset="slideInBottom">
+        <ModalOverlay />
+        <SlideFade in={isOpen} offsetY="20px">
+          <ModalContent padding={4}>
+            <ModalHeader
+              fontSize="xl"
+              fontWeight="bold"
+              fontFamily={"Bayon"}
+              mb={1}
+            >Check your Rented Item, Play with it!</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <NFTCard nft={nft} />
+            </ModalBody>
+          </ModalContent>
+        </SlideFade>
+      </Modal >}
     </VStack>
   )
 };
