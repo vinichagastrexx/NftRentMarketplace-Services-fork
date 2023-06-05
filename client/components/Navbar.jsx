@@ -80,10 +80,10 @@ export function Navbar() {
               }}
               backgroundColor={'#FBAA0B'}
               fontFamily={"Bayon"}
-              colorScheme="blue"
+              color={"white"}
               mr={3}
               as={NextLink}
-              href={recommendation.type === 1 ? '/inventory' : '/pools'}
+              href={recommendation.type === 3 ? '/inventory' : '/pools'}
               onClick={onClose}
             >
               {recommendation.callToAction}

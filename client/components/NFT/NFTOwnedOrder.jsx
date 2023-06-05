@@ -90,7 +90,6 @@ export default function NFTOwnedOrder({ nft }) {
               fontFamily={"Bayon"}
               isLoading={isLoading}
               color={"white"}
-              colorScheme="teal"
               size="md"
               mt={4}
               onClick={addItemToPool}

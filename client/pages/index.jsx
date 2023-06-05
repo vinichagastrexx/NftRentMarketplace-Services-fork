@@ -28,7 +28,7 @@ export default function Home() {
                 size={'lg'}
                 as={NextLink}
                 href='/pools'
-                colorScheme="teal"
+                color={"white"}
               >
                 Rent incredible Items
               </Button>
@@ -36,7 +36,7 @@ export default function Home() {
                 size={'lg'}
                 as={NextLink}
                 href='/inventory'
-                colorScheme="teal"
+                color={"white"}
               >
                 Check your game inventory
               </Button>

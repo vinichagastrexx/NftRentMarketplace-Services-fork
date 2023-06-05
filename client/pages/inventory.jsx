@@ -55,7 +55,7 @@ export default function Inventory() {
             size={'lg'}
             as={NextLink}
             href='/pools'
-            colorScheme="teal"
+            color={"white"}
           >
             Rent incredible Items
           </Button>
