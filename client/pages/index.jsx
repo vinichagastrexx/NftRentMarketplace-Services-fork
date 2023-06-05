@@ -1,4 +1,3 @@
-import { ConnectWallet } from "@thirdweb-dev/react";
 import { Box, Button, Container, Flex, Stack, Text } from "@chakra-ui/react"
 import NextLink from 'next/link'
 
@@ -25,10 +24,20 @@ export default function Home() {
         <Box flex="1">
           <Flex h={"100%"} alignItems={"center"} justifyContent={"center"}>
             <Stack spacing={4} align={"center"}>
-              <Button size={'lg'} as={NextLink} href='/pools'>
+              <Button
+                size={'lg'}
+                as={NextLink}
+                href='/pools'
+                colorScheme="teal"
+              >
                 Rent incredible Items
               </Button>
-              <Button size={'lg'} as={NextLink} href='/inventory'>
+              <Button
+                size={'lg'}
+                as={NextLink}
+                href='/inventory'
+                colorScheme="teal"
+              >
                 Check your game inventory
               </Button>
             </Stack>
