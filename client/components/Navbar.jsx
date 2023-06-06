@@ -25,7 +25,7 @@ import { darken } from '@chakra-ui/theme-tools';
 export function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [recommendation, setRecommendation] = useState(null);
-  const [activeTab, setActiveTab] = useState('/');
+  const [activeTab, setActiveTab] = useState('');
   const address = useAddress();
 
   useEffect(() => {
@@ -126,7 +126,7 @@ export function Navbar() {
               transition: 'color 0.2s',
             }}
           >
-            <Text>Know the game!</Text>
+            <Text>Discover BBG</Text>
           </Link>
         </Flex>
         <Flex direction={'row'} alignItems={'center'}>
@@ -149,14 +149,16 @@ export function Navbar() {
       {recommendation && (
         <Modal isOpen={isOpen} onClose={onClose} motionPreset="slideInBottom">
           <ModalOverlay />
-          <ModalContent padding={4}>
+          <ModalContent
+            borderRadius={'15px'}
+            padding={4}>
             <ModalHeader
-              fontSize="xl"
+              fontSize={28}
               fontWeight="bold"
               fontFamily={'Bayon'}
               mb={1}
             >
-              Welcome back, Gamer!
+              Welcome back Gamer!
             </ModalHeader>
             <ModalCloseButton />
             <ModalBody>
@@ -173,7 +175,9 @@ export function Navbar() {
                 {recommendation.text}
               </Text>
             </ModalBody>
-            <ModalFooter>
+            <ModalFooter
+              justifyContent={'center'}
+            >
               <Button
                 _hover={{
                   bg: darken('#FBAA0B', 15),
