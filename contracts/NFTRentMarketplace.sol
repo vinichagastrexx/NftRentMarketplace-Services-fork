@@ -4,6 +4,7 @@ pragma solidity ^0.8.9;
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 import "@chainlink/contracts/src/v0.8/ConfirmedOwner.sol";
+import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
@@ -109,18 +110,27 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     uint64 _vrfSubscriptionId,
     address _vrfCoordinator,
     bytes32 _vrfkeyHash,
-    address _nftContractAddress
+    address _nftContractAddress,
+    address _dataFeed
   ) VRFConsumerBaseV2(_vrfCoordinator) ConfirmedOwner(msg.sender) {
     vrfCoordinator = VRFCoordinatorV2Interface(_vrfCoordinator);
     vrfSubscriptionId = _vrfSubscriptionId;
     vrfkeyHash = _vrfkeyHash;
     nftContractAddress = _nftContractAddress;
+    dataFeed = AggregatorV3Interface(_dataFeed);
   }
 
   modifier onlyNftOwner(uint256 _itemNftId) {
     ERC721 erc721 = ERC721(nftContractAddress);
     require(msg.sender == erc721.ownerOf(_itemNftId), "Only the NFT owner can perform this operation");
     _;
+  }
+
+  function getLatestPrice() public view returns (int, uint8) {
+    (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound) = dataFeed
+      .latestRoundData();
+    uint8 decimal = dataFeed.decimals();
+    return (answer, decimal);
   }
 
   function fillRandomNumberList() public onlyOwner {
@@ -199,15 +209,21 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     return pools[categoryId];
   }
 
-  function getRentQuote(uint256 categoryId, uint256 rentTime) public view returns (uint256 rentQuote) {
+  function getRentQuote(
+    uint256 categoryId,
+    uint256 rentTime
+  ) public view returns (uint256 rentQuoteMatic, uint256 rentQuoteDollar) {
     Pool storage pool = pools[categoryId];
     require(pool.isActive, "Pool with the given category ID does not exist or is not active");
 
     uint256 basePrice = pool.basePrice;
     uint256 poolSupply = pool.availableItems.length;
 
-    rentQuote = calculateRentPrice(basePrice, rentTime, poolSupply);
-    return rentQuote;
+    rentQuoteMatic = calculateRentPrice(basePrice, rentTime, poolSupply);
+    (int answer, uint8 decimal) = getLatestPrice();
+    rentQuoteDollar = (uint256(answer) * rentQuoteMatic) / (10 ** decimal);
+
+    return (rentQuoteMatic, rentQuoteDollar);
   }
 
   function getItemByNftId(uint256 _nftId) public view returns (Item memory) {
@@ -295,7 +311,7 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     Rent memory newRent = Rent({
       id: newRentId,
       initDate: block.timestamp,
-      expirationDate: block.timestamp + _duration,
+      expirationDate: block.timestamp + (_duration * 86400),
       finishDate: 0,
       owner: item.owner,
       rentee: msg.sender,
@@ -360,12 +376,7 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
 
   function calculateRentPrice(uint256 basePrice, uint256 rentTime, uint256 poolSupply) internal view returns (uint256) {
     uint256 timeAdjustedPrice = basePrice.mul(rentTime);
-    uint256 supplyAdjustedPrice = timeAdjustedPrice.mul(100).mul(10 ** 20).div(poolSupply.add(100));
-
-    supplyAdjustedPrice = supplyAdjustedPrice.div(10 ** 18);
-    uint256 finalPrice = supplyAdjustedPrice.mul(marketVolumeFactor);
-
-    return finalPrice;
+    return timeAdjustedPrice;
   }
 
   function adjustMarketVolumeFactor(uint256 newFactor) public {
