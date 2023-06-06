@@ -1,6 +1,7 @@
 import { ConnectWallet, useAddress } from '@thirdweb-dev/react';
 import NextLink from 'next/link';
 import { HiHome } from 'react-icons/hi';
+import { GiLockedChest } from 'react-icons/gi';
 import {
   Link,
   Icon,
@@ -20,7 +21,6 @@ import {
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { darken } from '@chakra-ui/theme-tools';
-import { HiChartPie } from 'react-icons/hi';
 
 export function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -49,7 +49,7 @@ export function Navbar() {
   }, [address]);
 
   return (
-    <Box maxW={'1280px'} m={'auto'} py={'14px'} px={'35px'}>
+    <Box maxW={'85%'} m={'auto'} py={'14px'} px={'35px'}>
       <Flex justifyContent={'space-between'} alignItems={'center'}>
         <Link as={NextLink} href={'/'}>
           <Image
@@ -133,7 +133,14 @@ export function Navbar() {
           <ConnectWallet />
           {address && (
             <Link as={NextLink} href={`/profile/${address}`}>
-              <Icon as={HiChartPie} boxSize={8} ml={'30px'} />
+              <Icon
+                as={GiLockedChest}
+                boxSize={8}
+                ml={'35px'}
+                color={activeTab === '/profile' ? '#FBAA0B' : undefined}
+                textDecoration={activeTab === '/pools' ? 'underline' : undefined}
+                onClick={() => setActiveTab('/profile')}
+              />
             </Link>
           )}
         </Flex>
