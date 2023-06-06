@@ -1,9 +1,11 @@
-import { Box, Button, Container, Flex, Stack, Text } from '@chakra-ui/react';
+import { Box, Button, Center, Container, Flex, Link, Stack, Text } from '@chakra-ui/react';
 import NextLink from 'next/link';
+import { BsDiscord } from 'react-icons/bs'
+import { darken } from '@chakra-ui/theme-tools';
 
 export default function Home() {
   return (
-    <Container maxW={'100%'}>
+    <Container p={0} minW={'100%'}>
       <Flex
         h={'80vh'}
         w={'100%'}
@@ -13,7 +15,14 @@ export default function Home() {
         backgroundSize="cover"
         direction={{ base: 'column', md: 'row' }}
       >
-        <Box flex="0.5" p="4" backgroundColor="rgba(0, 0, 0, 0.4)">
+        <Flex
+          flex="0.5"
+          p={10}
+          backgroundColor="rgba(0, 0, 0, 0.48)"
+          direction="column"
+          justifyContent="center"
+          alignItems="start"
+        >
           <Text
             marginTop={6}
             letterSpacing={0.25}
@@ -31,40 +40,76 @@ export default function Home() {
             fontFamily={'Big Shoulders Text'}
           >
             Explore the ultimate NFT rental marketplace! Rent unique items to
-            enhance your gaming experience or earn by renting out your own. Join
-            the BBG community today!
+            enhance your gaming experience or earn by renting out your own.
           </Text>
-        </Box>
+          <Flex alignItems="center">
+            <Text
+              marginTop={18}
+              fontSize={25}
+              color="#FBAA0B"
+              fontFamily={'Big Shoulders Text'}
+            >
+
+            </Text>
+            <Link href='https://discord.gg/eYpmTe9Dde'>
+              <Button
+                marginTop={'15px'}
+                colorScheme='purple'
+                leftIcon={<BsDiscord />} >
+                Join the BBG community!
+              </Button>
+            </Link>
+          </Flex>
+        </Flex>
         <Box flex="1">
           <Flex h={'100%'} alignItems={'center'} justifyContent={'center'}>
             <Stack spacing={4} align={'center'}>
               <Button
+                minW={350}
                 letterSpacing={0.5}
+                _hover={{
+                  bg: darken('#FBAA0B', 15),
+                  transition: 'background-color 0.2s',
+                }}
+                _active={{
+                  transform: 'scale(0.98)',
+                }}
+                backgroundColor={'#FBAA0B'}
                 fontFamily={'Bayon'}
                 size={'lg'}
                 as={NextLink}
-                letterSpacing={0.5}
+                fontSize={25}
                 href="/pools"
                 color={'white'}
                 colorScheme="teal"
               >
-                Rent incredible Items
+                Rent Items
               </Button>
               <Button
+                minW={350}
+                letterSpacing={0.5}
+                _hover={{
+                  bg: darken('#FBAA0B', 15),
+                  transition: 'background-color 0.2s',
+                }}
+                _active={{
+                  transform: 'scale(0.98)',
+                }}
+                fontSize={25}
+                backgroundColor={'#FBAA0B'}
+                fontFamily={'Bayon'}
                 size={'lg'}
                 as={NextLink}
-                fontFamily={'Bayon'}
-                letterSpacing={0.5}
                 href="/inventory"
                 color={'white'}
                 colorScheme="teal"
               >
-                Check your game inventory
+                Earn By Renting
               </Button>
             </Stack>
           </Flex>
         </Box>
       </Flex>
-    </Container>
+    </Container >
   );
 }
