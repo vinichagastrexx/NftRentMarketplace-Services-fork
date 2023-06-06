@@ -11,6 +11,9 @@ import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receiver {
+  //PriceFeed
+  AggregatorV3Interface internal dataFeed;
+
   //VRF Settings
   VRFCoordinatorV2Interface public vrfCoordinator;
   uint64 private vrfSubscriptionId;
