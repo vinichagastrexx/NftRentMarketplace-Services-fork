@@ -1,5 +1,6 @@
 import { ConnectWallet, useAddress } from '@thirdweb-dev/react';
 import NextLink from 'next/link';
+import { HiHome } from 'react-icons/hi';
 import {
   Link,
   Icon,
@@ -24,6 +25,7 @@ import { HiChartPie } from 'react-icons/hi';
 export function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [recommendation, setRecommendation] = useState(null);
+  const [activeTab, setActiveTab] = useState('/');
   const address = useAddress();
 
   useEffect(() => {
@@ -47,7 +49,7 @@ export function Navbar() {
   }, [address]);
 
   return (
-    <Box maxW={'1280px'} m={'auto'} py={'10px'} px={'40px'}>
+    <Box maxW={'1280px'} m={'auto'} py={'14px'} px={'35px'}>
       <Flex justifyContent={'space-between'} alignItems={'center'}>
         <Link as={NextLink} href={'/'}>
           <Image
@@ -63,6 +65,26 @@ export function Navbar() {
         <Flex direction={'row'}>
           <Link
             as={NextLink}
+            href={'/'}
+            mx={2.5}
+            fontFamily={'Bayon'}
+            fontSize={'22'}
+            color={activeTab === '/' ? '#FBAA0B' : undefined}
+            textDecoration={activeTab === '/' ? 'underline' : undefined}
+            onClick={() => setActiveTab('/')}
+            _hover={{
+              color: '#FBAA0B',
+              textDecoration: 'underline',
+              transition: 'color 0.2s',
+            }}
+          >
+            <Icon as={HiHome} boxSize={7} />
+          </Link>
+          <Link
+            as={NextLink}
+            color={activeTab === '/pools' ? '#FBAA0B' : undefined}
+            textDecoration={activeTab === '/pools' ? 'underline' : undefined}
+            onClick={() => setActiveTab('/pools')}
             href={'/pools'}
             mx={2.5}
             fontFamily={'Bayon'}
@@ -77,6 +99,9 @@ export function Navbar() {
           </Link>
           <Link
             as={NextLink}
+            color={activeTab === '/inventory' ? '#FBAA0B' : undefined}
+            textDecoration={activeTab === '/inventory' ? 'underline' : undefined}
+            onClick={() => setActiveTab('/inventory')}
             href={'/inventory'}
             mx={2.5}
             fontFamily={'Bayon'}
