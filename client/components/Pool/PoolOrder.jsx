@@ -2,6 +2,11 @@ import {
   Heading,
   VStack,
   Text,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
   Box,
   useDisclosure,
   Image,
@@ -12,7 +17,6 @@ import {
   ModalHeader,
   ModalBody,
   ModalCloseButton,
-  SlideFade,
   Button,
 } from '@chakra-ui/react';
 import { useSigner } from '@thirdweb-dev/react';
@@ -21,10 +25,10 @@ import { darken } from '@chakra-ui/theme-tools';
 import React, { useState } from 'react';
 import {
   NFT_RENT_MARKETPLACE_ADDRESS,
-  NFT_RENT_MARKETPLACE_ABI,
   NFT_ADDRESS,
 } from '../../const/addresses';
 import NFTCard from '../NFT/NFTCard';
+import { ethers } from 'ethers';
 
 export default function PoolOrder({ pool }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -36,16 +40,30 @@ export default function PoolOrder({ pool }) {
   }
   const [isLoading, setIsLoading] = useState(false);
   const [nft, setNft] = useState(null);
-  const [poolPrice, setPoolPrice] = useState(0);
+  const [poolUSDPrice, setPoolUSDPrice] = useState(0);
+  const [poolMATICPrice, setPoolMATICPrice] = useState(0);
+  const [poolMATICFormatedPrice, setPoolMATICFormatedPrice] = useState(0);
+  const [rentDays, setRentDays] = useState(1);
 
+  const handleRentDaysChange = async (value) => {
+    setRentDays(value)
+    const contract = await sdk.getContract(NFT_RENT_MARKETPLACE_ADDRESS);
+    const price = await contract.call('getRentQuote', [pool.CATEGORYID, value]);
+    if (price?.rentQuoteDollar._hex) {
+      const poolUSDPriceBigNumber = ethers.BigNumber.from(price.rentQuoteDollar._hex);
+      const poolMATICPriceBigNumber = ethers.BigNumber.from(price.rentQuoteMatic._hex);
+      setPoolUSDPrice(ethers.utils.formatUnits(poolUSDPriceBigNumber));
+      setPoolMATICFormatedPrice(ethers.utils.formatUnits(poolMATICPriceBigNumber));
+      setPoolMATICPrice(price.rentQuoteMatic);
+    } else {
+      console.error('No quote has returned');
+    }
+  };
   const rentItem = async () => {
     setIsLoading(true);
-    // const contract = await sdk.getContract(NFT_RENT_MARKETPLACE_ADDRESS, NFT_RENT_MARKETPLACE_ABI)
     try {
       const contract = await sdk.getContract(NFT_RENT_MARKETPLACE_ADDRESS);
-      const price = await contract.call('getRentQuote', [1, 1]);
-      setPoolPrice(Number(`${price._hex}`));
-      const result = await contract.call('startRent', [1, 1], { value: price });
+      const result = await contract.call('startRent', [pool.CATEGORYID, rentDays], { value: poolMATICPrice });
       const nftId = result.receipt.events[1].args.itemNftId.toNumber();
       const nft = await getNft(nftId);
       setNft(nft);
@@ -92,10 +110,30 @@ export default function PoolOrder({ pool }) {
           Description:
         </Text>
         <Text fontFamily={'Big Shoulders Text'}>{pool.DESCRIPTION}</Text>
-        <Text fontSize={20} fontFamily={'Bayon'} fontWeight={'bold'} mt={2}>
-          Base Price:
-        </Text>
-        <Text fontFamily={'Big Shoulders Text'}>{pool.BASEPRICE}</Text>
+        <Box>
+          <Text fontSize={20} fontFamily={'Bayon'} fontWeight={'bold'} mt={2}>
+            Rent for:
+          </Text>
+          <NumberInput
+            size='lg'
+            maxW={32}
+            defaultValue={1}
+            min={1}
+            value={rentDays}
+            onChange={handleRentDaysChange}
+          >
+            <NumberInputField />
+            <NumberInputStepper>
+              <NumberIncrementStepper />
+              <NumberDecrementStepper />
+            </NumberInputStepper>
+          </NumberInput>
+          <Text fontSize={20} fontFamily={'Bayon'} fontWeight={'bold'} mt={2}>
+            Price:
+          </Text>
+          <Text fontFamily={'Big Shoulders Text'}>USD {Number(poolUSDPrice).toFixed(2)}</Text>
+          <Text fontFamily={'Big Shoulders Text'}>MATIC {poolMATICFormatedPrice}</Text>
+        </Box>
         <Button
           letterSpacing={0.5}
           _hover={{
