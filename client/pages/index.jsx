@@ -78,7 +78,7 @@ export default function Home() {
                 fontFamily={'Bayon'}
                 size={'lg'}
                 as={NextLink}
-                fontSize={25}
+                fontSize={30}
                 href="/pools"
                 color={'white'}
                 colorScheme="teal"
@@ -95,7 +95,7 @@ export default function Home() {
                 _active={{
                   transform: 'scale(0.98)',
                 }}
-                fontSize={25}
+                fontSize={30}
                 backgroundColor={'#FBAA0B'}
                 fontFamily={'Bayon'}
                 size={'lg'}
