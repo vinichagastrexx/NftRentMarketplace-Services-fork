@@ -12,6 +12,18 @@ class ItemService {
     return response;
   }
 
+  static async getIdleByOwner({ accessToken, owner }) {
+    const resourceId = "TREXXGG.ITEMS"
+    const sqlText = `SELECT * FROM TREXXGG.ITEMS WHERE TREXXGG.ITEMS.OWNER = '${owner}' AND TREXXGG.ITEMS.ISINPOOL = false`;
+    const response = await SxTApi.dql({
+      resourceId,
+      sqlText,
+      accessToken,
+    });
+    console.log(response)
+    return response;
+  }
+
   static async createItem({ accessToken, nftId, categoryId, owner }) {
     const resourceId = "TREXXGG.ITEMS"
     const sqlText = `INSERT INTO TREXXGG.ITEMS (nftId, categoryId, owner, rentee, isInPool) VALUES (${nftId}, ${categoryId}, '${owner}', NULL, false)`;
