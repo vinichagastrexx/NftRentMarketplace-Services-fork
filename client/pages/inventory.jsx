@@ -7,6 +7,7 @@ import {
   Drawer,
   DrawerOverlay,
   DrawerContent,
+  DrawerCloseButton,
   DrawerHeader,
   DrawerBody,
   SimpleGrid,
