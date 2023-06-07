@@ -130,7 +130,7 @@ export function Navbar() {
           </Link>
         </Flex>
         <Flex direction={'row'} alignItems={'center'}>
-          <ConnectWallet />
+          <ConnectWallet style={{ fontFamily: 'Bayon' }} />
           {address && (
             <Link as={NextLink} href={`/profile/${address}`}>
               <Icon
@@ -146,7 +146,7 @@ export function Navbar() {
         </Flex>
       </Flex>
 
-      {recommendation && (
+      {recommendation?.text && (
         <Modal isOpen={isOpen} onClose={onClose} motionPreset="slideInBottom">
           <ModalOverlay />
           <ModalContent
