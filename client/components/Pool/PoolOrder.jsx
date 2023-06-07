@@ -160,6 +160,7 @@ export default function PoolOrder({ pool }) {
         isLoading={isLoading}
         color={'white'}
         size="md"
+        fontSize={20}
         mt={4}
         onClick={rentItem}
       >

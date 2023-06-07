@@ -46,7 +46,7 @@ export default function NFTGrid({ isLoading, data }) {
           <Text>0 items found</Text>
         )}
       </SimpleGrid>
-      <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="xs">
+      <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="sm">
         <DrawerOverlay>
           <DrawerContent>
             <DrawerCloseButton />

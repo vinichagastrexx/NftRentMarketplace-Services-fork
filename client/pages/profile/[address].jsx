@@ -1,6 +1,7 @@
 import {
   Container,
   Heading,
+  Spinner,
   Text,
   SimpleGrid,
   Box,
@@ -32,12 +33,12 @@ function RentedNFT({ nftId }) {
 export default function ProfilePage() {
   const address = useAddress();
 
-  const { data: rentedOutItems, isLoading: rentedItemsLoading } = useSWR(
+  const { data: rentedOutItems, isLoading: rentedOutItemsLoading } = useSWR(
     `http://localhost:3001/items/get-rented/${address}`,
     fetcher,
   );
 
-  const { data: inPoolItems, isLoading: poolItemsLoading } = useSWR(
+  const { data: inPoolItems, isLoading: inPoolItemsLoading } = useSWR(
     `http://localhost:3001/items/get-in-pool/${address}`,
     fetcher,
   );
@@ -47,22 +48,20 @@ export default function ProfilePage() {
     fetcher,
   );
 
-  console.log(ownedItems)
-
   return (
     <Container maxW={'90%'} p={5}>
       <SimpleGrid padding={10} columns={5} spacing={5}>
         <Stat>
           <StatLabel fontSize={30} fontFamily={'Bayon'}>Items in Pools</StatLabel>
-          <StatNumber fontSize={30} fontFamily={'Bayon'}>{inPoolItems?.itemsInPool?.length}</StatNumber>
+          {inPoolItemsLoading ? <Spinner /> : <StatNumber fontSize={30} fontFamily={'Bayon'}>{inPoolItems?.itemsInPool?.length}</StatNumber>}
         </Stat>
         <Stat>
           <StatLabel fontSize={30} fontFamily={'Bayon'}>Items Rented Out</StatLabel>
-          <StatNumber fontSize={30} fontFamily={'Bayon'}>{rentedOutItems?.itemsRented?.length}</StatNumber>
+          {rentedOutItemsLoading ? <Spinner /> : <StatNumber fontSize={30} fontFamily={'Bayon'}>{rentedOutItems?.itemsRented?.length}</StatNumber>}
         </Stat>
         <Stat>
           <StatLabel fontSize={30} fontFamily={'Bayon'}>Owned Items</StatLabel>
-          <StatNumber fontSize={30} fontFamily={'Bayon'}>{ownedItems?.itemsOwned?.length}</StatNumber>
+          {ownedItemsLoading ? <Spinner /> : <StatNumber fontSize={30} fontFamily={'Bayon'}>{ownedItems?.itemsOwned?.length}</StatNumber>}
         </Stat>
         {/* <Stat>
           <StatLabel fontSize={30} fontFamily={'Bayon'}>Total Earnings</StatLabel>
@@ -98,7 +97,7 @@ export default function ProfilePage() {
               padding={2}
               my={4}
             >
-              {rentedItemsLoading ? (
+              {rentedOutItemsLoading ? (
                 [...Array(3)].map((_, index) => (
                   <Skeleton key={index} height={'150px'} width={'250px'} />
                 ))
@@ -143,7 +142,7 @@ export default function ProfilePage() {
               padding={2}
               my={4}
             >
-              {poolItemsLoading ? (
+              {inPoolItemsLoading ? (
                 [...Array(3)].map((_, index) => (
                   <Skeleton key={index} height={'150px'} width={'250px'} />
                 ))
