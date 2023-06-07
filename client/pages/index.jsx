@@ -1,6 +1,15 @@
-import { Box, Button, Center, Container, Flex, Link, Stack, Text } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Center,
+  Container,
+  Flex,
+  Link,
+  Stack,
+  Text,
+} from '@chakra-ui/react';
 import NextLink from 'next/link';
-import { BsDiscord } from 'react-icons/bs'
+import { BsDiscord } from 'react-icons/bs';
 import { darken } from '@chakra-ui/theme-tools';
 
 export default function Home() {
@@ -48,14 +57,13 @@ export default function Home() {
               fontSize={25}
               color="#FBAA0B"
               fontFamily={'Big Shoulders Text'}
-            >
-
-            </Text>
-            <Link href='https://discord.gg/eYpmTe9Dde'>
+            ></Text>
+            <Link href="https://discord.gg/eYpmTe9Dde">
               <Button
                 marginTop={'15px'}
-                colorScheme='purple'
-                leftIcon={<BsDiscord />} >
+                colorScheme="purple"
+                leftIcon={<BsDiscord />}
+              >
                 Join the BBG community!
               </Button>
             </Link>
@@ -110,6 +118,6 @@ export default function Home() {
           </Flex>
         </Box>
       </Flex>
-    </Container >
+    </Container>
   );
 }

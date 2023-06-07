@@ -75,7 +75,7 @@ export default function Inventory() {
             _hover={{
               bg: '#FBAA0B',
               transition: 'background-color 0.2s',
-              color: 'white'
+              color: 'white',
             }}
             padding={10}
           >
@@ -125,7 +125,7 @@ export default function Inventory() {
             _hover={{
               bg: '#FBAA0B',
               transition: 'background-color 0.2s',
-              color: 'white'
+              color: 'white',
             }}
             padding={10}
           >
@@ -150,7 +150,7 @@ export default function Inventory() {
               <></>
             )}
             <SimpleGrid
-              justifyItems='center'
+              justifyItems="center"
               justifyContent="center"
               columns={[1, 2, 5]}
               spacing={2}

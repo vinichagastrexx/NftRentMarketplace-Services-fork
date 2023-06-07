@@ -22,7 +22,7 @@ export default function PoolGrid({ isLoading, data }) {
   return (
     <>
       <SimpleGrid
-        justifyItems='center'
+        justifyItems="center"
         justifyContent="center"
         columns={[1, 2, 3]}
         spacing={2}

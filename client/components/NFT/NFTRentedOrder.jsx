@@ -93,11 +93,22 @@ export default function NFTRentedOrder({ nft, rentId }) {
           Finish Rent
         </Button>
         <Box>
-          <Text fontFamily={'bayon'} fontSize={20} fontWeight={'bold'}>Description:</Text>
-          <Text fontFamily={'big shoulders text'} mb={1} fontSize={16}>{nft.metadata.description}</Text>
+          <Text fontFamily={'bayon'} fontSize={20} fontWeight={'bold'}>
+            Description:
+          </Text>
+          <Text fontFamily={'big shoulders text'} mb={1} fontSize={16}>
+            {nft.metadata.description}
+          </Text>
         </Box>
         <Box>
-          <Text marginBottom={4} fontFamily={'bayon'} fontSize={20} fontWeight={'bold'}>Traits:</Text>
+          <Text
+            marginBottom={4}
+            fontFamily={'bayon'}
+            fontSize={20}
+            fontWeight={'bold'}
+          >
+            Traits:
+          </Text>
           <SimpleGrid columns={2} spacing={4}>
             {Object.entries(nft?.metadata?.attributes || {}).map(
               ([key, value]) => (
@@ -110,8 +121,20 @@ export default function NFTRentedOrder({ nft, rentId }) {
                   p={'8px'}
                   borderRadius={'4px'}
                 >
-                  <Text letterSpacing={0.3} fontSize={'small'} fontFamily={'Bayon'} fontWeight={'bold'} textTransform={'capitalize'}>{value.trait_type}</Text>
-                  <Text fontFamily={'big shoulders text'} fontSize={'medium'} textTransform={'uppercase'}>
+                  <Text
+                    letterSpacing={0.3}
+                    fontSize={'small'}
+                    fontFamily={'Bayon'}
+                    fontWeight={'bold'}
+                    textTransform={'capitalize'}
+                  >
+                    {value.trait_type}
+                  </Text>
+                  <Text
+                    fontFamily={'big shoulders text'}
+                    fontSize={'medium'}
+                    textTransform={'uppercase'}
+                  >
                     {value.value}
                   </Text>
                 </Flex>

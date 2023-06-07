@@ -52,16 +52,40 @@ export default function ProfilePage() {
     <Container maxW={'90%'} p={5}>
       <SimpleGrid padding={10} columns={5} spacing={5}>
         <Stat>
-          <StatLabel fontSize={30} fontFamily={'Bayon'}>Items in Pools</StatLabel>
-          {inPoolItemsLoading ? <Spinner /> : <StatNumber fontSize={30} fontFamily={'Bayon'}>{inPoolItems?.itemsInPool?.length}</StatNumber>}
+          <StatLabel fontSize={30} fontFamily={'Bayon'}>
+            Items in Pools
+          </StatLabel>
+          {inPoolItemsLoading ? (
+            <Spinner />
+          ) : (
+            <StatNumber fontSize={30} fontFamily={'Bayon'}>
+              {inPoolItems?.itemsInPool?.length}
+            </StatNumber>
+          )}
         </Stat>
         <Stat>
-          <StatLabel fontSize={30} fontFamily={'Bayon'}>Items Rented Out</StatLabel>
-          {rentedOutItemsLoading ? <Spinner /> : <StatNumber fontSize={30} fontFamily={'Bayon'}>{rentedOutItems?.itemsRented?.length}</StatNumber>}
+          <StatLabel fontSize={30} fontFamily={'Bayon'}>
+            Items Rented Out
+          </StatLabel>
+          {rentedOutItemsLoading ? (
+            <Spinner />
+          ) : (
+            <StatNumber fontSize={30} fontFamily={'Bayon'}>
+              {rentedOutItems?.itemsRented?.length}
+            </StatNumber>
+          )}
         </Stat>
         <Stat>
-          <StatLabel fontSize={30} fontFamily={'Bayon'}>Owned Items</StatLabel>
-          {ownedItemsLoading ? <Spinner /> : <StatNumber fontSize={30} fontFamily={'Bayon'}>{ownedItems?.itemsOwned?.length}</StatNumber>}
+          <StatLabel fontSize={30} fontFamily={'Bayon'}>
+            Owned Items
+          </StatLabel>
+          {ownedItemsLoading ? (
+            <Spinner />
+          ) : (
+            <StatNumber fontSize={30} fontFamily={'Bayon'}>
+              {ownedItems?.itemsOwned?.length}
+            </StatNumber>
+          )}
         </Stat>
         {/* <Stat>
           <StatLabel fontSize={30} fontFamily={'Bayon'}>Total Earnings</StatLabel>
@@ -74,7 +98,7 @@ export default function ProfilePage() {
             _hover={{
               bg: '#FBAA0B',
               transition: 'background-color 0.2s',
-              color: 'white'
+              color: 'white',
             }}
             colorScheme="teal"
             padding={10}
@@ -119,7 +143,7 @@ export default function ProfilePage() {
             _hover={{
               bg: '#FBAA0B',
               transition: 'background-color 0.2s',
-              color: 'white'
+              color: 'white',
             }}
             padding={10}
           >
@@ -159,6 +183,6 @@ export default function ProfilePage() {
           </AccordionPanel>
         </AccordionItem>
       </Accordion>
-    </Container >
+    </Container>
   );
 }

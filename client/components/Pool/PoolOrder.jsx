@@ -53,14 +53,20 @@ export default function PoolOrder({ pool }) {
   }, []);
 
   const handleRentDaysChange = async (value) => {
-    setRentDays(value)
+    setRentDays(value);
     const contract = await sdk.getContract(NFT_RENT_MARKETPLACE_ADDRESS);
     const price = await contract.call('getRentQuote', [pool.CATEGORYID, value]);
     if (price?.rentQuoteDollar._hex) {
-      const poolUSDPriceBigNumber = ethers.BigNumber.from(price.rentQuoteDollar._hex);
-      const poolMATICPriceBigNumber = ethers.BigNumber.from(price.rentQuoteMatic._hex);
+      const poolUSDPriceBigNumber = ethers.BigNumber.from(
+        price.rentQuoteDollar._hex,
+      );
+      const poolMATICPriceBigNumber = ethers.BigNumber.from(
+        price.rentQuoteMatic._hex,
+      );
       setPoolUSDPrice(ethers.utils.formatUnits(poolUSDPriceBigNumber));
-      setPoolMATICFormatedPrice(ethers.utils.formatUnits(poolMATICPriceBigNumber));
+      setPoolMATICFormatedPrice(
+        ethers.utils.formatUnits(poolMATICPriceBigNumber),
+      );
       setPoolMATICPrice(price.rentQuoteMatic);
     } else {
       console.error('No quote has returned');
@@ -70,7 +76,11 @@ export default function PoolOrder({ pool }) {
     setIsLoading(true);
     try {
       const contract = await sdk.getContract(NFT_RENT_MARKETPLACE_ADDRESS);
-      const result = await contract.call('startRent', [pool.CATEGORYID, Number(rentDays)], { value: poolMATICPrice });
+      const result = await contract.call(
+        'startRent',
+        [pool.CATEGORYID, Number(rentDays)],
+        { value: poolMATICPrice },
+      );
       const nftId = result.receipt.events[1].args.itemNftId.toNumber();
       const nft = await getNft(nftId);
       setNft(nft);
@@ -116,14 +126,16 @@ export default function PoolOrder({ pool }) {
         <Text fontSize={20} fontFamily={'Bayon'} fontWeight={'bold'}>
           Description:
         </Text>
-        <Text mb={2} fontFamily={'Big Shoulders Text'}>{pool.SHORT_DESCRIPTION}</Text>
+        <Text mb={2} fontFamily={'Big Shoulders Text'}>
+          {pool.SHORT_DESCRIPTION}
+        </Text>
         <Box>
           <Flex direction="row" gap={10} justify="flex-start" mb={3}>
             <Text fontSize={20} fontFamily={'Bayon'} fontWeight={'bold'} mt={2}>
               Rent for (days):
             </Text>
             <NumberInput
-              size='lg'
+              size="lg"
               maxW={32}
               defaultValue={1}
               min={1}
@@ -139,11 +151,20 @@ export default function PoolOrder({ pool }) {
           </Flex>
           <Box>
             <Flex direction="row" gap={8} justify="flex-start">
-              <Text fontSize={20} fontFamily={'Bayon'} fontWeight={'bold'} mt={2}>
+              <Text
+                fontSize={20}
+                fontFamily={'Bayon'}
+                fontWeight={'bold'}
+                mt={2}
+              >
                 Price:
               </Text>
-              <Text mt={2} fontSize={20} fontFamily={'Big Shoulders Text'}>USD {Number(poolUSDPrice).toFixed(2)}</Text>
-              <Text mt={2} fontSize={20} fontFamily={'Big Shoulders Text'}>MATIC {poolMATICFormatedPrice}</Text>
+              <Text mt={2} fontSize={20} fontFamily={'Big Shoulders Text'}>
+                USD {Number(poolUSDPrice).toFixed(2)}
+              </Text>
+              <Text mt={2} fontSize={20} fontFamily={'Big Shoulders Text'}>
+                MATIC {poolMATICFormatedPrice}
+              </Text>
             </Flex>
           </Box>
         </Box>
@@ -182,7 +203,7 @@ export default function PoolOrder({ pool }) {
             </ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              <Link as={NEXTLink} href='/inventory'>
+              <Link as={NEXTLink} href="/inventory">
                 <NFTCard nft={nft} />
               </Link>
             </ModalBody>

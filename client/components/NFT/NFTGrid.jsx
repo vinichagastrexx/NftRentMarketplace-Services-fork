@@ -24,7 +24,7 @@ export default function NFTGrid({ isLoading, data }) {
   return (
     <>
       <SimpleGrid
-        justifyItems='center'
+        justifyItems="center"
         justifyContent="center"
         columns={[1, 2, 5]}
         spacing={2}
