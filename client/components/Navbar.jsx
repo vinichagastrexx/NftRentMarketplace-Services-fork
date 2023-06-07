@@ -146,7 +146,7 @@ export function Navbar() {
         </Flex>
       </Flex>
 
-      {recommendation?.text && (
+      {recommendation !== null && (
         <Modal isOpen={isOpen} onClose={onClose} motionPreset="slideInBottom">
           <ModalOverlay />
           <ModalContent
