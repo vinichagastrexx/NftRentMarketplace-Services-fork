@@ -4,6 +4,7 @@ import {
   Spinner,
   Text,
   SimpleGrid,
+  Flex,
   Box,
   Skeleton,
   Accordion,
@@ -37,12 +38,10 @@ export default function ProfilePage() {
     `http://localhost:3001/items/get-rented/${address}`,
     fetcher,
   );
-
   const { data: inPoolItems, isLoading: inPoolItemsLoading } = useSWR(
     `http://localhost:3001/items/get-in-pool/${address}`,
     fetcher,
   );
-
   const { data: ownedItems, isLoading: ownedItemsLoading } = useSWR(
     `http://localhost:3001/items/get-owned/${address}`,
     fetcher,
@@ -100,26 +99,31 @@ export default function ProfilePage() {
               transition: 'background-color 0.2s',
               color: 'white',
             }}
-            colorScheme="teal"
             padding={10}
           >
-            <Box flex="1" textAlign="left">
-              <Heading fontSize={40} fontFamily={'Bayon'}>
-                Your Rented Out Items
-              </Heading>
-            </Box>
-            <AccordionIcon />
+            <Flex alignItems={'center'} textAlign="left">
+              <Box minW={350}>
+                <Heading fontSize={40} fontFamily={'Bayon'}>
+                  Your Rented Out Items
+                </Heading>
+              </Box>
+              <Box marginLeft={10}>
+                <AccordionIcon boxSize={8} />
+              </Box>
+            </Flex>
           </AccordionButton>
           <AccordionPanel paddingLeft={10} pb={4}>
             <Text fontSize={25} fontFamily={'Big Shoulders Text'}>
               Items that you own and are currently rented by other players.
             </Text>
             <SimpleGrid
-              minChildWidth="200px"
+              justifyItems="center"
+              justifyContent="center"
+              columns={[1, 2, 5]}
               spacing={2}
               maxW={'100%'}
               padding={2}
-              my={4}
+              my={5}
             >
               {rentedOutItemsLoading ? (
                 [...Array(3)].map((_, index) => (
@@ -130,7 +134,7 @@ export default function ProfilePage() {
                   <RentedNFT key={rentedItem.NFTID} nftId={rentedItem.NFTID} />
                 ))
               ) : (
-                <Text fontSize={24} fontFamily={'Big Shoulders Text'}>
+                <Text fontSize={25} fontFamily={'Big Shoulders Text'}>
                   0 items found
                 </Text>
               )}
@@ -147,12 +151,16 @@ export default function ProfilePage() {
             }}
             padding={10}
           >
-            <Box flex="1" textAlign="left">
-              <Heading fontSize={40} fontFamily={'Bayon'}>
-                Your Items in Pools
-              </Heading>
-            </Box>
-            <AccordionIcon />
+            <Flex alignItems={'center'} textAlign="left">
+              <Box minW={350}>
+                <Heading fontSize={40} fontFamily={'Bayon'}>
+                  Your Items in Pools
+                </Heading>
+              </Box>
+              <Box marginLeft={10}>
+                <AccordionIcon boxSize={8} />
+              </Box>
+            </Flex>
           </AccordionButton>
           <AccordionPanel paddingLeft={10} pb={4}>
             <Text fontSize={25} fontFamily={'Big Shoulders Text'}>
