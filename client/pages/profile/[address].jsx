@@ -21,6 +21,7 @@ import React from 'react';
 import { NFT_ADDRESS } from '../../const/addresses';
 import useSWR from 'swr';
 import NFTCard from '../../components/NFT/NFTCard';
+import { URLS } from '../../config/urls';
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
@@ -35,15 +36,15 @@ export default function ProfilePage() {
   const address = useAddress();
 
   const { data: rentedOutItems, isLoading: rentedOutItemsLoading } = useSWR(
-    `http://localhost:3001/items/get-rented/${address}`,
+    `${URLS.ITEMS}/get-rented/${address}`,
     fetcher,
   );
   const { data: inPoolItems, isLoading: inPoolItemsLoading } = useSWR(
-    `http://localhost:3001/items/get-in-pool/${address}`,
+    `${URLS.ITEMS}/get-in-pool/${address}`,
     fetcher,
   );
   const { data: ownedItems, isLoading: ownedItemsLoading } = useSWR(
-    `http://localhost:3001/items/get-owned/${address}`,
+    `${URLS.ITEMS}/get-owned/${address}`,
     fetcher,
   );
 

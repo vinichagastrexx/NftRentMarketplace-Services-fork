@@ -34,6 +34,7 @@ import NFTRentedOrder from '../components/NFT/NFTRentedOrder';
 import { NFT_ADDRESS } from '../const/addresses';
 import useSWR from 'swr';
 import NextLink from 'next/link';
+import { URLS } from '../config/urls';
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
@@ -65,7 +66,7 @@ export default function Inventory() {
   const { contract: nftCollection } = useContract(NFT_ADDRESS);
   const { data: ownedNfts, isLoading } = useOwnedNFTs(nftCollection, address);
   const { data: rentedItems, isLoading: rentedItemsLoading } = useSWR(
-    `http://localhost:3001/rents/get-active-by-rentee/${address}`,
+    `${URLS.RENTS}/get-active-by-rentee/${address}`,
     fetcher,
   );
   return (

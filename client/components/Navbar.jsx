@@ -21,6 +21,7 @@ import {
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { darken } from '@chakra-ui/theme-tools';
+import { URLS } from '../config/urls';
 
 export function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -33,7 +34,7 @@ export function Navbar() {
       if (address) {
         try {
           const response = await fetch(
-            `http://localhost:3001/recommendations/${address}`,
+            `${URLS.RECOMMENDATIONS}/${address}`,
           );
           const data = await response.json();
           if (data.recommendations.length > 0) {
