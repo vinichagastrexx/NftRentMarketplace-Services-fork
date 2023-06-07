@@ -4,12 +4,16 @@ pragma solidity ^0.8.9;
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 import "@chainlink/contracts/src/v0.8/ConfirmedOwner.sol";
+import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receiver {
+  //PriceFeed
+  AggregatorV3Interface internal dataFeed;
+
   //VRF Settings
   VRFCoordinatorV2Interface public vrfCoordinator;
   uint64 private vrfSubscriptionId;
@@ -66,7 +70,7 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     address rentee;
     uint256 poolId;
     uint256 randomNumber;
-    uint256 itemId;
+    uint256 itemNftId;
     RentStatus status;
   }
 
@@ -82,37 +86,54 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
   mapping(uint256 => uint256) private nftIdToItemId;
 
   //Rent Events
-  event RentStarted(uint256 indexed requestId, uint256 poolId, address rentee, uint256 itemId);
-  event RentFinished(uint256 indexed requestId, uint256 poolId, address rentee, uint256 itemId);
+  event RentStarted(
+    uint256 indexed rentId,
+    uint256 poolId,
+    address rentee,
+    uint256 itemNftId,
+    uint256 initDate,
+    uint256 expirationDate,
+    uint256 price,
+    address owner
+  );
+  event RentFinished(uint256 indexed rentId, uint256 finishDate);
 
   //Pool Events
   event PoolEnabled(uint256 poolId);
   event PoolDisabled(uint256 poolId);
-  event PoolCreated(uint256 indexed poolId);
+  event PoolCreated(uint256 indexed poolId, uint256 basePrice);
 
   //Item Events
-  event ItemAddedToPool(uint256 indexed itemId, uint256 poolId);
+  event ItemAddedToPool(uint256 indexed nftId, uint256 poolId);
   event ItemRemovedFromPool(uint256 indexed itemId, uint256 poolId);
-  event ItemCreated(uint256 indexed itemId, uint256 indexed nftId, uint256 categoryId, address owner);
+  event ItemCreated(uint256 indexed nftId, uint256 categoryId, address owner);
   address public nftContractAddress;
 
   constructor(
     uint64 _vrfSubscriptionId,
     address _vrfCoordinator,
     bytes32 _vrfkeyHash,
-    address _nftContractAddress
+    address _nftContractAddress,
+    address _dataFeed
   ) VRFConsumerBaseV2(_vrfCoordinator) ConfirmedOwner(msg.sender) {
     vrfCoordinator = VRFCoordinatorV2Interface(_vrfCoordinator);
     vrfSubscriptionId = _vrfSubscriptionId;
     vrfkeyHash = _vrfkeyHash;
     nftContractAddress = _nftContractAddress;
+    dataFeed = AggregatorV3Interface(_dataFeed);
   }
 
   modifier onlyNftOwner(uint256 _itemNftId) {
-    uint256 itemId = nftIdToItemId[_itemNftId];
-    Item storage item = items[itemId];
-    require(msg.sender == item.owner, "Only the NFT owner can perform this operation");
+    ERC721 erc721 = ERC721(nftContractAddress);
+    require(msg.sender == erc721.ownerOf(_itemNftId), "Only the NFT owner can perform this operation");
     _;
+  }
+
+  function getLatestPrice() public view returns (int, uint8) {
+    (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound) = dataFeed
+      .latestRoundData();
+    uint8 decimal = dataFeed.decimals();
+    return (answer, decimal);
   }
 
   function fillRandomNumberList() public onlyOwner {
@@ -145,7 +166,7 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     newPool.basePrice = _basePrice;
     newPool.isActive = true;
 
-    emit PoolCreated(_categoryId);
+    emit PoolCreated(_categoryId, newPool.basePrice);
   }
 
   function disablePool(uint256 _categoryId) public onlyOwner {
@@ -160,7 +181,9 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     emit PoolEnabled(_categoryId);
   }
 
-  function createItem(uint256 _nftId, uint256 _categoryId) public {
+  function createItem(uint256 _nftId, uint256 _categoryId) public onlyNftOwner(_nftId) {
+    require(nftIdToItemId[_nftId] == 0, "Item with this NFT ID already exists");
+
     _itemIds.increment();
     uint256 newItemId = _itemIds.current();
 
@@ -174,7 +197,7 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
       isInPool: false
     });
     nftIdToItemId[_nftId] = newItemId;
-    emit ItemCreated(newItemId, _nftId, _categoryId, msg.sender);
+    emit ItemCreated(_nftId, _categoryId, msg.sender);
   }
 
   function getRent(uint256 requestId) public view returns (Rent memory) {
@@ -189,15 +212,21 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     return pools[categoryId];
   }
 
-  function getRentQuote(uint256 categoryId, uint256 rentTime) public view returns (uint256 rentQuote) {
+  function getRentQuote(
+    uint256 categoryId,
+    uint256 rentTime
+  ) public view returns (uint256 rentQuoteMatic, uint256 rentQuoteDollar) {
     Pool storage pool = pools[categoryId];
     require(pool.isActive, "Pool with the given category ID does not exist or is not active");
 
     uint256 basePrice = pool.basePrice;
     uint256 poolSupply = pool.availableItems.length;
 
-    rentQuote = calculateRentPrice(basePrice, rentTime, poolSupply);
-    return rentQuote;
+    rentQuoteMatic = calculateRentPrice(basePrice, rentTime, poolSupply);
+    (int answer, uint8 decimal) = getLatestPrice();
+    rentQuoteDollar = (uint256(answer) * rentQuoteMatic) / (10 ** decimal);
+
+    return (rentQuoteMatic, rentQuoteDollar);
   }
 
   function getItemByNftId(uint256 _nftId) public view returns (Item memory) {
@@ -206,7 +235,7 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     return items[itemId];
   }
 
-  function addItemToPool(uint256 _nftId, uint256 _categoryId) public {
+  function addItemToPool(uint256 _nftId, uint256 _categoryId) public onlyNftOwner(_nftId) {
     Pool storage pool = pools[_categoryId];
     uint256 itemId = nftIdToItemId[_nftId];
     Item storage item = items[itemId];
@@ -214,13 +243,16 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     require(item.id != 0, "Item does not exist");
     require(pool.isActive, "Pool with the given category ID does not exist or is not active");
     require(items[item.id].isInPool == false, "Item is already in a pool");
-    require(item.owner == msg.sender, "Only item owner can add it to a pool");
+    // Update the owner of the item if the current owner is not the sender
+    if (item.owner != msg.sender) {
+      item.owner = payable(msg.sender);
+    }
 
     ERC721 erc721 = ERC721(nftContractAddress);
     erc721.safeTransferFrom(msg.sender, address(this), item.nftId);
     pools[_categoryId].availableItems.push(item.id);
     item.isInPool = true;
-    emit ItemAddedToPool(item.id, _categoryId);
+    emit ItemAddedToPool(item.nftId, _categoryId);
   }
 
   function removeItemFromPool(uint256 _nftId) public onlyNftOwner(_nftId) {
@@ -251,53 +283,81 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     Pool storage pool = pools[_categoryId];
     require(pool.isActive, "Pool with the given category ID does not exist or is not active");
     require(pool.availableItems.length > 0, "Pool with the given category ID has no available items to rent");
-    uint256 poolSupply = pool.availableItems.length;
-    uint256 poolBasePrice = pool.basePrice;
-    uint256 rentPrice = calculateRentPrice(poolBasePrice, _duration, poolSupply);
+    require(randomNumberList.length > 0, "There is no random number available to select item");
+
+    uint256 rentPrice = calculateRentPrice(pool.basePrice, _duration, pool.availableItems.length);
+
     require(msg.value == rentPrice, "The price must be equal to the quote. Get quote again!");
-    require(randomNumberList.length > 0, "There is no random number in list");
 
-    uint256 randomNumber = randomNumberList[randomNumberList.length - 1];
-    randomNumberList.pop();
-    if (randomNumberList.length < 5) {
-      fillRandomNumberList();
-    }
-
-    uint256 index = randomNumber % pool.availableItems.length;
-    uint256 selectedItemId = pool.availableItems[index];
+    uint256 randomNumber = getRandomNumber();
+    uint256 itemRandomIndex = randomNumber % pool.availableItems.length;
+    uint256 selectedItemId = pool.availableItems[itemRandomIndex];
 
     Item storage item = items[selectedItemId];
     item.isRented = true;
     item.rentee = msg.sender;
 
-    pool.rentedItems.push(selectedItemId);
+    updatePoolAfterRent(pool, selectedItemId, itemRandomIndex);
+    createNewRent(_categoryId, _duration, rentPrice, randomNumber, item);
+  }
 
-    pool.availableItems[index] = pool.availableItems[pool.availableItems.length - 1];
-    pool.availableItems.pop();
-
+  function createNewRent(
+    uint256 _categoryId,
+    uint256 _duration,
+    uint256 rentPrice,
+    uint256 randomNumber,
+    Item storage item
+  ) private {
     _rentsIds.increment();
     uint256 newRentId = _rentsIds.current();
+
     Rent memory newRent = Rent({
       id: newRentId,
       initDate: block.timestamp,
-      expirationDate: block.timestamp + _duration,
+      expirationDate: block.timestamp + (_duration * 86400),
       finishDate: 0,
       owner: item.owner,
       rentee: msg.sender,
       price: rentPrice,
       poolId: _categoryId,
-      itemId: item.id,
+      itemNftId: item.nftId,
       randomNumber: randomNumber,
       status: RentStatus.ACTIVE
     });
+
     rents[newRentId] = newRent;
-    emit RentStarted(newRentId, _categoryId, msg.sender, item.nftId);
+    emit RentStarted(
+      newRentId,
+      _categoryId,
+      msg.sender,
+      item.nftId,
+      newRent.initDate,
+      newRent.expirationDate,
+      rentPrice,
+      item.owner
+    );
+  }
+
+  function getRandomNumber() private returns (uint256 randomNumber) {
+    randomNumber = randomNumberList[randomNumberList.length - 1];
+    randomNumberList.pop();
+    if (randomNumberList.length < 5) {
+      fillRandomNumberList();
+    }
+    return randomNumber;
+  }
+
+  function updatePoolAfterRent(Pool storage pool, uint256 selectedItemId, uint256 index) private {
+    pool.rentedItems.push(selectedItemId);
+    pool.availableItems[index] = pool.availableItems[pool.availableItems.length - 1];
+    pool.availableItems.pop();
   }
 
   function finishRent(uint256 rentId) public {
     require(rents[rentId].status == RentStatus.ACTIVE, "This Rent is not Active");
     Rent storage rent = rents[rentId];
-    Item storage item = items[rent.itemId];
+    uint256 itemId = nftIdToItemId[rent.itemNftId];
+    Item storage item = items[itemId];
     Pool storage pool = pools[rent.poolId];
 
     require(item.isRented, "Item is not currently rented");
@@ -314,17 +374,12 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     rent.status = RentStatus.FINISHED;
     rent.finishDate = block.timestamp;
     payable(item.owner).transfer(rent.price);
-    emit RentFinished(rent.id, pool.categoryId, msg.sender, item.id);
+    emit RentFinished(rent.id, rent.finishDate);
   }
 
   function calculateRentPrice(uint256 basePrice, uint256 rentTime, uint256 poolSupply) internal view returns (uint256) {
     uint256 timeAdjustedPrice = basePrice.mul(rentTime);
-    uint256 supplyAdjustedPrice = timeAdjustedPrice.mul(100).mul(10 ** 20).div(poolSupply.add(100));
-
-    supplyAdjustedPrice = supplyAdjustedPrice.div(10 ** 18);
-    uint256 finalPrice = supplyAdjustedPrice.mul(marketVolumeFactor);
-
-    return finalPrice;
+    return timeAdjustedPrice;
   }
 
   function adjustMarketVolumeFactor(uint256 newFactor) public {
