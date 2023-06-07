@@ -12,7 +12,7 @@ export default function Pools() {
   );
   if (error) return <div>{error.message}</div>;
   return (
-    <Container maxW={'75%'} p={5}>
+    <Container maxW={'90%'} p={5}>
       <PoolGrid isLoading={isLoading} data={data?.pools} />
     </Container>
   );
