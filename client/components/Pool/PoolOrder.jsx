@@ -1,5 +1,6 @@
 import {
   Heading,
+  Flex,
   VStack,
   Text,
   NumberInput,
@@ -22,7 +23,7 @@ import {
 import { useSigner } from '@thirdweb-dev/react';
 import { ThirdwebSDK } from '@thirdweb-dev/sdk';
 import { darken } from '@chakra-ui/theme-tools';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   NFT_RENT_MARKETPLACE_ADDRESS,
   NFT_ADDRESS,
@@ -44,6 +45,10 @@ export default function PoolOrder({ pool }) {
   const [poolMATICPrice, setPoolMATICPrice] = useState(0);
   const [poolMATICFormatedPrice, setPoolMATICFormatedPrice] = useState(0);
   const [rentDays, setRentDays] = useState(1);
+
+  useEffect(() => {
+    handleRentDaysChange(rentDays);
+  }, []);
 
   const handleRentDaysChange = async (value) => {
     setRentDays(value)
@@ -90,7 +95,7 @@ export default function PoolOrder({ pool }) {
 
   return (
     <VStack spacing={6} align="stretch" padding={'10px'}>
-      <Box marginTop={'20%'}>
+      <Box marginTop={'10%'}>
         <Heading fontFamily={'Bayon'} size="xl" mt={2}>
           {pool.CATEGORYTYPE} Pool
         </Heading>
@@ -103,57 +108,63 @@ export default function PoolOrder({ pool }) {
         </Text>
       </Box>
       <Box>
-        <Image src={pool.IMAGEURL} alt={pool.NAME} borderRadius={'6px'} />
+        <Image src={pool.IMAGEURL} alt={pool.NAME} />
       </Box>
       <Box>
         <Text fontSize={20} fontFamily={'Bayon'} fontWeight={'bold'}>
           Description:
         </Text>
-        <Text fontFamily={'Big Shoulders Text'}>{pool.DESCRIPTION}</Text>
+        <Text mb={2} fontFamily={'Big Shoulders Text'}>{pool.SHORT_DESCRIPTION}</Text>
         <Box>
-          <Text fontSize={20} fontFamily={'Bayon'} fontWeight={'bold'} mt={2}>
-            Rent for:
-          </Text>
-          <NumberInput
-            size='lg'
-            maxW={32}
-            defaultValue={1}
-            min={1}
-            value={rentDays}
-            onChange={handleRentDaysChange}
-          >
-            <NumberInputField />
-            <NumberInputStepper>
-              <NumberIncrementStepper />
-              <NumberDecrementStepper />
-            </NumberInputStepper>
-          </NumberInput>
-          <Text fontSize={20} fontFamily={'Bayon'} fontWeight={'bold'} mt={2}>
-            Price:
-          </Text>
-          <Text fontFamily={'Big Shoulders Text'}>USD {Number(poolUSDPrice).toFixed(2)}</Text>
-          <Text fontFamily={'Big Shoulders Text'}>MATIC {poolMATICFormatedPrice}</Text>
+          <Flex direction="row" gap={10} justify="flex-start" mb={3}>
+            <Text fontSize={20} fontFamily={'Bayon'} fontWeight={'bold'} mt={2}>
+              Rent for (days):
+            </Text>
+            <NumberInput
+              size='lg'
+              maxW={32}
+              defaultValue={1}
+              min={1}
+              value={rentDays}
+              onChange={handleRentDaysChange}
+            >
+              <NumberInputField />
+              <NumberInputStepper>
+                <NumberIncrementStepper />
+                <NumberDecrementStepper />
+              </NumberInputStepper>
+            </NumberInput>
+          </Flex>
+          <Box>
+            <Flex direction="row" gap={8} justify="flex-start">
+              <Text fontSize={20} fontFamily={'Bayon'} fontWeight={'bold'} mt={2}>
+                Price:
+              </Text>
+              <Text mt={2} fontSize={20} fontFamily={'Big Shoulders Text'}>USD {Number(poolUSDPrice).toFixed(2)}</Text>
+              <Text mt={2} fontSize={20} fontFamily={'Big Shoulders Text'}>MATIC {poolMATICFormatedPrice}</Text>
+            </Flex>
+          </Box>
         </Box>
-        <Button
-          letterSpacing={0.5}
-          _hover={{
-            bg: darken('#FBAA0B', 15),
-            transition: 'background-color 0.2s',
-          }}
-          _active={{
-            transform: 'scale(0.98)',
-          }}
-          backgroundColor={'#FBAA0B'}
-          fontFamily={'Bayon'}
-          isLoading={isLoading}
-          color={'white'}
-          size="md"
-          mt={4}
-          onClick={rentItem}
-        >
-          Rent Item
-        </Button>
       </Box>
+      <Button
+        letterSpacing={0.5}
+        _hover={{
+          bg: darken('#FBAA0B', 15),
+          transition: 'background-color 0.2s',
+        }}
+        _active={{
+          transform: 'scale(0.98)',
+        }}
+        backgroundColor={'#FBAA0B'}
+        fontFamily={'Bayon'}
+        isLoading={isLoading}
+        color={'white'}
+        size="md"
+        mt={4}
+        onClick={rentItem}
+      >
+        Rent Item
+      </Button>
       {nft && (
         <Modal isOpen={isOpen} onClose={onClose} motionPreset="slideInBottom">
           <ModalOverlay />
