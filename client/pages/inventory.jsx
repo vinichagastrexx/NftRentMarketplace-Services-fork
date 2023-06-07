@@ -45,11 +45,10 @@ function RentedNFT({ nftId, rentData }) {
       <div onClick={onOpen}>
         <NFTCard key={rentedNft.metadata.id} nft={rentedNft} />
       </div>
-      <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="xs">
+      <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="sm">
         <DrawerOverlay>
           <DrawerContent>
             <DrawerCloseButton />
-            <DrawerHeader>NFT Details</DrawerHeader>
             <DrawerBody>
               <NFTRentedOrder nft={rentedNft} rentId={rentData.ID} />
             </DrawerBody>
@@ -142,11 +141,13 @@ export default function Inventory() {
               <></>
             )}
             <SimpleGrid
-              minChildWidth="200px"
+              justifyItems='center'
+              justifyContent="center"
+              columns={[1, 2, 5]}
               spacing={2}
               maxW={'100%'}
               padding={2}
-              my={4}
+              my={5}
             >
               {rentedItemsLoading ? (
                 [...Array(3)].map((_, index) => (

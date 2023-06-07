@@ -2,6 +2,7 @@ import {
   Heading,
   Flex,
   VStack,
+  Link,
   Text,
   NumberInput,
   NumberInputField,
@@ -30,6 +31,7 @@ import {
 } from '../../const/addresses';
 import NFTCard from '../NFT/NFTCard';
 import { ethers } from 'ethers';
+import NEXTLink from 'next/link';
 
 export default function PoolOrder({ pool }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -68,7 +70,7 @@ export default function PoolOrder({ pool }) {
     setIsLoading(true);
     try {
       const contract = await sdk.getContract(NFT_RENT_MARKETPLACE_ADDRESS);
-      const result = await contract.call('startRent', [pool.CATEGORYID, rentDays], { value: poolMATICPrice });
+      const result = await contract.call('startRent', [pool.CATEGORYID, Number(rentDays)], { value: poolMATICPrice });
       const nftId = result.receipt.events[1].args.itemNftId.toNumber();
       const nft = await getNft(nftId);
       setNft(nft);
@@ -169,7 +171,7 @@ export default function PoolOrder({ pool }) {
       {nft && (
         <Modal isOpen={isOpen} onClose={onClose} motionPreset="slideInBottom">
           <ModalOverlay />
-          <ModalContent padding={20}>
+          <ModalContent alignItems={'center'} padding={10}>
             <ModalHeader
               fontSize="xl"
               fontWeight="bold"
@@ -180,7 +182,9 @@ export default function PoolOrder({ pool }) {
             </ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              <NFTCard nft={nft} />
+              <Link as={NEXTLink} href='/inventory'>
+                <NFTCard nft={nft} />
+              </Link>
             </ModalBody>
           </ModalContent>
         </Modal>
