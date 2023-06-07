@@ -24,11 +24,13 @@ export default function NFTGrid({ isLoading, data }) {
   return (
     <>
       <SimpleGrid
-        minChildWidth="200px"
+        justifyItems='center'
+        justifyContent="center"
+        columns={[1, 2, 5]}
         spacing={2}
         maxW={'100%'}
         padding={2}
-        my={4}
+        my={5}
       >
         {isLoading ? (
           [...Array(3)].map((_, index) => (

@@ -1,33 +1,43 @@
 import React from 'react';
-import { Image, Box, Flex, Text, Divider } from '@chakra-ui/react';
+import { Image, Box, Flex, Text, Divider, useColorModeValue } from '@chakra-ui/react';
 
 export default function PoolCard({ pool }) {
+  const boxShadowColor = useColorModeValue('rgba(0, 0, 0, 0.5)', 'rgba(255, 255, 255, 0.5)');
+  const hoverTransition = 'all 0.25s ease-in-out';
+
+  const background = pool.RARITY === 'Common'
+    ? 'linear-gradient(to right, #523b26 0%, #b55d0b 100%)'
+    : 'linear-gradient(to right, #265eed 0%, #01164d 100%)';
+
   return (
     <Flex
       overflow={'hidden'}
       borderRadius={'10px'}
-      border={'1px'}
+      border={'0px'}
+      background={background}
       direction={'column'}
-      maxWidth={200}
+      maxWidth={250}
       justifyContent={'center'}
+      boxShadow={`0px 10px 15px ${boxShadowColor}`}
+      transition={hoverTransition}
+      _hover={{
+        transform: 'scale(1.05)',
+      }}
     >
-      <Box>
+      <Box backgroundColor={'white'}>
         <Image
           src={pool.IMAGEURL}
           alt={pool.ID}
           width={'100%'}
-          objectFit="cover"
+          transition={hoverTransition}
         />
       </Box>
-      <Box background="linear-gradient(to right, #FFFFFF, #48E3C8)" p={4}>
-        <Text fontSize="m" fontWeight="bold" fontFamily={'Bayon'} mb={1}>
-          {pool.CATEGORYTYPE} Pool
+      <Box textAlign="center" p={4}>
+        <Text color={'white'} fontSize={20} fontWeight="bold" fontFamily={'Bayon'} mb={1}>
+          {pool.CATEGORYTYPE}
         </Text>
-        <Text fontSize="m" fontFamily={'big shoulders text'} mb={1}>
-          Base Price: {pool.BASEPRICE}
-        </Text>
-        <Text fontSize="m" fontFamily={'big shoulders text'} mb={1}>
-          Rarity: {pool.RARITY}
+        <Text color={'white'} fontSize={25} fontFamily={'big shoulders text'} mb={1}>
+          {pool.RARITY}
         </Text>
       </Box>
     </Flex>

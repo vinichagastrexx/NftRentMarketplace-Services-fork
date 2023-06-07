@@ -22,11 +22,13 @@ export default function PoolGrid({ isLoading, data }) {
   return (
     <>
       <SimpleGrid
-        minChildWidth="200px"
+        justifyItems='center'
+        justifyContent="center"
+        columns={[1, 2, 3]}
         spacing={2}
         maxW={'100%'}
         padding={2}
-        my={4}
+        my={2}
       >
         {isLoading ? (
           [...Array(3)].map((_, index) => (
