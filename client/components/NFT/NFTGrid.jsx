@@ -43,7 +43,7 @@ export default function NFTGrid({ isLoading, data }) {
             </div>
           ))
         ) : (
-          <Text>0 items found</Text>
+          <Text fontSize={24} fontFamily={'Big Shoulders Text'}>0 items found</Text>
         )}
       </SimpleGrid>
       <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="sm">
