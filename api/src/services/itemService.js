@@ -20,7 +20,6 @@ class ItemService {
       sqlText,
       accessToken,
     });
-    console.log(response)
     return response;
   }
 
