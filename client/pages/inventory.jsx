@@ -2,11 +2,11 @@ import {
   Container,
   Heading,
   Text,
+  Flex,
   useDisclosure,
   Drawer,
   DrawerOverlay,
   DrawerContent,
-  DrawerCloseButton,
   DrawerHeader,
   DrawerBody,
   SimpleGrid,
@@ -18,6 +18,7 @@ import {
   AccordionPanel,
   AccordionIcon,
   Box,
+  Spacer,
 } from '@chakra-ui/react';
 import {
   useContract,
@@ -68,7 +69,7 @@ export default function Inventory() {
   );
   return (
     <Container maxW={'90%'} p={5}>
-      <Accordion allowToggle>
+      <Accordion defaultIndex={[0]} allowToggle>
         <AccordionItem>
           <AccordionButton
             _hover={{
@@ -78,12 +79,16 @@ export default function Inventory() {
             }}
             padding={10}
           >
-            <Box flex="1" textAlign="left">
-              <Heading fontSize={40} fontFamily={'Bayon'}>
-                Your Owned Items
-              </Heading>
-            </Box>
-            <AccordionIcon />
+            <Flex alignItems={'center'} textAlign="left">
+              <Box minW={280}>
+                <Heading fontSize={40} fontFamily={'Bayon'}>
+                  Your Owned Items
+                </Heading>
+              </Box>
+              <Box marginLeft={10}>
+                <AccordionIcon boxSize={8} />
+              </Box>
+            </Flex>
           </AccordionButton>
           <AccordionPanel paddingLeft={10} pb={4}>
             {isLoading ? (
@@ -124,12 +129,16 @@ export default function Inventory() {
             }}
             padding={10}
           >
-            <Box flex="1" textAlign="left">
-              <Heading fontSize={40} fontFamily={'Bayon'}>
-                Your Rented Items
-              </Heading>
-            </Box>
-            <AccordionIcon />
+            <Flex alignItems={'center'} textAlign="left">
+              <Box minW={280}>
+                <Heading fontSize={40} fontFamily={'Bayon'}>
+                  Your Rented Items
+                </Heading>
+              </Box>
+              <Box marginLeft={10}>
+                <AccordionIcon boxSize={8} />
+              </Box>
+            </Flex>
           </AccordionButton>
           <AccordionPanel paddingLeft={10} pb={4}>
             {rentedItems?.rents.length > 0 ? (
