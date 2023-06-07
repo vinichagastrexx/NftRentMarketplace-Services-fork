@@ -10,6 +10,8 @@ import {
 } from '@chakra-ui/react';
 import { MdShield } from 'react-icons/md';
 import { LuSword } from 'react-icons/lu';
+import { PoolRarity } from '../../const/pool_rarity'
+
 export default function PoolCard({ pool }) {
   const boxShadowColor = useColorModeValue(
     'rgba(0, 0, 0, 0.5)',
@@ -18,7 +20,7 @@ export default function PoolCard({ pool }) {
   const hoverTransition = 'all 0.25s ease-in-out';
 
   const background =
-    pool.RARITY === 'Common'
+    pool.RARITY === PoolRarity.Common
       ? 'linear-gradient(to right, #523b26 0%, #b55d0b 100%)'
       : 'linear-gradient(to right, #265eed 0%, #01164d 100%)';
 
