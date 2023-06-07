@@ -1,5 +1,5 @@
 export const NFT_RENT_MARKETPLACE_ADDRESS =
-  '0xf346580395f58B732A205818cAa04C43A6F00930';
+  '0x532811e5574919a63e5a14b0B8D2b6c7B44F6C14';
 export const NFT_RENT_MARKETPLACE_ABI = [
   {
     inputs: [
@@ -939,4 +939,4 @@ export const NFT_RENT_MARKETPLACE_ABI = [
     type: 'function',
   },
 ];
-export const NFT_ADDRESS = '0xdE00E6c8B2d719f1F0eee9f001887D085bd1846C';
+export const NFT_ADDRESS = '0x8a391Dd704F00dEb29C60ab923aBf45d18d667e3';
