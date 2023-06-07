@@ -1,6 +1,7 @@
 import React from 'react';
-import { Image, Box, Flex, Text, Divider, useColorModeValue } from '@chakra-ui/react';
-
+import { Image, Box, Flex, Text, Divider, useColorModeValue, Icon } from '@chakra-ui/react';
+import { MdShield } from 'react-icons/md'
+import { LuSword } from 'react-icons/lu'
 export default function PoolCard({ pool }) {
   const boxShadowColor = useColorModeValue('rgba(0, 0, 0, 0.5)', 'rgba(255, 255, 255, 0.5)');
   const hoverTransition = 'all 0.25s ease-in-out';
@@ -8,6 +9,8 @@ export default function PoolCard({ pool }) {
   const background = pool.RARITY === 'Common'
     ? 'linear-gradient(to right, #523b26 0%, #b55d0b 100%)'
     : 'linear-gradient(to right, #265eed 0%, #01164d 100%)';
+
+  const icon = pool.ID === 3 ? MdShield : LuSword
 
   return (
     <Flex
@@ -33,6 +36,7 @@ export default function PoolCard({ pool }) {
         />
       </Box>
       <Box textAlign="center" p={4}>
+        <Icon boxSize={6} as={icon} color={'white'} />
         <Text color={'white'} fontSize={20} fontWeight="bold" fontFamily={'Bayon'} mb={1}>
           {pool.CATEGORYTYPE}
         </Text>
