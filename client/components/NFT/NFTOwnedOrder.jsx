@@ -32,14 +32,13 @@ export default function NFTOwnedOrder({ nft }) {
   const [isLoading, setIsLoading] = useState(false);
   const addItemToPool = async () => {
     setIsLoading(true);
-    // const contract = await sdk.getContract(NFT_RENT_MARKETPLACE_ADDRESS, NFT_RENT_MARKETPLACE_ABI)
     try {
       const contract = await sdk.getContract(NFT_RENT_MARKETPLACE_ADDRESS);
       await contract.call('addItemToPool', [parseInt(nft.metadata.id), 1]);
       toast({
         title: 'Success',
         description: 'Your item is in pool for rent!',
-        status: 'sucess',
+        status: 'success',
         duration: 5000,
         isClosable: true,
       });
