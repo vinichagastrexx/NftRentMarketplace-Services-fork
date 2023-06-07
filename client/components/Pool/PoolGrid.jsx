@@ -46,7 +46,7 @@ export default function PoolGrid({ isLoading, data }) {
           </Text>
         )}
       </SimpleGrid>
-      <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="xs">
+      <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="sm">
         <DrawerOverlay>
           <DrawerContent>
             <DrawerCloseButton />
