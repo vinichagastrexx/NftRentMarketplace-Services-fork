@@ -40,7 +40,7 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
   using SafeMath for uint256;
   Counters.Counter private _itemIds;
   Counters.Counter private _rentsIds;
-  uint256 public marketVolumeFactor = 1;
+  uint256 public marketVolumeFactor = 1 * 10 ** 18;
 
   struct Item {
     uint256 id;
@@ -126,6 +126,14 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
   modifier onlyNftOwner(uint256 _itemNftId) {
     ERC721 erc721 = ERC721(nftContractAddress);
     require(msg.sender == erc721.ownerOf(_itemNftId), "Only the NFT owner can perform this operation");
+    _;
+  }
+
+  modifier onlyMarketVolumeUpdater() {
+    require(
+      msg.sender == marketVolumeFactorUpdaterContract,
+      "Only the market volume factor updater can update the contract"
+    );
     _;
   }
 
@@ -406,11 +414,11 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
   }
 
   function calculateRentPrice(uint256 basePrice, uint256 rentTime) internal view returns (uint256) {
-    uint256 timeAdjustedPrice = basePrice.mul(rentTime).mul(marketVolumeFactor);
+    uint256 timeAdjustedPrice = basePrice.mul(rentTime).mul(marketVolumeFactor / 10 ** 18);
     return timeAdjustedPrice;
   }
 
-  function adjustMarketVolumeFactor(uint256 newFactor) public {
+  function adjustMarketVolumeFactor(uint256 newFactor) public onlyMarketVolumeUpdater onlyOwner {
     marketVolumeFactor = newFactor;
   }
 
