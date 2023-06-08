@@ -38,4 +38,4 @@ if (transactionVolume > 0) {
 
 
 console.log("Value we'll send on-chain:", newMarketVolumeFactor);
-return Functions.encodeUint256(newMarketVolumeFactor);
+return Functions.encodeUint256(parseInt(newMarketVolumeFactor * 10 ** 18));
