@@ -1,0 +1,66 @@
+[] NFT
+  [] criar novo Contrato
+  [] criar todos os nfts e items no marketplace
+
+[] NFTRentMarketplace Criar novo Contrato
+  [] Criar Pools
+  [] Criar items
+
+
+------
+
+[] Rent 
+  [] salvar em Dólar
+
+[] NFTRentedOrder
+  [] Data expiração
+  [] Quanto gastou
+
+[] Profile Dashboard
+  [] Quanto você ganhou alugando seus itens até o momento
+
+[] Ajustar autenticação no SxT
+  [] setEnv -> SXT_BEARER_TOKEN
+
+[] Finalizar aluguel
+  [] tempo -> lambda
+
+[] Admin Dashboard 
+  [] numero total de alugueis
+  [] numero de transacoes
+  [] valor total das transacoes
+  [] alugueis por pool
+  [] taxas que o mktplace faturou
+  [] criar pool
+  [] desativar pool
+  [] ativar pool
+
+Footer
+[] developed by trexx
+[] Discover Boom Boogers
+
+
+1. Deployar NFTRentMarketplace
+2. Criar pool
+3. Atualizar envs e abi
+4. Reiniciar o worker
+5. Adicionar como consumer no VRF
+6. Chamar a função fillRandomNumberList
+7. Criar item no NFTRentMarketplace
+8. Adicionar item a pool
+9. Iniciar Rent
+10. Finalizar Rent
+
+O que precisa pra funcionar?
+-> NFT
+-> marketplace
+-> Tabelas SxT
+-> 
+
+Dependências:
+- SpaceAndTime
+- QuickNode
+- Chainlink Functions
+- Chainlink Automation
+- Chainlink DataFeed
+- AWS S3
