@@ -51,7 +51,6 @@ class RecommendationService {
         userRecommendations.push(recommendations.rentFromAnotherPool('Common Shield Pool', 'Common Weapon Pool'))
       }
     }
-    console.log('userRecommendations', userRecommendations)
     return userRecommendations;
   }
 }
