@@ -10,7 +10,7 @@ task(
   .addOptionalParam(
     "configpath",
     "Path to Functions request config file",
-    `${__dirname}/../../Functions-request-config.js`,
+    `${__dirname}/../../config/Functions-request-config.js`,
     types.string
   )
   .setAction(async (taskArgs) => {
@@ -21,16 +21,16 @@ task(
     }
 
     console.log(`Reading data from Functions client contract ${taskArgs.contract} on network ${network.name}`)
-    const clientContractFactory = await ethers.getContractFactory("FunctionsConsumer")
+    const clientContractFactory = await ethers.getContractFactory("MarketVolumeFactorUpdater")
     const clientContract = await clientContractFactory.attach(taskArgs.contract)
 
-    let latestError = await clientContract.latestError()
+    let latestError = await clientContract.latestMarketVolumeUpdateError()
     if (latestError.length > 0 && latestError !== "0x") {
       const errorString = Buffer.from(latestError.slice(2), "hex").toString()
       console.log(`\nOn-chain error message: ${Buffer.from(latestError.slice(2), "hex").toString()}`)
     }
 
-    let latestResponse = await clientContract.latestResponse()
+    let latestResponse = await clientContract.latestMarketVolumeUpdate()
     if (latestResponse.length > 0 && latestResponse !== "0x") {
       const requestConfig = require(path.isAbsolute(taskArgs.configpath)
         ? taskArgs.configpath
