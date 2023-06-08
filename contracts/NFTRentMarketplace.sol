@@ -11,6 +11,9 @@ import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receiver {
+  //MarketVolumeFactorUpdater
+  address internal marketVolumeFactorUpdaterContract;
+
   //PriceFeed
   AggregatorV3Interface internal dataFeed;
 
@@ -129,12 +132,16 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     _;
   }
 
-  modifier onlyMarketVolumeUpdater() {
+  modifier onlyMarketVolumeUpdaterOrOwner() {
     require(
-      msg.sender == marketVolumeFactorUpdaterContract,
-      "Only the market volume factor updater can update the contract"
+      msg.sender == marketVolumeFactorUpdaterContract || msg.sender == owner(),
+      "Only the market volume factor updater or the owner can update the contract"
     );
     _;
+  }
+
+  function setMarketVolumeFactorUpdaterContract(address _marketVolumeFactorUpdaterContract) public onlyOwner {
+    marketVolumeFactorUpdaterContract = _marketVolumeFactorUpdaterContract;
   }
 
   function getLatestPrice() public view returns (int, uint8) {
@@ -243,10 +250,10 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     return items[itemId];
   }
 
-  function addItemToPool(uint256 _nftId, uint256 _categoryId) public onlyNftOwner(_nftId) {
-    Pool storage pool = pools[_categoryId];
+  function addItemToPool(uint256 _nftId) public onlyNftOwner(_nftId) {
     uint256 itemId = nftIdToItemId[_nftId];
     Item storage item = items[itemId];
+    Pool storage pool = pools[item.categoryId];
 
     require(item.id != 0, "Item does not exist");
     require(pool.isActive, "Pool with the given category ID does not exist or is not active");
@@ -259,9 +266,9 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
 
     ERC721 erc721 = ERC721(nftContractAddress);
     erc721.safeTransferFrom(msg.sender, address(this), item.nftId);
-    pools[_categoryId].availableItems.push(item.id);
+    pools[item.categoryId].availableItems.push(item.id);
     item.isInPool = true;
-    emit ItemAddedToPool(item.nftId, _categoryId);
+    emit ItemAddedToPool(item.nftId, item.categoryId);
   }
 
   function removeItemFromPool(uint256 _nftId) public onlyNftOwner(_nftId) {
@@ -409,16 +416,17 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     item.rentee = address(0);
     rent.status = RentStatus.FINISHED;
     rent.finishDate = block.timestamp;
+    //todo -> check the amount consumed and return change
     payable(item.owner).transfer(rent.price);
     emit RentFinished(rent.id, rent.finishDate);
   }
 
   function calculateRentPrice(uint256 basePrice, uint256 rentTime) internal view returns (uint256) {
-    uint256 timeAdjustedPrice = basePrice.mul(rentTime).mul(marketVolumeFactor / 10 ** 18);
+    uint256 timeAdjustedPrice = basePrice.mul(rentTime).mul(marketVolumeFactor) / 10 ** 18;
     return timeAdjustedPrice;
   }
 
-  function adjustMarketVolumeFactor(uint256 newFactor) public onlyMarketVolumeUpdater onlyOwner {
+  function adjustMarketVolumeFactor(uint256 newFactor) public onlyMarketVolumeUpdaterOrOwner {
     marketVolumeFactor = newFactor;
   }
 
