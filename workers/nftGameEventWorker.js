@@ -30,6 +30,7 @@ class NFTGameEventWorker {
       const categoryId = categoryAttribute ? categoryAttribute[1].value : null;
       console.log(categoryId);
       await this.nftRentMarketplaceContract.call("createItem", [tokenId, Number(categoryId[0])]);
+      //todo -> update owner in Database
     } catch (error) {
       console.error('Error:', error.message);
     }
