@@ -222,7 +222,7 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     uint256 basePrice = pool.basePrice;
     uint256 poolSupply = pool.availableItems.length;
 
-    rentQuoteMatic = calculateRentPrice(basePrice, rentTime, poolSupply);
+    rentQuoteMatic = calculateRentPrice(basePrice, rentTime);
     (int answer, uint8 decimal) = getLatestPrice();
     rentQuoteDollar = (uint256(answer) * rentQuoteMatic) / (10 ** decimal);
 
@@ -243,6 +243,7 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     require(item.id != 0, "Item does not exist");
     require(pool.isActive, "Pool with the given category ID does not exist or is not active");
     require(items[item.id].isInPool == false, "Item is already in a pool");
+
     // Update the owner of the item if the current owner is not the sender
     if (item.owner != msg.sender) {
       item.owner = payable(msg.sender);
@@ -285,7 +286,11 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     require(pool.availableItems.length > 0, "Pool with the given category ID has no available items to rent");
     require(randomNumberList.length > 0, "There is no random number available to select item");
 
-    uint256 rentPrice = calculateRentPrice(pool.basePrice, _duration, pool.availableItems.length);
+    //check if the pool is made by items of the sender
+    bool allItemsSameOwner = checkAllItemsSameOwner(msg.sender, _categoryId);
+    require(!allItemsSameOwner, "All items belong to the same owner");
+
+    uint256 rentPrice = calculateRentPrice(pool.basePrice, _duration);
 
     require(msg.value == rentPrice, "The price must be equal to the quote. Get quote again!");
 
@@ -293,10 +298,9 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     uint256 itemRandomIndex = randomNumber % pool.availableItems.length;
     uint256 selectedItemId = pool.availableItems[itemRandomIndex];
 
-    Item storage item = items[selectedItemId];
+    Item storage item = getRandomItemNotOwnedBy(msg.sender, _categoryId);
     item.isRented = true;
     item.rentee = msg.sender;
-
     updatePoolAfterRent(pool, selectedItemId, itemRandomIndex);
     createNewRent(_categoryId, _duration, rentPrice, randomNumber, item);
   }
@@ -338,6 +342,30 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     );
   }
 
+  function checkAllItemsSameOwner(address owner, uint256 _categoryId) private view returns (bool) {
+    Pool storage pool = pools[_categoryId];
+
+    for (uint256 i = 0; i < pool.availableItems.length; i++) {
+      if (items[pool.availableItems[i]].owner != owner) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function getRandomItemNotOwnedBy(address owner, uint256 _categoryId) private returns (Item storage item) {
+    Pool storage pool = pools[_categoryId];
+    uint256 itemRandomIndex;
+    uint256 selectedItemId;
+    do {
+      uint256 randomNumber = getRandomNumber();
+      itemRandomIndex = randomNumber % pool.availableItems.length;
+      selectedItemId = pool.availableItems[itemRandomIndex];
+      item = items[selectedItemId];
+    } while (item.owner == owner);
+    return item;
+  }
+
   function getRandomNumber() private returns (uint256 randomNumber) {
     randomNumber = randomNumberList[randomNumberList.length - 1];
     randomNumberList.pop();
@@ -377,8 +405,8 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     emit RentFinished(rent.id, rent.finishDate);
   }
 
-  function calculateRentPrice(uint256 basePrice, uint256 rentTime, uint256 poolSupply) internal view returns (uint256) {
-    uint256 timeAdjustedPrice = basePrice.mul(rentTime);
+  function calculateRentPrice(uint256 basePrice, uint256 rentTime) internal view returns (uint256) {
+    uint256 timeAdjustedPrice = basePrice.mul(rentTime).mul(marketVolumeFactor);
     return timeAdjustedPrice;
   }
 
