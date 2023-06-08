@@ -165,7 +165,7 @@ export default function ProfilePage() {
           </AccordionButton>
           <AccordionPanel paddingLeft={10} pb={4}>
             <Text fontSize={25} fontFamily={'Big Shoulders Text'}>
-              These are the items you've placed in pools, available for others
+              These are the items you have placed in pools, available for others
               to rent
             </Text>
             <SimpleGrid

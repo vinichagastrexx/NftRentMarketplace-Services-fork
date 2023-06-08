@@ -166,7 +166,7 @@ export function Navbar() {
             <ModalCloseButton />
             <ModalBody>
               <Text fontSize="lg" fontFamily={'Bayon'} mb={1}>
-                We've analyzed your profile and found some personalized
+                We have analyzed your profile and found some personalized
                 recommendations for you:
               </Text>
               <Text
