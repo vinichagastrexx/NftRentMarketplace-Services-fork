@@ -64,7 +64,7 @@ const setAutoRequest = async (contract, taskArgs) => {
     )
   }
 
-  const functionsRequestBytes = await autoClientContract.generateRequest(
+  const functionsRequestBytes = await autoClientContract.generateMarketVolumeUpdateRequest(
     request.source,
     request.secrets ?? [],
     request.args ?? []
@@ -80,7 +80,7 @@ const setAutoRequest = async (contract, taskArgs) => {
   }
 
   console.log("Setting Functions request")
-  const setRequestTx = await autoClientContract.setRequest(
+  const setRequestTx = await autoClientContract.setMarketVolumeUpdateRequest(
     taskArgs.subid,
     taskArgs.gaslimit,
     taskArgs.interval,

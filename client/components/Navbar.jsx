@@ -21,6 +21,7 @@ import {
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { darken } from '@chakra-ui/theme-tools';
+import { URLS } from '../config/urls';
 
 export function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -33,7 +34,7 @@ export function Navbar() {
       if (address) {
         try {
           const response = await fetch(
-            `http://localhost:3001/recommendations/${address}`,
+            `${URLS.RECOMMENDATIONS}/${address}`,
           );
           const data = await response.json();
           if (data.recommendations.length > 0) {
@@ -100,7 +101,9 @@ export function Navbar() {
           <Link
             as={NextLink}
             color={activeTab === '/inventory' ? '#FBAA0B' : undefined}
-            textDecoration={activeTab === '/inventory' ? 'underline' : undefined}
+            textDecoration={
+              activeTab === '/inventory' ? 'underline' : undefined
+            }
             onClick={() => setActiveTab('/inventory')}
             href={'/inventory'}
             mx={2.5}
@@ -138,7 +141,9 @@ export function Navbar() {
                 boxSize={8}
                 ml={'35px'}
                 color={activeTab === '/profile' ? '#FBAA0B' : undefined}
-                textDecoration={activeTab === '/pools' ? 'underline' : undefined}
+                textDecoration={
+                  activeTab === '/pools' ? 'underline' : undefined
+                }
                 onClick={() => setActiveTab('/profile')}
               />
             </Link>
@@ -149,9 +154,7 @@ export function Navbar() {
       {recommendation !== null && (
         <Modal isOpen={isOpen} onClose={onClose} motionPreset="slideInBottom">
           <ModalOverlay />
-          <ModalContent
-            borderRadius={'15px'}
-            padding={4}>
+          <ModalContent borderRadius={'15px'} padding={4}>
             <ModalHeader
               fontSize={28}
               fontWeight="bold"
@@ -175,9 +178,7 @@ export function Navbar() {
                 {recommendation.text}
               </Text>
             </ModalBody>
-            <ModalFooter
-              justifyContent={'center'}
-            >
+            <ModalFooter justifyContent={'center'}>
               <Button
                 _hover={{
                   bg: darken('#FBAA0B', 15),

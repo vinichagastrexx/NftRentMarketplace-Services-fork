@@ -2,6 +2,7 @@ import {
   Container,
   Heading,
   Text,
+  Flex,
   useDisclosure,
   Drawer,
   DrawerOverlay,
@@ -18,6 +19,7 @@ import {
   AccordionPanel,
   AccordionIcon,
   Box,
+  Spacer,
 } from '@chakra-ui/react';
 import {
   useContract,
@@ -32,6 +34,7 @@ import NFTRentedOrder from '../components/NFT/NFTRentedOrder';
 import { NFT_ADDRESS } from '../const/addresses';
 import useSWR from 'swr';
 import NextLink from 'next/link';
+import { URLS } from '../config/urls';
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
@@ -45,11 +48,10 @@ function RentedNFT({ nftId, rentData }) {
       <div onClick={onOpen}>
         <NFTCard key={rentedNft.metadata.id} nft={rentedNft} />
       </div>
-      <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="xs">
+      <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="sm">
         <DrawerOverlay>
           <DrawerContent>
             <DrawerCloseButton />
-            <DrawerHeader>NFT Details</DrawerHeader>
             <DrawerBody>
               <NFTRentedOrder nft={rentedNft} rentId={rentData.ID} />
             </DrawerBody>
@@ -64,27 +66,31 @@ export default function Inventory() {
   const { contract: nftCollection } = useContract(NFT_ADDRESS);
   const { data: ownedNfts, isLoading } = useOwnedNFTs(nftCollection, address);
   const { data: rentedItems, isLoading: rentedItemsLoading } = useSWR(
-    `http://localhost:3001/rents/get-active-by-rentee/${address}`,
+    `${URLS.RENTS}/get-active-by-rentee/${address}`,
     fetcher,
   );
   return (
     <Container maxW={'90%'} p={5}>
-      <Accordion allowToggle>
+      <Accordion defaultIndex={[0]} allowToggle>
         <AccordionItem>
           <AccordionButton
             _hover={{
               bg: '#FBAA0B',
               transition: 'background-color 0.2s',
-              color: 'white'
+              color: 'white',
             }}
             padding={10}
           >
-            <Box flex="1" textAlign="left">
-              <Heading fontSize={40} fontFamily={'Bayon'}>
-                Your Owned Items
-              </Heading>
-            </Box>
-            <AccordionIcon />
+            <Flex alignItems={'center'} textAlign="left">
+              <Box minW={280}>
+                <Heading fontSize={40} fontFamily={'Bayon'}>
+                  Your Owned Items
+                </Heading>
+              </Box>
+              <Box marginLeft={10}>
+                <AccordionIcon boxSize={8} />
+              </Box>
+            </Flex>
           </AccordionButton>
           <AccordionPanel paddingLeft={10} pb={4}>
             {isLoading ? (
@@ -121,16 +127,20 @@ export default function Inventory() {
             _hover={{
               bg: '#FBAA0B',
               transition: 'background-color 0.2s',
-              color: 'white'
+              color: 'white',
             }}
             padding={10}
           >
-            <Box flex="1" textAlign="left">
-              <Heading fontSize={40} fontFamily={'Bayon'}>
-                Your Rented Items
-              </Heading>
-            </Box>
-            <AccordionIcon />
+            <Flex alignItems={'center'} textAlign="left">
+              <Box minW={280}>
+                <Heading fontSize={40} fontFamily={'Bayon'}>
+                  Your Rented Items
+                </Heading>
+              </Box>
+              <Box marginLeft={10}>
+                <AccordionIcon boxSize={8} />
+              </Box>
+            </Flex>
           </AccordionButton>
           <AccordionPanel paddingLeft={10} pb={4}>
             {rentedItems?.rents.length > 0 ? (
@@ -142,11 +152,13 @@ export default function Inventory() {
               <></>
             )}
             <SimpleGrid
-              minChildWidth="200px"
+              justifyItems="center"
+              justifyContent="center"
+              columns={[1, 2, 5]}
               spacing={2}
               maxW={'100%'}
               padding={2}
-              my={4}
+              my={5}
             >
               {rentedItemsLoading ? (
                 [...Array(3)].map((_, index) => (

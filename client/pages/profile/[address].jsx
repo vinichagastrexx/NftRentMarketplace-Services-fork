@@ -4,6 +4,7 @@ import {
   Spinner,
   Text,
   SimpleGrid,
+  Flex,
   Box,
   Skeleton,
   Accordion,
@@ -20,6 +21,7 @@ import React from 'react';
 import { NFT_ADDRESS } from '../../const/addresses';
 import useSWR from 'swr';
 import NFTCard from '../../components/NFT/NFTCard';
+import { URLS } from '../../config/urls';
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
@@ -34,17 +36,15 @@ export default function ProfilePage() {
   const address = useAddress();
 
   const { data: rentedOutItems, isLoading: rentedOutItemsLoading } = useSWR(
-    `http://localhost:3001/items/get-rented/${address}`,
+    `${URLS.ITEMS}/get-rented/${address}`,
     fetcher,
   );
-
   const { data: inPoolItems, isLoading: inPoolItemsLoading } = useSWR(
-    `http://localhost:3001/items/get-in-pool/${address}`,
+    `${URLS.ITEMS}/get-in-pool/${address}`,
     fetcher,
   );
-
   const { data: ownedItems, isLoading: ownedItemsLoading } = useSWR(
-    `http://localhost:3001/items/get-owned/${address}`,
+    `${URLS.ITEMS}/get-owned/${address}`,
     fetcher,
   );
 
@@ -52,16 +52,40 @@ export default function ProfilePage() {
     <Container maxW={'90%'} p={5}>
       <SimpleGrid padding={10} columns={5} spacing={5}>
         <Stat>
-          <StatLabel fontSize={30} fontFamily={'Bayon'}>Items in Pools</StatLabel>
-          {inPoolItemsLoading ? <Spinner /> : <StatNumber fontSize={30} fontFamily={'Bayon'}>{inPoolItems?.itemsInPool?.length}</StatNumber>}
+          <StatLabel fontSize={30} fontFamily={'Bayon'}>
+            Items in Pools
+          </StatLabel>
+          {inPoolItemsLoading ? (
+            <Spinner />
+          ) : (
+            <StatNumber fontSize={30} fontFamily={'Bayon'}>
+              {inPoolItems?.itemsInPool?.length}
+            </StatNumber>
+          )}
         </Stat>
         <Stat>
-          <StatLabel fontSize={30} fontFamily={'Bayon'}>Items Rented Out</StatLabel>
-          {rentedOutItemsLoading ? <Spinner /> : <StatNumber fontSize={30} fontFamily={'Bayon'}>{rentedOutItems?.itemsRented?.length}</StatNumber>}
+          <StatLabel fontSize={30} fontFamily={'Bayon'}>
+            Items Rented Out
+          </StatLabel>
+          {rentedOutItemsLoading ? (
+            <Spinner />
+          ) : (
+            <StatNumber fontSize={30} fontFamily={'Bayon'}>
+              {rentedOutItems?.itemsRented?.length}
+            </StatNumber>
+          )}
         </Stat>
         <Stat>
-          <StatLabel fontSize={30} fontFamily={'Bayon'}>Owned Items</StatLabel>
-          {ownedItemsLoading ? <Spinner /> : <StatNumber fontSize={30} fontFamily={'Bayon'}>{ownedItems?.itemsOwned?.length}</StatNumber>}
+          <StatLabel fontSize={30} fontFamily={'Bayon'}>
+            Owned Items
+          </StatLabel>
+          {ownedItemsLoading ? (
+            <Spinner />
+          ) : (
+            <StatNumber fontSize={30} fontFamily={'Bayon'}>
+              {ownedItems?.itemsOwned?.length}
+            </StatNumber>
+          )}
         </Stat>
         {/* <Stat>
           <StatLabel fontSize={30} fontFamily={'Bayon'}>Total Earnings</StatLabel>
@@ -74,28 +98,33 @@ export default function ProfilePage() {
             _hover={{
               bg: '#FBAA0B',
               transition: 'background-color 0.2s',
-              color: 'white'
+              color: 'white',
             }}
-            colorScheme="teal"
             padding={10}
           >
-            <Box flex="1" textAlign="left">
-              <Heading fontSize={40} fontFamily={'Bayon'}>
-                Your Rented Out Items
-              </Heading>
-            </Box>
-            <AccordionIcon />
+            <Flex alignItems={'center'} textAlign="left">
+              <Box minW={350}>
+                <Heading fontSize={40} fontFamily={'Bayon'}>
+                  Your Rented Out Items
+                </Heading>
+              </Box>
+              <Box marginLeft={10}>
+                <AccordionIcon boxSize={8} />
+              </Box>
+            </Flex>
           </AccordionButton>
           <AccordionPanel paddingLeft={10} pb={4}>
             <Text fontSize={25} fontFamily={'Big Shoulders Text'}>
               Items that you own and are currently rented by other players.
             </Text>
             <SimpleGrid
-              minChildWidth="200px"
+              justifyItems="center"
+              justifyContent="center"
+              columns={[1, 2, 5]}
               spacing={2}
               maxW={'100%'}
               padding={2}
-              my={4}
+              my={5}
             >
               {rentedOutItemsLoading ? (
                 [...Array(3)].map((_, index) => (
@@ -106,7 +135,7 @@ export default function ProfilePage() {
                   <RentedNFT key={rentedItem.NFTID} nftId={rentedItem.NFTID} />
                 ))
               ) : (
-                <Text fontSize={24} fontFamily={'Big Shoulders Text'}>
+                <Text fontSize={25} fontFamily={'Big Shoulders Text'}>
                   0 items found
                 </Text>
               )}
@@ -119,16 +148,20 @@ export default function ProfilePage() {
             _hover={{
               bg: '#FBAA0B',
               transition: 'background-color 0.2s',
-              color: 'white'
+              color: 'white',
             }}
             padding={10}
           >
-            <Box flex="1" textAlign="left">
-              <Heading fontSize={40} fontFamily={'Bayon'}>
-                Your Items in Pools
-              </Heading>
-            </Box>
-            <AccordionIcon />
+            <Flex alignItems={'center'} textAlign="left">
+              <Box minW={350}>
+                <Heading fontSize={40} fontFamily={'Bayon'}>
+                  Your Items in Pools
+                </Heading>
+              </Box>
+              <Box marginLeft={10}>
+                <AccordionIcon boxSize={8} />
+              </Box>
+            </Flex>
           </AccordionButton>
           <AccordionPanel paddingLeft={10} pb={4}>
             <Text fontSize={25} fontFamily={'Big Shoulders Text'}>
@@ -159,6 +192,6 @@ export default function ProfilePage() {
           </AccordionPanel>
         </AccordionItem>
       </Accordion>
-    </Container >
+    </Container>
   );
 }

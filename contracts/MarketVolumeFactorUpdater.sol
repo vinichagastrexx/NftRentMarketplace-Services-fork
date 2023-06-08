@@ -2,57 +2,41 @@
 pragma solidity ^0.8.7;
 
 import {Functions, FunctionsClient} from "./dev/functions/FunctionsClient.sol";
-// import "@chainlink/contracts/src/v0.8/dev/functions/FunctionsClient.sol"; // Once published
 import {ConfirmedOwner} from "@chainlink/contracts/src/v0.8/ConfirmedOwner.sol";
 import {AutomationCompatibleInterface} from "@chainlink/contracts/src/v0.8/AutomationCompatible.sol";
-import {NFTRentMarketplace} from "./NFTRentMarketplace.sol"; // Import NFTRentMarketplace
+import {NFTRentMarketplace} from "./NFTRentMarketplace.sol";
 
 contract MarketVolumeFactorUpdater is FunctionsClient, ConfirmedOwner, AutomationCompatibleInterface {
   using Functions for Functions.Request;
 
-  bytes public requestCBOR;
-  bytes32 public latestRequestId;
-  bytes public latestResponse;
-  bytes public latestError;
+  bytes public marketVolumeUpdateRequest;
+  bytes32 public currentRequestId;
+  bytes public latestMarketVolumeUpdate;
+  bytes public latestMarketVolumeUpdateError;
   uint64 public subscriptionId;
-  uint32 public fulfillGasLimit;
-  uint256 public updateInterval;
-  uint256 public lastUpkeepTimeStamp;
-  uint256 public upkeepCounter;
-  uint256 public responseCounter;
-  NFTRentMarketplace public nftRentMarketplace;
-  event OCRResponse(bytes32 indexed requestId, bytes result, bytes err);
+  uint32 public gasLimit;
+  uint256 public marketVolumeUpdateInterval;
+  uint256 public lastMarketVolumeUpdateTimeStamp;
+  uint256 public marketVolumeUpdateCounter;
+  uint256 public marketVolumeUpdateResponseCounter;
+  NFTRentMarketplace public rentMarketplace;
+  event MarketVolumeUpdateResponse(bytes32 indexed requestId, bytes result, bytes err);
 
-  /**
-   * @notice Executes once when a contract is created to initialize state variables
-   *
-   * @param oracle The FunctionsOracle contract
-   * @param _subscriptionId The Functions billing subscription ID used to pay for Functions requests
-   * @param _fulfillGasLimit Maximum amount of gas used to call the client contract's `handleOracleFulfillment` function
-   * @param _updateInterval Time interval at which Chainlink Automation should call performUpkeep
-   */
   constructor(
     address oracle,
     uint64 _subscriptionId,
     uint32 _fulfillGasLimit,
     uint256 _updateInterval,
-    address _nftRentMarketplaceContract
+    address _rentMarketplaceContract
   ) FunctionsClient(oracle) ConfirmedOwner(msg.sender) {
-    nftRentMarketplace = NFTRentMarketplace(_nftRentMarketplaceContract); // Add this line
-    updateInterval = _updateInterval;
+    rentMarketplace = NFTRentMarketplace(_rentMarketplaceContract);
+    marketVolumeUpdateInterval = _updateInterval;
     subscriptionId = _subscriptionId;
-    fulfillGasLimit = _fulfillGasLimit;
-    lastUpkeepTimeStamp = block.timestamp;
+    gasLimit = _fulfillGasLimit;
+    lastMarketVolumeUpdateTimeStamp = block.timestamp;
   }
 
-  /**
-   * @notice Generates a new Functions.Request. This pure function allows the request CBOR to be generated off-chain, saving gas.
-   *
-   * @param source JavaScript source code
-   * @param secrets Encrypted secrets payload
-   * @param args List of arguments accessible from within the source code
-   */
-  function generateRequest(
+  function generateMarketVolumeUpdateRequest(
     string calldata source,
     bytes calldata secrets,
     string[] calldata args
@@ -67,80 +51,44 @@ contract MarketVolumeFactorUpdater is FunctionsClient, ConfirmedOwner, Automatio
     return req.encodeCBOR();
   }
 
-  /**
-   * @notice Sets the bytes representing the CBOR-encoded Functions.Request that is sent when performUpkeep is called
-
-   * @param _subscriptionId The Functions billing subscription ID used to pay for Functions requests
-   * @param _fulfillGasLimit Maximum amount of gas used to call the client contract's `handleOracleFulfillment` function
-   * @param _updateInterval Time interval at which Chainlink Automation should call performUpkeep
-   * @param newRequestCBOR Bytes representing the CBOR-encoded Functions.Request
-   */
-  function setRequest(
+  function setMarketVolumeUpdateRequest(
     uint64 _subscriptionId,
     uint32 _fulfillGasLimit,
     uint256 _updateInterval,
     bytes calldata newRequestCBOR
   ) external onlyOwner {
-    updateInterval = _updateInterval;
+    marketVolumeUpdateInterval = _updateInterval;
     subscriptionId = _subscriptionId;
-    fulfillGasLimit = _fulfillGasLimit;
-    requestCBOR = newRequestCBOR;
+    gasLimit = _fulfillGasLimit;
+    marketVolumeUpdateRequest = newRequestCBOR;
   }
 
-  /**
-   * @notice Used by Automation to check if performUpkeep should be called.
-   *
-   * The function's argument is unused in this example, but there is an option to have Automation pass custom data
-   * that can be used by the checkUpkeep function.
-   *
-   * Returns a tuple where the first element is a boolean which determines if upkeep is needed and the
-   * second element contains custom bytes data which is passed to performUpkeep when it is called by Automation.
-   */
   function checkUpkeep(bytes memory) public view override returns (bool upkeepNeeded, bytes memory) {
-    upkeepNeeded = (block.timestamp - lastUpkeepTimeStamp) > updateInterval;
+    upkeepNeeded = (block.timestamp - lastMarketVolumeUpdateTimeStamp) > marketVolumeUpdateInterval;
   }
 
-  /**
-   * @notice Called by Automation to trigger a Functions request
-   *
-   * The function's argument is unused in this example, but there is an option to have Automation pass custom data
-   * returned by checkUpkeep (See Chainlink Automation documentation)
-   */
   function performUpkeep(bytes calldata) external override {
-    (bool upkeepNeeded, ) = checkUpkeep("");
-    require(upkeepNeeded, "Time interval not met");
-    lastUpkeepTimeStamp = block.timestamp;
-    upkeepCounter = upkeepCounter + 1;
+    (bool updateNeeded, ) = checkUpkeep("");
+    require(updateNeeded, "Time interval not met");
+    lastMarketVolumeUpdateTimeStamp = block.timestamp;
+    marketVolumeUpdateCounter = marketVolumeUpdateCounter + 1;
 
-    bytes32 requestId = s_oracle.sendRequest(subscriptionId, requestCBOR, fulfillGasLimit);
+    bytes32 requestId = s_oracle.sendRequest(subscriptionId, marketVolumeUpdateRequest, gasLimit);
 
     s_pendingRequests[requestId] = s_oracle.getRegistry();
     emit RequestSent(requestId);
-    latestRequestId = requestId;
+    currentRequestId = requestId;
   }
 
-  /**
-   * @notice Callback that is invoked once the DON has resolved the request or hit an error
-   *
-   * @param requestId The request ID, returned by sendRequest()
-   * @param response Aggregated response from the user code
-   * @param err Aggregated error from the user code or from the execution pipeline
-   * Either response or error parameter will be set, but never both
-   */
   function fulfillRequest(bytes32 requestId, bytes memory response, bytes memory err) internal override {
-    latestResponse = response;
-    latestError = err;
-    responseCounter = responseCounter + 1;
+    latestMarketVolumeUpdate = response;
+    latestMarketVolumeUpdateError = err;
+    marketVolumeUpdateResponseCounter = marketVolumeUpdateResponseCounter + 1;
     uint256 volumeFactor = uint256(bytes32(response));
-    nftRentMarketplace.adjustMarketVolumeFactor(volumeFactor);
-    emit OCRResponse(requestId, response, err);
+    rentMarketplace.adjustMarketVolumeFactor(volumeFactor);
+    emit MarketVolumeUpdateResponse(requestId, response, err);
   }
 
-  /**
-   * @notice Allows the Functions oracle address to be updated
-   *
-   * @param oracle New oracle address
-   */
   function updateOracleAddress(address oracle) public onlyOwner {
     setOracle(oracle);
   }

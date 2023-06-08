@@ -2,12 +2,13 @@ import React from 'react';
 import PoolGrid from '../components/Pool/PoolGrid';
 import useSWR from 'swr';
 import { Container } from '@chakra-ui/react';
+import { URLS } from '../config/urls';
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
 export default function Pools() {
   const { data, error, isLoading } = useSWR(
-    `http://localhost:3001/pools/get-all`,
+    `${URLS.POOLS}/get-all`,
     fetcher,
   );
   if (error) return <div>{error.message}</div>;

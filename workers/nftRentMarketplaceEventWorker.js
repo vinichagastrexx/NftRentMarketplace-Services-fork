@@ -2,7 +2,6 @@ const { ThirdwebSDK } = require('@thirdweb-dev/sdk');
 const { Mumbai } = require('@thirdweb-dev/chains');
 const axios = require('axios');
 const env = require('../config/env');
-const { NFT_RENT_MARKETPLACE_ABI } = require('../config/abi');
 
 
 class NFTRentMarketplaceEventWorker {
