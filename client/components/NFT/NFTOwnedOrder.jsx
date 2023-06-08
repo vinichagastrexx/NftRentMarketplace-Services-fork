@@ -16,10 +16,10 @@ import { useSigner } from '@thirdweb-dev/react';
 import { ThirdwebSDK } from '@thirdweb-dev/sdk';
 import {
   NFT_RENT_MARKETPLACE_ADDRESS,
-  NFT_RENT_MARKETPLACE_ABI,
   NFT_ADDRESS,
 } from '../../const/addresses';
 import React, { useState } from 'react';
+
 
 export default function NFTOwnedOrder({ nft }) {
   const toast = useToast();
@@ -33,8 +33,11 @@ export default function NFTOwnedOrder({ nft }) {
   const addItemToPool = async () => {
     setIsLoading(true);
     try {
-      const contract = await sdk.getContract(NFT_RENT_MARKETPLACE_ADDRESS);
-      await contract.call('addItemToPool', [parseInt(nft.metadata.id), 1]);
+      //todo -> improve to not send two tx
+      const nftContract = await sdk.getContract(NFT_ADDRESS, 'nft-collection');
+      await nftContract.call('approve', [NFT_RENT_MARKETPLACE_ADDRESS, parseInt(nft.metadata.id)])
+      const marketplaceContract = await sdk.getContract(NFT_RENT_MARKETPLACE_ADDRESS);
+      await marketplaceContract.call('addItemToPool', [parseInt(nft.metadata.id)]);
       toast({
         title: 'Success',
         description: 'Your item is in pool for rent!',

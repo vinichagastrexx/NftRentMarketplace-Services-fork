@@ -24,13 +24,12 @@ class NFTGameEventWorker {
     try {
       const nft = await this.nftContract.get(tokenId);
       console.log(nft);
-      const [categoryId] = Object.entries(nft?.metadata?.attributes).map(
-        ([_, value]) => {
-          if (value.trait_type === 'categoryId') {
-            return value.value
-          }
-        })
-      await this.nftRentMarketplaceContract.call("createItem", [tokenId, categoryId]);
+      const categoryAttribute = Object.entries(nft?.metadata?.attributes || {}).find(
+        ([_, value]) => value.trait_type === 'categoryId'
+      );
+      const categoryId = categoryAttribute ? categoryAttribute[1].value : null;
+      console.log(categoryId);
+      await this.nftRentMarketplaceContract.call("createItem", [tokenId, Number(categoryId[0])]);
     } catch (error) {
       console.error('Error:', error.message);
     }

@@ -7,12 +7,10 @@ export default function NFTCard({ nft }) {
     'rgba(0, 0, 0, 0.5)',
     'rgba(255, 255, 255, 0.5)',
   );
-  const [categoryId] = Object.entries(nft?.metadata?.attributes || {}).map(
-    ([_, value]) => {
-      if (value.trait_type === 'categoryId') {
-        return value.value
-      }
-    })
+  const categoryAttribute = Object.entries(nft?.metadata?.attributes || {}).find(
+    ([_, value]) => value.trait_type === 'categoryId'
+  );
+  const categoryId = categoryAttribute ? categoryAttribute[1].value : null;
   const background =
     categoryId === ItemCategory.Rare
       ? 'linear-gradient(to right, #265eed 0%, #01164d 100%)'
