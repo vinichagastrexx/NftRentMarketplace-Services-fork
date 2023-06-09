@@ -26,4 +26,7 @@ app.use('/pools', poolRoutes);
 app.use('/rents', rentRoutes);
 app.use('/recommendations', recommendationRoutes);
 
-module.exports.handler = serverless(app);
+//to test locally you can use the code below
+app.listen(process.env.PORT || 80, () => {
+  console.log('Server is running on port 80');
+});
