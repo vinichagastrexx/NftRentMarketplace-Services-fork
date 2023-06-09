@@ -1,5 +1,5 @@
 const axios = require('axios');
-const env = require('../../../config/env');
+const env = require('../../config/env');
 
 class SxTApi {
   static async dml({ resourceId, sqlText, accessToken }) {

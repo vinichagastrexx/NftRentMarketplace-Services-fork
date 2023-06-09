@@ -1,6 +1,8 @@
 # vscode
 .vscode
 
+api/.serverless
+
 # hardhat
 artifacts
 cache

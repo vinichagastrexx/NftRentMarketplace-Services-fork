@@ -1,0 +1,17 @@
+service: nft-rent-mktplace-api
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-2
+  memorySize: 128
+  timeout: 10
+
+functions:
+  app:
+    handler: api/server.handler
+    events:
+      - http: ANY /
+      - http:
+          path: /{proxy+}
+          method: any

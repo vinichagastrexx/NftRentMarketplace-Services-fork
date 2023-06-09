@@ -103,7 +103,7 @@ export default function Inventory() {
             ) : (
               <div>
                 <Text fontSize={25} fontFamily={'Big Shoulders Text'}>
-                  You don't have any Items! Check the available Pools and rent
+                  You do not have any Items! Check the available Pools and rent
                   some items to play!
                 </Text>
                 <Button
