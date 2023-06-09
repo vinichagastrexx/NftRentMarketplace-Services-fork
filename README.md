@@ -64,3 +64,20 @@ Enjoy testing the NFTRentMarketplace!
 ### Important Notice!
 
 Please be aware that occasionally, the Space and Time API might experience intermittent issues, which could result in the pools not being displayed on the page as expected. If you encounter this situation, a simple page refresh usually resolves the issue. We appreciate your understanding and patience!
+
+## Contract Addresses deployed on Polygon Mumbai
+
+### Chainlink Automations 
+```bash
+0x372F29046b112875D46CA71800178b7Ff304d246
+```
+
+### BoomBoogersNFTs 
+```bash
+0xDf0CA9fcf0eD80A3D42f746129584b8A647003cE
+```
+
+### NFTRentMarketplace 
+```bash
+0xc0f94CC0945eb627527b8858A055eC9ee4b66425
+```
