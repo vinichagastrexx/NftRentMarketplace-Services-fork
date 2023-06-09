@@ -1,5 +1,6 @@
 const ItemService = require('./itemService');
 const SxTApi = require('./sxtApi');
+const env = require('../../config/env')
 
 class RentService {
   static async startRent({ accessToken, rentId, nftId, poolId, rentee, price, expirationDate, initDate, owner }) {

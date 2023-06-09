@@ -7,7 +7,6 @@ const rentRoutes = require('./routes/rentRoutes');
 const recommendationRoutes = require('./routes/recommendationRoutes');
 const { sxtAuthenticate } = require('./helpers/sxtAuth');
 require('dotenv').config();
-const serverless = require('serverless-http');
 
 app.options('*', cors())
 app.use(cors())
@@ -26,7 +25,8 @@ app.use('/pools', poolRoutes);
 app.use('/rents', rentRoutes);
 app.use('/recommendations', recommendationRoutes);
 
+const PORT = process.env.PORT || 80
 //to test locally you can use the code below
-app.listen(process.env.PORT || 80, () => {
-  console.log('Server is running on port 80');
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });

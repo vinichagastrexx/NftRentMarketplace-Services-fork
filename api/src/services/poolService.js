@@ -1,4 +1,5 @@
 const SxTApi = require('./sxtApi');
+const env = require('../../config/env')
 
 class PoolService {
   static async getAll({ accessToken }) {
