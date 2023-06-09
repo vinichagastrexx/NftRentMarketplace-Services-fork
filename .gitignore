@@ -2,6 +2,7 @@
 .vscode
 
 api/.serverless
+tasks.txt
 
 # hardhat
 artifacts
