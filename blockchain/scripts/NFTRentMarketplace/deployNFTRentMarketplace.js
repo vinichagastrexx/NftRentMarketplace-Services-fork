@@ -9,7 +9,8 @@ async function main() {
     env.vrfSubId,
     env.vrfCoordinatorContractAddress,
     env.vrfKeyHash,
-    env.nftContractAddress
+    env.nftContractAddress,
+    env.dataFeedContractAddress
   )
 
   await nftRentMarketplace.deployed()
