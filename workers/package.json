@@ -1,0 +1,19 @@
+{
+  "name": "nft-rent-marketplace-worker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "@thirdweb-dev/chains": "^0.1.19",
+    "@thirdweb-dev/contracts": "^3.5.4",
+    "@thirdweb-dev/sdk": "^3.10.19",
+    "axios": "^1.4.0",
+    "dotenv": "^16.0.3"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
