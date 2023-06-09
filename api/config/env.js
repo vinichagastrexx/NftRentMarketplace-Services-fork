@@ -12,6 +12,7 @@ module.exports = {
   cfOracleAddress: process.env.CF_ORACLE_ADDRESS ?? "",
   sxtPvKey: process.env.SXT_PV_KEY ?? "",
   sxtURL: process.env.SXT_URL ?? "",
+  sxtSchema: process.env.SXT_SCHEMA ?? "",
   sxtPubKey: process.env.SXT_PUB_KEY ?? "",
   sxtUserId: process.env.SXT_USER_ID ?? "",
   sxtCLIPath: process.env.SXT_CLI_PATH ?? "",
