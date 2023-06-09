@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "deve": "node server-dev.js"
+    "dev": "node server-dev.js"
   },
   "keywords": [],
   "author": "",

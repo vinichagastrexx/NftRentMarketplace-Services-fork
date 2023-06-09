@@ -10,5 +10,4 @@ COPY . .
 
 EXPOSE 3000
 
-# Run app.js when the container launches
-CMD ["npm", "start"]
+CMD ["npm", "run", "dev"]
