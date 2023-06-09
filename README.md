@@ -11,13 +11,13 @@ NFTRentMarketplace is a platform that allows users to rent their NFTs to others.
 
 The NFTRentMarketplace is a robust and efficient platform for NFT rentals, built with a variety of technologies to ensure a seamless user experience. Here's a brief overview of what we have used to built the system:
 
-### Lambda AWS + Api Gateway
-### Elastic Container Service AWS
-### AWS S3
-### Chainlink Functions + Automations
-### Chainlink VRF
-### Chainlink DataFeed
-### Space and Time
+- Lambda AWS + Api Gateway
+- Elastic Container Service AWS
+- AWS S3
+- Chainlink Functions + Automations
+- Chainlink VRF
+- Chainlink DataFeed
+- Space and Time
 
 
 ## How to Test
