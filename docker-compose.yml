@@ -1,0 +1,33 @@
+version: '3'
+services:
+  nft-rent-marketplace-api:
+    build: 
+      context: ./api
+      dockerfile: Dockerfile
+    volumes:
+      - ./api:/app
+    ports:
+      - "80:80"
+    restart: always
+
+  nft-rent-marketplace-worker:
+    build: 
+      context: ./workers
+      dockerfile: Dockerfile
+    volumes:
+      - ./workers:/app
+    restart: always
+    depends_on:
+      - nft-rent-marketplace-api
+
+  nft-rent-marketplace-client:
+    build: 
+      context: ./client
+      dockerfile: Dockerfile
+    volumes:
+      - ./client:/app
+    ports:
+      - "3000:3000"
+    restart: always
+    depends_on:
+      - nft-rent-marketplace-api
