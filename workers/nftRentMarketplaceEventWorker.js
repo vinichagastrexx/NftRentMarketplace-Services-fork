@@ -8,6 +8,7 @@ class NFTRentMarketplaceEventWorker {
   constructor() {
     this.contractAddress = env.nftRentMarketplaceContract;
     this.privateKey = env.walletPvKey;
+    this.nftRentMarketplaceApi = env.nftRentMarketplaceApi;
     this.provider = env.mumbaiRpcUrl;
     this.init();
   }
@@ -34,7 +35,7 @@ class NFTRentMarketplaceEventWorker {
       initDate: new Date(Number(`${event.data.initDate._hex}`) * 1000),
     }
     try {
-      await axios.post(`${process.env.NFT_RENT_MARKETPLACE_API}/rents/start-rent`, payload);
+      await axios.post(`${this.nftRentMarketplaceApi}/rents/start-rent`, payload);
     } catch (error) {
       console.error('Error:', error.message);
     }
@@ -45,7 +46,7 @@ class NFTRentMarketplaceEventWorker {
       finishDate: new Date(Number(`${event.data.finishDate._hex}`) * 1000),
     }
     try {
-      await axios.post(`${process.env.NFT_RENT_MARKETPLACE_API}/rents/finish-rent`, payload);
+      await axios.post(`${this.nftRentMarketplaceApi}/rents/finish-rent`, payload);
     } catch (error) {
       console.error('Error:', error.message);
     }
@@ -56,7 +57,7 @@ class NFTRentMarketplaceEventWorker {
         poolId: Number(`${event.data.poolId._hex}`),
         basePrice: Number(`${event.data.basePrice._hex}`),
       }
-      await axios.post(`${process.env.NFT_RENT_MARKETPLACE_API}/pools/create-pool`, payload);
+      await axios.post(`${this.nftRentMarketplaceApi}/pools/create-pool`, payload);
     } catch (error) {
       console.error('Error:', error.message);
     }
@@ -69,7 +70,7 @@ class NFTRentMarketplaceEventWorker {
         rentee: event.data.rentee,
         owner: event.data.owner,
       }
-      await axios.post(`${process.env.NFT_RENT_MARKETPLACE_API}/items/create-item`, payload);
+      await axios.post(`${this.nftRentMarketplaceApi}/items/create-item`, payload);
     } catch (error) {
       console.error('Error:', error.message);
     }
@@ -78,7 +79,7 @@ class NFTRentMarketplaceEventWorker {
     try {
       console.log(event);
       const nftId = Number(`${event.data.nftId._hex}`)
-      await axios.post(`${process.env.NFT_RENT_MARKETPLACE_API}/items/add-to-pool/${nftId}`);
+      await axios.post(`${this.nftRentMarketplaceApi}/items/add-to-pool/${nftId}`);
     } catch (error) {
       console.error('Error:', error.message);
     }
