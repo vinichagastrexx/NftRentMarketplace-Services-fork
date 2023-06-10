@@ -25,7 +25,7 @@ app.use('/items', itemRoutes);
 app.use('/pools', poolRoutes);
 app.use('/rents', rentRoutes);
 app.use('/recommendations', recommendationRoutes);
-const PORT = 3001
+const PORT = process.env.PORT || 80;
 //to test locally you can use the code below
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
