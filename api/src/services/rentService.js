@@ -37,7 +37,7 @@ class RentService {
     });
     const rent = await RentService.getRentById({ accessToken, rentId });
     const rentedNftId = rent.NFTID;
-    await ItemService.rentItem({ accessToken, nftId: rentedNftId, rentee: null });
+    await ItemService.finishRent({ accessToken, nftId: rentedNftId });
     return response;
   }
 
