@@ -132,6 +132,16 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     _;
   }
 
+  modifier onlyItemOwnerOrContractOwner(uint256 _itemNftId) {
+    uint256 itemId = nftIdToItemId[_itemNftId];
+    Item storage item = items[itemId];
+    require(
+      msg.sender == item.owner || msg.sender == owner(),
+      "Only the item owner or the contract owner can perform this operation"
+    );
+    _;
+  }
+
   modifier onlyRenteeOrContractOwner(uint256 rentId) {
     Rent storage rent = rents[rentId];
     require(
@@ -280,7 +290,7 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     emit ItemAddedToPool(item.nftId, item.categoryId);
   }
 
-  function removeItemFromPool(uint256 _nftId) public onlyNftOwner(_nftId) {
+  function removeItemFromPool(uint256 _nftId) public onlyItemOwnerOrContractOwner(_nftId) {
     uint256 itemId = nftIdToItemId[_nftId];
     Item storage item = items[itemId];
     uint256 poolId = item.categoryId;
