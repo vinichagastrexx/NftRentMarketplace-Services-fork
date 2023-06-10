@@ -136,7 +136,7 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     Rent storage rent = rents[rentId];
     require(
       msg.sender == rent.rentee || msg.sender == owner(),
-      "Only the NFT owner or the contract owner can perform this operation"
+      "Only the Rentee or the contract owner can perform this operation"
     );
     _;
   }
@@ -224,8 +224,8 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     emit ItemCreated(_nftId, _categoryId, msg.sender);
   }
 
-  function getRent(uint256 requestId) public view returns (Rent memory) {
-    return rents[requestId];
+  function getRent(uint256 rentId) public view returns (Rent memory) {
+    return rents[rentId];
   }
 
   function getItem(uint256 itemId) public view returns (Item memory) {
@@ -416,8 +416,8 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
 
     require(item.isRented, "Item is not currently rented");
     require(
-      item.rentee == msg.sender || (msg.sender == owner() && block.timestamp > rent.expirationDate),
-      "Only the rentee can finish the rent or the owner can finish expired rents"
+      (msg.sender == owner() && block.timestamp > rent.expirationDate),
+      "Contract owner can only finish expired rents"
     );
 
     uint256 rentedIndex = findIndex(pool.rentedItems, item.id);
