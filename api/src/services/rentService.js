@@ -23,7 +23,8 @@ class RentService {
       sqlText,
       accessToken,
     });
-    return response;
+
+    return response[0];
   }
 
   static async finishRent({ accessToken, rentId, finishDate }) {
@@ -35,7 +36,7 @@ class RentService {
       accessToken,
     });
     const rent = await RentService.getRentById({ accessToken, rentId });
-    const rentedNftId = rent.nftId;
+    const rentedNftId = rent.NFTID;
     await ItemService.rentItem({ accessToken, nftId: rentedNftId, rentee: null });
     return response;
   }
