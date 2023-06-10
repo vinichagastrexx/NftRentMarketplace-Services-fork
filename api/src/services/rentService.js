@@ -14,6 +14,19 @@ class RentService {
     await ItemService.rentItem({ accessToken, nftId, rentee })
     return response;
   }
+
+  static async getRentById({ accessToken, rentId }) {
+    const resourceId = `${env.sxtSchema}.RENTS`
+    const sqlText = `SELECT * FROM ${env.sxtSchema}.RENTS WHERE Id = ${rentId};`;
+    const response = await SxTApi.dql({
+      resourceId,
+      sqlText,
+      accessToken,
+    });
+
+    return response[0];
+  }
+
   static async finishRent({ accessToken, rentId, finishDate }) {
     const resourceId = `${env.sxtSchema}.RENTS`
     const sqlText = `UPDATE ${env.sxtSchema}.RENTS SET finishDate = '${finishDate}' WHERE Id = ${rentId};`;
@@ -22,6 +35,9 @@ class RentService {
       sqlText,
       accessToken,
     });
+    const rent = await RentService.getRentById({ accessToken, rentId });
+    const rentedNftId = rent.NFTID;
+    await ItemService.finishRent({ accessToken, nftId: rentedNftId });
     return response;
   }
 

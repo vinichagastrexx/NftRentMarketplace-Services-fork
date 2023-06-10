@@ -69,15 +69,17 @@ Please be aware that occasionally, the Space and Time API might experience inter
 
 ### Chainlink Automations 
 ```bash
-0x372F29046b112875D46CA71800178b7Ff304d246
+0x56E4f3793A21Bf61D08417A029b3FF2136714Dba
 ```
+Link to Chainlink Automations page https://automation.chain.link/mumbai/72450187399273084920613248152939248918365445738579105491850788328274421171338
+
 
 ### BoomBoogersNFTs 
 ```bash
-0xDf0CA9fcf0eD80A3D42f746129584b8A647003cE
+0xfeE7b77D45ef6A6d5083E4C3Ae80b9145DD6F975
 ```
 
 ### NFTRentMarketplace 
 ```bash
-0xc0f94CC0945eb627527b8858A055eC9ee4b66425
+0x95b761a342176dE1a54c2C71CA32A518a4e0f871
 ```

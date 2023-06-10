@@ -58,6 +58,17 @@ class ItemService {
     return response;
   }
 
+  static async finishRent({ accessToken, nftId }) {
+    const resourceId = `${env.sxtSchema}.ITEMS`
+    const sqlText = `UPDATE ${env.sxtSchema}.ITEMS SET rentee = NULL WHERE nftId = ${nftId};`;
+    const response = await SxTApi.dml({
+      resourceId,
+      sqlText,
+      accessToken,
+    });
+    return response;
+  }
+
   static async addToPool({ accessToken, nftId }) {
     const resourceId = `${env.sxtSchema}.ITEMS`
     const sqlText = `UPDATE ${env.sxtSchema}.ITEMS SET isInPool = true WHERE nftId = ${nftId};`;
