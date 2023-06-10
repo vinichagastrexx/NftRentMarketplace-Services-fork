@@ -132,6 +132,18 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     _;
   }
 
+  modifier onlyNftOwnerOrContractOwner(uint256 rentId) {
+    Rent storage rent = rents[rentId];
+    uint256 itemId = nftIdToItemId[rent.itemNftId];
+    Item storage item = items[itemId];
+    ERC721 erc721 = ERC721(nftContractAddress);
+    require(
+      msg.sender == erc721.ownerOf(item.nftId) || msg.sender == owner(),
+      "Only the NFT owner or the contract owner can perform this operation"
+    );
+    _;
+  }
+
   modifier onlyMarketVolumeUpdaterOrOwner() {
     require(
       msg.sender == marketVolumeFactorUpdaterContract || msg.sender == owner(),
@@ -309,14 +321,14 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
 
     require(msg.value == rentPrice, "The price must be equal to the quote. Get quote again!");
 
-    uint256 randomNumber = getRandomNumber();
-    uint256 itemRandomIndex = randomNumber % pool.availableItems.length;
-    uint256 selectedItemId = pool.availableItems[itemRandomIndex];
-
-    Item storage item = getRandomItemNotOwnedBy(msg.sender, _categoryId);
+    (Item storage item, uint256 itemRandomIndex, uint256 randomNumber) = getRandomItemNotOwnedBy(
+      msg.sender,
+      _categoryId
+    );
     item.isRented = true;
     item.rentee = msg.sender;
-    updatePoolAfterRent(pool, selectedItemId, itemRandomIndex);
+
+    updatePoolAfterRent(pool, item.id, itemRandomIndex);
     createNewRent(_categoryId, _duration, rentPrice, randomNumber, item);
   }
 
@@ -368,17 +380,19 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     return true;
   }
 
-  function getRandomItemNotOwnedBy(address owner, uint256 _categoryId) private returns (Item storage item) {
+  function getRandomItemNotOwnedBy(
+    address owner,
+    uint256 _categoryId
+  ) private returns (Item storage item, uint256 itemRandomIndex, uint256 randomNumber) {
     Pool storage pool = pools[_categoryId];
-    uint256 itemRandomIndex;
     uint256 selectedItemId;
     do {
-      uint256 randomNumber = getRandomNumber();
+      randomNumber = getRandomNumber();
       itemRandomIndex = randomNumber % pool.availableItems.length;
       selectedItemId = pool.availableItems[itemRandomIndex];
       item = items[selectedItemId];
     } while (item.owner == owner);
-    return item;
+    return (item, itemRandomIndex, randomNumber);
   }
 
   function getRandomNumber() private returns (uint256 randomNumber) {
@@ -396,7 +410,7 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     pool.availableItems.pop();
   }
 
-  function finishRent(uint256 rentId) public {
+  function finishRent(uint256 rentId) public onlyNftOwnerOrContractOwner(rentId) {
     require(rents[rentId].status == RentStatus.ACTIVE, "This Rent is not Active");
     Rent storage rent = rents[rentId];
     uint256 itemId = nftIdToItemId[rent.itemNftId];
@@ -404,7 +418,10 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     Pool storage pool = pools[rent.poolId];
 
     require(item.isRented, "Item is not currently rented");
-    require(item.rentee == msg.sender, "Only the rentee can finish the rent");
+    require(
+      item.rentee == msg.sender || (msg.sender == owner() && block.timestamp > rent.expirationDate),
+      "Only the rentee can finish the rent or the owner can finish expired rents"
+    );
 
     uint256 rentedIndex = findIndex(pool.rentedItems, item.id);
     require(rentedIndex < pool.rentedItems.length, "Item not found in rented items");
