@@ -1,8 +1,25 @@
 const ItemService = require('./itemService');
 const SxTApi = require('./sxtApi');
 const env = require('../../config/env')
+const { logRent } = require('../../helpers/logRents')
+const pool = require('../../helpers/pgConnection')
 
 class RentService {
+  static async getRentsLastDay() {
+    const query = `
+      SELECT COUNT(*)
+      FROM rents
+      WHERE date > NOW() - INTERVAL '24 HOURS';
+    `;
+
+    try {
+      const result = await pool.query(query);
+      return result.rows[0].count;
+    } catch (error) {
+      console.error('Error getting rent count for the last 24 hours: ', error.stack);
+    }
+  }
+
   static async startRent({ accessToken, rentId, nftId, poolId, rentee, price, expirationDate, initDate, owner }) {
     const resourceId = `${env.sxtSchema}.RENTS`
     const sqlText = `INSERT INTO ${env.sxtSchema}.RENTS (Id, initDate, expirationDate, finishDate, rentPrice, rentee, poolId, nftId, owner) VALUES (${rentId}, '${initDate}', '${expirationDate}', null, ${price}, '${rentee}', ${poolId}, ${nftId}, '${owner}');`;
@@ -12,6 +29,7 @@ class RentService {
       accessToken,
     });
     await ItemService.rentItem({ accessToken, nftId, rentee })
+    await logRent(rentId, price, initDate);
     return response;
   }
 

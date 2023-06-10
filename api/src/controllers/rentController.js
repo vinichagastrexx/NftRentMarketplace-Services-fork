@@ -30,5 +30,11 @@ class RentController {
 
     res.status(200).json({ rents });
   }
+
+  static async getRentsLastDay(_, res) {
+    const lastDayRents = await RentService.getRentsLastDay();
+
+    res.status(200).json({ lastDayRents });
+  }
 }
 module.exports = RentController;

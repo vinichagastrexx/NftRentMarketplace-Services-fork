@@ -69,9 +69,9 @@ Please be aware that occasionally, the Space and Time API might experience inter
 
 ### Chainlink Automations 
 ```bash
-0x56E4f3793A21Bf61D08417A029b3FF2136714Dba
+0xECFEAcAF4485Ac6121e997F3b15db23731D8c63C
 ```
-Link to Chainlink Automations page https://automation.chain.link/mumbai/72450187399273084920613248152939248918365445738579105491850788328274421171338
+Link to Chainlink Automations page https://automation.chain.link/mumbai/63292638924533328737958263471889951271068760855989613073193221825799424017776
 
 
 ### BoomBoogersNFTs 
