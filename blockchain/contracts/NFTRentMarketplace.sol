@@ -415,10 +415,6 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     Pool storage pool = pools[rent.poolId];
 
     require(item.isRented, "Item is not currently rented");
-    require(
-      (msg.sender == owner() && block.timestamp > rent.expirationDate),
-      "Contract owner can only finish expired rents"
-    );
 
     uint256 rentedIndex = findIndex(pool.rentedItems, item.id);
     require(rentedIndex < pool.rentedItems.length, "Item not found in rented items");
