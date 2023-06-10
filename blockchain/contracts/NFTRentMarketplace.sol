@@ -132,13 +132,10 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     _;
   }
 
-  modifier onlyNftOwnerOrContractOwner(uint256 rentId) {
+  modifier onlyRenteeOrContractOwner(uint256 rentId) {
     Rent storage rent = rents[rentId];
-    uint256 itemId = nftIdToItemId[rent.itemNftId];
-    Item storage item = items[itemId];
-    ERC721 erc721 = ERC721(nftContractAddress);
     require(
-      msg.sender == erc721.ownerOf(item.nftId) || msg.sender == owner(),
+      msg.sender == rent.rentee || msg.sender == owner(),
       "Only the NFT owner or the contract owner can perform this operation"
     );
     _;
@@ -410,7 +407,7 @@ contract NFTRentMarketplace is VRFConsumerBaseV2, ConfirmedOwner, IERC721Receive
     pool.availableItems.pop();
   }
 
-  function finishRent(uint256 rentId) public onlyNftOwnerOrContractOwner(rentId) {
+  function finishRent(uint256 rentId) public onlyRenteeOrContractOwner(rentId) {
     require(rents[rentId].status == RentStatus.ACTIVE, "This Rent is not Active");
     Rent storage rent = rents[rentId];
     uint256 itemId = nftIdToItemId[rent.itemNftId];
