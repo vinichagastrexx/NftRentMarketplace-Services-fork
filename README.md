@@ -9,6 +9,8 @@ NFTRentMarketplace is a platform that allows users to rent their NFTs to others.
 
 ## [Architecture Explained](docs/architecture.md)
 
+![nft-rent-mktplace-architecture](https://github.com/trexx-games/nft-rent-marketplace/assets/133237806/14659fe4-c980-4d3c-ae47-c8fc9f853c7a)
+
 The NFTRentMarketplace is a robust and efficient platform for NFT rentals, built with a variety of technologies to ensure a seamless user experience. Here's a brief overview of what we have used to built the system:
 
 - Lambda AWS + Api Gateway
