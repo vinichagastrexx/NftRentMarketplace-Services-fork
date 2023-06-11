@@ -6,7 +6,6 @@ NFTRentMarketplace is a platform that allows users to rent their NFTs to others.
 - `nft-rent-marketplace-worker`: This service listens for events on the blockchain and updates the application's database on Space and Time accordingly.
 - `nft-rent-marketplace-client`: This is the frontend service that provides the user interface for the platform.
 
-
 ## [Architecture Explained](docs/architecture.md)
 
 ![nft-rent-mktplace-architecture](https://github.com/trexx-games/nft-rent-marketplace/assets/133237806/23667d40-3a6b-4abf-b4de-d77298158b19)
@@ -21,6 +20,7 @@ The NFTRentMarketplace is a robust and efficient platform for NFT rentals, built
 - Chainlink DataFeed
 - Space and Time
 
+## [See the API Docs](docs/api/api.md)
 
 ## How to Test
 
