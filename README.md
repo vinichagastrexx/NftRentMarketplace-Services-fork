@@ -21,6 +21,7 @@ The NFTRentMarketplace is a robust and efficient platform for NFT rentals, built
 - Space and Time
 
 ## [See the API Docs](docs/api/api.md)
+Here you can find comprehensive documentation detailing the functionality and usage of the NFTRentMarketplace API.
 
 ## How to Test
 
