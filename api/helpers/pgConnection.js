@@ -1,11 +1,11 @@
 const { Pool } = require('pg');
-
+const { pgDb, pgPort, pgPwd, pgUri, pgUser } = require('../config/env')
 const pool = new Pool({
-  host: 'nft-rent-marketplace.c7cif0nlpkny.us-east-2.rds.amazonaws.com',
-  port: 5432,
-  user: 'postgres',
-  password: 'vinichagastrexx',
-  database: 'logs',
+  host: pgUri,
+  port: pgPort,
+  user: pgUser,
+  password: pgPwd,
+  database: pgDb,
 });
 
 module.exports = pool;

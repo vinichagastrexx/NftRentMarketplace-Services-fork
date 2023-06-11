@@ -19,5 +19,10 @@ module.exports = {
   sxtOrgCode: process.env.SXT_ORG_CODE ?? "",
   biscuitItems: process.env.BISCUIT_ITEMS ?? "",
   biscuitRents: process.env.BISCUIT_RENTS ?? "",
-  biscuitPools: process.env.BISCUIT_POOLS ?? ""
+  biscuitPools: process.env.BISCUIT_POOLS ?? "",
+  pgUser: process.env.PG_USER ?? "",
+  pgPwd: process.env.PG_PWD ?? "",
+  pgUri: process.env.PG_URI ?? "",
+  pgPort: process.env.PG_PORT ?? "",
+  pgDb: process.env.PG_DATABASE ?? ""
 }
