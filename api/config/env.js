@@ -1,5 +1,6 @@
 require("dotenv").config();
 
+
 module.exports = {
   nftContractAddress: process.env.NFT_CONTRACT ?? "",
   nftRentMarketplaceContract: process.env.NFT_RENT_MARKETPLACE_CONTRACT ?? "",

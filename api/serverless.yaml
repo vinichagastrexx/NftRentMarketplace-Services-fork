@@ -7,10 +7,13 @@ provider:
   memorySize: 128
   timeout: 10
   environment:
-    WALLET_PV_KEY: ${env:WALLET_PV_KEY}
-    BLOCKCHAIN_RPC_URL: ${env:BLOCKCHAIN_RPC_URL}
+    NFT_CONTRACT: ${env:NFT_CONTRACT}
     NFT_RENT_MARKETPLACE_CONTRACT: ${env:NFT_RENT_MARKETPLACE_CONTRACT}
-    NFT_RENT_MARKETPLACE_API: ${env:NFT_RENT_MARKETPLACE_API}
+    PG_USER: ${env:PG_USER}
+    PG_PWD: ${env:PG_PWD}
+    PG_URI: ${env:PG_URI}
+    PG_PORT: ${env:PG_PORT}
+    PG_DATABASE: ${env:PG_DATABASE}
 
 functions:
   app:
