@@ -10,22 +10,40 @@ import {
 } from '@chakra-ui/react';
 import { MdShield } from 'react-icons/md';
 import { LuSword } from 'react-icons/lu';
-import { PoolRarity } from '../../const/pool_rarity'
+import { GiVisoredHelm } from 'react-icons/gi';
 
 export default function PoolCard({ pool }) {
+  const rarityColors = {
+    1: '#523b26',
+    2: '#265eed',
+    3: '#523b26',
+    5: '#f2521e',
+    6: '#2a8303',
+    4: '#3198d6',
+  };
   const boxShadowColor = useColorModeValue(
     'rgba(0, 0, 0, 0.5)',
     'rgba(255, 255, 255, 0.5)',
   );
   const hoverTransition = 'all 0.25s ease-in-out';
 
-  const background =
-    pool.RARITY === PoolRarity.Common
-      ? 'linear-gradient(to right, #523b26 0%, #b55d0b 100%)'
-      : 'linear-gradient(to right, #265eed 0%, #01164d 100%)';
+  const icons = {
+    1: LuSword,
+    2: LuSword,
+    3: MdShield,
+    4: GiVisoredHelm,
+    5: GiVisoredHelm,
+    6: GiVisoredHelm,
+  };
 
-  const icon = pool.ID === 3 ? MdShield : LuSword;
+  const icon = icons[pool.categoryid];
 
+  const background = rarityColors[pool.categoryid] || rgb(0, 0, 0);
+  const gameLogos = {
+    1: 'logos/logo_bbg.png',
+    2: 'logos/logo_cursed_stone.png',
+  };
+  const gameLogo = gameLogos[pool.gameid];
   return (
     <Flex
       overflow={'hidden'}
@@ -41,12 +59,20 @@ export default function PoolCard({ pool }) {
         transform: 'scale(1.05)',
       }}
     >
-      <Box backgroundColor={'white'}>
+      <Box backgroundColor={'white'} position="relative">
         <Image
-          src={pool.IMAGEURL}
-          alt={pool.ID}
+          src={pool.imageurl}
+          alt={pool.categoryid}
           width={'100%'}
           transition={hoverTransition}
+        />
+        <Image
+          src={gameLogo}
+          alt="game logo"
+          position="absolute"
+          top={2}
+          right={2}
+          boxSize={10}
         />
       </Box>
       <Box textAlign="center" p={4}>
@@ -55,18 +81,18 @@ export default function PoolCard({ pool }) {
           color={'white'}
           fontSize={20}
           fontWeight="bold"
-          fontFamily={'Bayon'}
+          fontFamily={'Manrope'}
           mb={1}
         >
-          {pool.CATEGORYTYPE}
+          {pool.categoryname}
         </Text>
         <Text
           color={'white'}
           fontSize={25}
-          fontFamily={'big shoulders text'}
+          fontFamily={'Dela Gothic One'}
           mb={1}
         >
-          {pool.RARITY}
+          {pool.rarityname}
         </Text>
       </Box>
     </Flex>

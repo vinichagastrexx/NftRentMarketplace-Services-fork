@@ -1,4 +1,4 @@
-const pool = require('./pgConnection');
+const pool = require("./pgConnection");
 
 async function logRent(rentId, price, date) {
   const query = `

@@ -31,7 +31,7 @@ import React from 'react';
 import NFTGrid from '../components/NFT/NFTGrid';
 import NFTCard from '../components/NFT/NFTCard';
 import NFTRentedOrder from '../components/NFT/NFTRentedOrder';
-import { NFT_ADDRESS } from '../const/addresses';
+import { NFT_BBG_ADDRESS, NFT_CS_ADDRESS } from '../const/addresses';
 import useSWR from 'swr';
 import NextLink from 'next/link';
 import { URLS } from '../config/urls';
@@ -39,7 +39,12 @@ import { URLS } from '../config/urls';
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
 function RentedNFT({ nftId, rentData }) {
-  const { contract: nftCollection } = useContract(NFT_ADDRESS);
+  const nftAddresses = {
+    1: NFT_BBG_ADDRESS,
+    2: NFT_CS_ADDRESS,
+  }
+  const nftAddress = nftAddresses[rentData.gameid]
+  const { contract: nftCollection } = useContract(nftAddress);
   const { data: rentedNft } = useNFT(nftCollection, nftId);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -53,7 +58,7 @@ function RentedNFT({ nftId, rentData }) {
           <DrawerContent>
             <DrawerCloseButton />
             <DrawerBody>
-              <NFTRentedOrder nft={rentedNft} rentId={rentData.ID} />
+              <NFTRentedOrder nft={rentedNft} rentId={rentData.id} nftAddress={nftAddress} />
             </DrawerBody>
           </DrawerContent>
         </DrawerOverlay>
@@ -63,8 +68,22 @@ function RentedNFT({ nftId, rentData }) {
 }
 export default function Inventory() {
   const address = useAddress();
-  const { contract: nftCollection } = useContract(NFT_ADDRESS);
-  const { data: ownedNfts, isLoading } = useOwnedNFTs(nftCollection, address);
+  const { contract: nftCollectionBBG } = useContract(NFT_BBG_ADDRESS);
+  const { contract: nftCollectionCS } = useContract(NFT_CS_ADDRESS);
+  const { data: ownedNftsBBG, isLoading: isLoadingBBG } = useOwnedNFTs(
+    nftCollectionBBG,
+    address,
+  );
+  const { data: ownedNftsCS, isLoading: isLoadingCS } = useOwnedNFTs(
+    nftCollectionCS,
+    address,
+  );
+  const ownedNftsBBGWithContract = ownedNftsBBG?.map(nft => ({ ...nft, contract: NFT_BBG_ADDRESS })) || [];
+  const ownedNftsCSWithContract = ownedNftsCS?.map(nft => ({ ...nft, contract: NFT_CS_ADDRESS })) || [];
+
+  const ownedNfts = [...ownedNftsBBGWithContract, ...ownedNftsCSWithContract];
+
+  const isLoading = isLoadingBBG || isLoadingCS;
   const { data: rentedItems, isLoading: rentedItemsLoading } = useSWR(
     `${URLS.RENTS}/get-active-by-rentee/${address}`,
     fetcher,
@@ -75,7 +94,7 @@ export default function Inventory() {
         <AccordionItem>
           <AccordionButton
             _hover={{
-              bg: '#FBAA0B',
+              bg: '#66E383',
               transition: 'background-color 0.2s',
               color: 'white',
             }}
@@ -83,7 +102,7 @@ export default function Inventory() {
           >
             <Flex alignItems={'center'} textAlign="left">
               <Box minW={280}>
-                <Heading fontSize={40} fontFamily={'Bayon'}>
+                <Heading fontSize={40} fontFamily={'Manrope'}>
                   Your Owned Items
                 </Heading>
               </Box>
@@ -96,13 +115,13 @@ export default function Inventory() {
             {isLoading ? (
               <></>
             ) : ownedNfts?.length > 0 ? (
-              <Text fontSize={25} fontFamily={'Big Shoulders Text'}>
+              <Text fontSize={25} fontFamily={'Manrope'}>
                 These are the game items you own. Put them in a pool and start
                 generating income!
               </Text>
             ) : (
               <div>
-                <Text fontSize={25} fontFamily={'Big Shoulders Text'}>
+                <Text fontSize={25} fontFamily={'Manrope'}>
                   You do not have any Items! Check the available Pools and rent
                   some items to play!
                 </Text>
@@ -125,7 +144,7 @@ export default function Inventory() {
         <AccordionItem>
           <AccordionButton
             _hover={{
-              bg: '#FBAA0B',
+              bg: '#66E383',
               transition: 'background-color 0.2s',
               color: 'white',
             }}
@@ -133,7 +152,7 @@ export default function Inventory() {
           >
             <Flex alignItems={'center'} textAlign="left">
               <Box minW={280}>
-                <Heading fontSize={40} fontFamily={'Bayon'}>
+                <Heading fontSize={40} fontFamily={'Manrope'}>
                   Your Rented Items
                 </Heading>
               </Box>
@@ -144,7 +163,7 @@ export default function Inventory() {
           </AccordionButton>
           <AccordionPanel paddingLeft={10} pb={4}>
             {rentedItems?.rents.length > 0 ? (
-              <Text fontSize={25} fontFamily={'Big Shoulders Text'}>
+              <Text fontSize={25} fontFamily={'Manrope'}>
                 These are the items you are currently renting from other players
                 for use in the game.
               </Text>
@@ -167,13 +186,13 @@ export default function Inventory() {
               ) : rentedItems?.rents.length > 0 ? (
                 rentedItems?.rents?.map((rentedItem) => (
                   <RentedNFT
-                    key={rentedItem.NFTID}
-                    nftId={rentedItem.NFTID}
+                    key={rentedItem.nftid}
+                    nftId={rentedItem.nftid}
                     rentData={rentedItem}
                   />
                 ))
               ) : (
-                <Text fontSize={24} fontFamily={'Big Shoulders Text'}>
+                <Text fontSize={24} fontFamily={'Manrope'}>
                   0 items found
                 </Text>
               )}

@@ -25,9 +25,9 @@ export default function PoolGrid({ isLoading, data }) {
         justifyItems="center"
         justifyContent="center"
         columns={[1, 2, 3]}
-        spacing={2}
+        spacing={10}
         maxW={'100%'}
-        padding={2}
+        padding={4}
         my={2}
       >
         {isLoading ? (
@@ -36,12 +36,12 @@ export default function PoolGrid({ isLoading, data }) {
           ))
         ) : data && data.length > 0 ? (
           data.map((pool) => (
-            <div key={pool.ID} onClick={() => handlePoolClick(pool)}>
+            <div key={pool.categoryid} onClick={() => handlePoolClick(pool)}>
               <PoolCard pool={pool}></PoolCard>
             </div>
           ))
         ) : (
-          <Text fontSize={25} fontFamily={'Big Shoulders Text'}>
+          <Text fontSize={25} fontFamily={'Manrope'}>
             0 pools found
           </Text>
         )}

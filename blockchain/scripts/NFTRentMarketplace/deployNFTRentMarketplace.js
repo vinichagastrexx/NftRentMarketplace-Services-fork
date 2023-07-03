@@ -4,12 +4,11 @@ const { ethers } = require("hardhat")
 async function main() {
   const [owner] = await ethers.getSigners()
 
-  const NFTRentMarketplace = await ethers.getContractFactory("NFTRentMarketplace")
+  const NFTRentMarketplace = await ethers.getContractFactory("NFTRentMarketplaceV2")
   const nftRentMarketplace = await NFTRentMarketplace.deploy(
     env.vrfSubId,
     env.vrfCoordinatorContractAddress,
     env.vrfKeyHash,
-    env.nftContractAddress,
     env.dataFeedContractAddress
   )
 

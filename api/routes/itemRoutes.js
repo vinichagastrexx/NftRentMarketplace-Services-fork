@@ -1,13 +1,13 @@
 const express = require('express');
+const ItemController = require('../src/controllers/itemController')
+const itemController = new ItemController();
+
 const router = express.Router();
-const ItemController = require('../src/controllers/itemController');
-const authMiddleware = require('../src/middlewares/auth')
 
-router.post('/create-item', authMiddleware, ItemController.createItem);
-router.post('/add-to-pool/:nftId', authMiddleware, ItemController.addToPool);
-router.get('/get-in-pool/:owner', authMiddleware, ItemController.getItemsInPoolByUser);
-router.get('/get-rented/:owner', authMiddleware, ItemController.getItemsRentedByUser);
-router.get('/get-owned/:owner', authMiddleware, ItemController.getItemsOwnedByUser);
-
-
+router.post('/create-item', (req, res) => itemController.createItem(req, res));
+router.put('/add-to-pool/:nftId', (req, res) => itemController.addToPool(req, res));
+router.get('/get-in-pool/:owner', (req, res) => itemController.getItemsInPoolByUser(req, res));
+router.get('/get-rented/:owner', (req, res) => itemController.getItemsRentedByUser(req, res));
+router.get('/get-owned/:owner', (req, res) => itemController.getByOwner(req, res));
+router.get('/get-by-nft-id/:nftId', (req, res) => itemController.getByNftId(req, res));
 module.exports = router;

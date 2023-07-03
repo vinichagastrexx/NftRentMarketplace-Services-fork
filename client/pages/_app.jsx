@@ -4,15 +4,15 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { Navbar } from '../components/Navbar';
 import Head from 'next/head';
 
-const activeChain = 'mumbai';
+const activeChain = 'avalanche-fuji';
 
 function MyApp({ Component, pageProps }) {
   return (
     <ThirdwebProvider activeChain={activeChain}>
       <ChakraProvider>
         <Head>
-          <title>BBGMarketplace</title>
-          <meta property="og:title" content="BBGMarketplace" key="title" />
+          <title>NFT Rent</title>
+          <meta property="og:title" content="NFT Rent" key="title" />
           <link rel="icon" href="/icons/favicon.ico" />
         </Head>
         <Navbar />

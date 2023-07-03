@@ -77,12 +77,40 @@ Please be aware that occasionally, the Space and Time API might experience inter
 Link to Chainlink Automations page https://automation.chain.link/mumbai/63292638924533328737958263471889951271068760855989613073193221825799424017776
 
 
+## Polygon Contracts
 ### BoomBoogersNFTs 
 ```bash
 0xfeE7b77D45ef6A6d5083E4C3Ae80b9145DD6F975
 ```
 
-### NFTRentMarketplace 
+### NFTRentMarketplace
 ```bash
 0x95b761a342176dE1a54c2C71CA32A518a4e0f871
+```
+
+## Avalanche Contracts
+### BoomBoogersNFTs 
+```bash
+0x3460515Abc206F63d6A93692595Db754892814Cc
+```
+
+### CursedStone NFTs 
+```bash
+0x2Cc69f390eDB73a36f60C9E0B9bF9e281cC61C4E
+```
+
+### NFTRentMarketplace
+```bash
+0x66Dd2308c4Ce5d75Dc27dc550912266bcb2Ec951
+```
+
+## LaChain Contracts
+### BoomBoogersNFTs 
+```bash
+0x7EAE287Fa62ed2D3b41748ceA1fb2Ea21aa56ed8
+```
+
+### NFTRentMarketplace
+```bash
+0xD19A5708bc3402B348DbE792F66eaBd8A094F21d
 ```

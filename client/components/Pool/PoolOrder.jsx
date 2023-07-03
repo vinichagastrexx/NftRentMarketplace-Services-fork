@@ -27,7 +27,8 @@ import { darken } from '@chakra-ui/theme-tools';
 import React, { useState, useEffect } from 'react';
 import {
   NFT_RENT_MARKETPLACE_ADDRESS,
-  NFT_ADDRESS,
+  NFT_BBG_ADDRESS,
+  NFT_CS_ADDRESS,
 } from '../../const/addresses';
 import NFTCard from '../NFT/NFTCard';
 import { ethers } from 'ethers';
@@ -50,12 +51,12 @@ export default function PoolOrder({ pool }) {
 
   useEffect(() => {
     handleRentDaysChange(rentDays);
-  }, []);
+  }, [handleRentDaysChange, rentDays]);
 
   const handleRentDaysChange = async (value) => {
     setRentDays(value);
     const contract = await sdk.getContract(NFT_RENT_MARKETPLACE_ADDRESS);
-    const price = await contract.call('getRentQuote', [pool.CATEGORYID, value]);
+    const price = await contract.call('getRentQuote', [pool.categoryid, value]);
     if (price?.rentQuoteDollar._hex) {
       const poolUSDPriceBigNumber = ethers.BigNumber.from(
         price.rentQuoteDollar._hex,
@@ -78,11 +79,11 @@ export default function PoolOrder({ pool }) {
       const contract = await sdk.getContract(NFT_RENT_MARKETPLACE_ADDRESS);
       const result = await contract.call(
         'startRent',
-        [pool.CATEGORYID, Number(rentDays)],
+        [pool.categoryid, Number(rentDays)],
         { value: poolMATICPrice },
       );
-      const nftId = result.receipt.events[1].args.itemNftId.toNumber();
-      const nft = await getNft(nftId);
+      const nftId = result.receipt.events[0].args.itemNftId.toNumber();
+      const nft = await getNft(nftId, pool.gameid);
       setNft(nft);
       onOpen();
     } catch (error) {
@@ -99,8 +100,14 @@ export default function PoolOrder({ pool }) {
     }
   };
 
-  const getNft = async (nftId) => {
-    const contract = await sdk.getContract(NFT_ADDRESS);
+  const getNft = async (nftId, gameId) => {
+    const contractAddresses = {
+      1: NFT_BBG_ADDRESS,
+      2: NFT_CS_ADDRESS,
+    };
+
+    const contractAddress = contractAddresses[gameId];
+    const contract = await sdk.getContract(contractAddress);
     const nft = await contract.erc721.get(nftId);
     return nft;
   };
@@ -108,30 +115,30 @@ export default function PoolOrder({ pool }) {
   return (
     <VStack spacing={6} align="stretch" padding={'10px'}>
       <Box marginTop={'10%'}>
-        <Heading fontFamily={'Bayon'} size="xl" mt={2}>
-          {pool.CATEGORYTYPE} Pool
+        <Heading fontFamily={'Manrope'} size="xl" mt={2}>
+          {pool.categoyname} Pool
         </Heading>
         <Text
           fontSize={20}
-          fontFamily={'Big Shoulders Text'}
+          fontFamily={'Manrope'}
           fontWeight={'bold'}
         >
-          Rarity: {pool.RARITY}
+          Rarity: {pool.rarityname}
         </Text>
       </Box>
       <Box>
-        <Image src={pool.IMAGEURL} alt={pool.NAME} />
+        <Image src={pool.imageurl} alt={pool.categoryname} />
       </Box>
       <Box>
-        <Text fontSize={20} fontFamily={'Bayon'} fontWeight={'bold'}>
+        <Text fontSize={20} fontFamily={'Manrope'} fontWeight={'bold'}>
           Description:
         </Text>
-        <Text mb={2} fontFamily={'Big Shoulders Text'}>
-          {pool.SHORT_DESCRIPTION}
+        <Text mb={2} fontFamily={'Manrope'}>
+          {pool.short_description}
         </Text>
         <Box>
           <Flex direction="row" gap={10} justify="flex-start" mb={3}>
-            <Text fontSize={20} fontFamily={'Bayon'} fontWeight={'bold'} mt={2}>
+            <Text fontSize={20} fontFamily={'Manrope'} fontWeight={'bold'} mt={2}>
               Rent for (days):
             </Text>
             <NumberInput
@@ -153,17 +160,17 @@ export default function PoolOrder({ pool }) {
             <Flex direction="row" gap={8} justify="flex-start">
               <Text
                 fontSize={20}
-                fontFamily={'Bayon'}
+                fontFamily={'Manrope'}
                 fontWeight={'bold'}
                 mt={2}
               >
                 Price:
               </Text>
-              <Text mt={2} fontSize={20} fontFamily={'Big Shoulders Text'}>
+              <Text mt={2} fontSize={20} fontFamily={'Dela Gothic One'}>
                 USD {Number(poolUSDPrice).toFixed(2)}
               </Text>
-              <Text mt={2} fontSize={20} fontFamily={'Big Shoulders Text'}>
-                MATIC {poolMATICFormatedPrice}
+              <Text mt={2} fontSize={20} fontFamily={'Dela Gothic One'}>
+                AVAX {poolMATICFormatedPrice}
               </Text>
             </Flex>
           </Box>
@@ -172,14 +179,14 @@ export default function PoolOrder({ pool }) {
       <Button
         letterSpacing={0.5}
         _hover={{
-          bg: darken('#FBAA0B', 15),
+          bg: darken('#66E383', 15),
           transition: 'background-color 0.2s',
         }}
         _active={{
           transform: 'scale(0.98)',
         }}
-        backgroundColor={'#FBAA0B'}
-        fontFamily={'Bayon'}
+        backgroundColor={'#66E383'}
+        fontFamily={'Manrope'}
         isLoading={isLoading}
         color={'white'}
         size="md"
@@ -196,7 +203,7 @@ export default function PoolOrder({ pool }) {
             <ModalHeader
               fontSize="xl"
               fontWeight="bold"
-              fontFamily={'Bayon'}
+              fontFamily={'Manrope'}
               mb={1}
             >
               Check your Rented Item, Play with it!

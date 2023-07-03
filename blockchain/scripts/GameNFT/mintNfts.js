@@ -6,8 +6,8 @@ async function main() {
   const GameNFT = await ethers.getContractFactory("GameNFT")
   const gameNFT = await GameNFT.attach(env.nftContractAddress)
   await gameNFT.connect(owner)
-  for(let i = 0; i < 5; i++) {
-    const tx = await gameNFT.mintTo(env.walletAddress, '')
+  for (let i = 0; i < 5; i++) {
+    const tx = await gameNFT.mintTo(env.walletAddress, "")
     console.log("NFT minted:", tx)
   }
 }

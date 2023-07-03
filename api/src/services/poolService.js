@@ -1,40 +1,20 @@
-const SxTApi = require('./sxtApi');
-const env = require('../../config/env')
+const PoolModel = require("../models/poolModel");
 
 class PoolService {
-  static async getAll({ accessToken }) {
-    const resourceId = `${env.sxtSchema}.POOLS`
-    const sqlText = `SELECT * FROM ${env.sxtSchema}.POOLS INNER JOIN ${env.sxtSchema}.CATEGORIES ON ${env.sxtSchema}.POOLS.CATEGORYID = ${env.sxtSchema}.CATEGORIES.ID;`;
-    const response = await SxTApi.dql({
-      resourceId,
-      sqlText,
-      accessToken,
-    });
-    return response;
+  constructor() {
+    this.poolModel = new PoolModel();
   }
 
-  static async getById({ accessToken }) {
-    const resourceId = `${env.sxtSchema}.POOLS`
-    const sqlText = `SELECT * FROM ${env.sxtSchema}.POOLS INNER JOIN ${env.sxtSchema}.CATEGORIES ON ${env.sxtSchema}.POOLS.CATEGORYID = ${env.sxtSchema}.CATEGORIES.ID;`;
-    const response = await SxTApi.dql({
-      resourceId,
-      sqlText,
-      accessToken,
-    });
-    return response[0];
+  async getAll() {
+    return await this.poolModel.getAll();
   }
 
+  async getById(categoryId) {
+    return await this.poolModel.getById(categoryId);
+  }
 
-  static async createPool({ accessToken, poolId, basePrice }) {
-    const resourceId = `${env.sxtSchema}.POOLS`
-    const sqlText = `INSERT INTO ${env.sxtSchema}.POOLS (categoryId, isActive, basePrice, ImageUrl) VALUES (${poolId}, true, ${basePrice}, 'https://nft-rent-marketplace.s3.us-east-2.amazonaws.com/categories/${poolId}.png');`;
-    const response = await SxTApi.dml({
-      resourceId,
-      sqlText,
-      accessToken,
-    });
-
-    return response[0];
+  async createPool({ categoryId, basePrice, gameId }) {
+    return await this.poolModel.createPool({ categoryId, basePrice, gameId });
   }
 }
 

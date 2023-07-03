@@ -1,123 +1,68 @@
 import {
-  Box,
-  Button,
-  Center,
-  Container,
+  VStack,
   Flex,
-  Link,
-  Stack,
+  Box,
+  Image,
   Text,
 } from '@chakra-ui/react';
-import NextLink from 'next/link';
-import { BsDiscord } from 'react-icons/bs';
-import { darken } from '@chakra-ui/theme-tools';
+import { Fade } from 'react-awesome-reveal';
+import Footer from '../components/Footer';
+import FAQ from '../components/FAQ';
 
 export default function Home() {
   return (
-    <Container p={0} minW={'100%'}>
-      <Flex
-        h={'80vh'}
-        w={'100%'}
-        backgroundImage="url('/bbg_concept.jpg')"
-        backgroundPosition="center"
-        backgroundRepeat="no-repeat"
-        backgroundSize="cover"
-        direction={{ base: 'column', md: 'row' }}
-      >
-        <Flex
-          flex="0.5"
-          p={10}
-          backgroundColor="rgba(0, 0, 0, 0.48)"
-          direction="column"
-          justifyContent="center"
-          alignItems="start"
-        >
-          <Text
-            marginTop={6}
-            letterSpacing={0.25}
-            lineHeight={1.1}
-            fontSize={50}
-            color="white"
-            fontFamily={'Bayon'}
-          >
-            Welcome to Boom Boogers Marketplace!
+    <Box >
+      <VStack bgGradient="linear(to-r, #000000, #0C4200)" backgroundImage={'images/abstract.png'} minH='100vh' justify='center' align='center' >
+        <Fade direction="up" triggerOnce>
+          <Text fontSize='7xl' fontFamily={'Dela Gothic One'} color={'#FFFFFF'} fontWeight='bold' textAlign='center'>
+            Unleash the power of
           </Text>
-          <Text
-            marginTop={18}
-            fontSize={25}
-            color="white"
-            fontFamily={'Big Shoulders Text'}
-          >
-            Explore the ultimate NFT rental marketplace! Rent unique items to
-            enhance your gaming experience or earn by renting out your own.
+        </Fade>
+        <Fade direction="down" delay={500} triggerOnce>
+          <Text fontSize='8xl' fontFamily={'Dela Gothic One'} color={'#FFFFFF'} textAlign='center'>
+            NFTs
           </Text>
-          <Flex alignItems="center">
-            <Text
-              marginTop={18}
-              fontSize={25}
-              color="#FBAA0B"
-              fontFamily={'Big Shoulders Text'}
-            ></Text>
-            <Link href="https://discord.gg/eYpmTe9Dde">
-              <Button
-                marginTop={'15px'}
-                colorScheme="purple"
-                leftIcon={<BsDiscord />}
-              >
-                Join the BBG community!
-              </Button>
-            </Link>
-          </Flex>
+        </Fade>
+      </VStack>
+      <VStack marginTop={'80px'} minH={'50vh'}>
+        <Flex direction={['column', 'row']} justify='center' align='center' p={10} color='white'>
+          <Box flex="1" p={5}>
+            <Image
+              src="images/casino.jpg"
+              alt="NFT Image"
+              height={'480px'}
+              borderRadius="40"
+              sx={{ filter: 'grayscale(100%)' }}
+            />
+          </Box>
+          <Box flex="1" p={5}>
+            <Text fontSize='4xl' fontFamily={'Dela Gothic One'} fontWeight='bold' color={'black'}>
+              Dive into pool-based NFT renting
+            </Text>
+            <Text marginTop={'15px'} fontFamily={'Manrope'} fontSize='xl' color={'black'}>
+              Put your NFTs into our specially curated pools, making them available for rent by fellow gamers looking to unlock new experiences.
+            </Text>
+          </Box>
         </Flex>
-        <Box flex="1">
-          <Flex h={'100%'} alignItems={'center'} justifyContent={'center'}>
-            <Stack spacing={4} align={'center'}>
-              <Button
-                minW={350}
-                letterSpacing={0.5}
-                _hover={{
-                  bg: darken('#FBAA0B', 15),
-                  transition: 'background-color 0.2s',
-                }}
-                _active={{
-                  transform: 'scale(0.98)',
-                }}
-                backgroundColor={'#FBAA0B'}
-                fontFamily={'Bayon'}
-                size={'lg'}
-                as={NextLink}
-                fontSize={30}
-                href="/pools"
-                color={'white'}
-                colorScheme="teal"
-              >
-                Rent Items
-              </Button>
-              <Button
-                minW={350}
-                letterSpacing={0.5}
-                _hover={{
-                  bg: darken('#FBAA0B', 15),
-                  transition: 'background-color 0.2s',
-                }}
-                _active={{
-                  transform: 'scale(0.98)',
-                }}
-                fontSize={30}
-                backgroundColor={'#FBAA0B'}
-                fontFamily={'Bayon'}
-                size={'lg'}
-                as={NextLink}
-                href="/inventory"
-                color={'white'}
-                colorScheme="teal"
-              >
-                Earn By Renting
-              </Button>
-            </Stack>
-          </Flex>
-        </Box>
-      </Flex>
-    </Container>
+      </VStack>
+      <VStack minH={'50vh'} marginBottom={'80px'}>
+        <Flex direction={['column', 'row']} justify='center' align='center' p={10} color='white'>
+          <Box flex="1" p={5}>
+            <Text fontSize='4xl' fontFamily={'Dela Gothic One'} fontWeight='bold' color={'black'}>
+              Improve your in-game performance
+            </Text>
+            <Text marginTop={'15px'} fontFamily={'Manrope'} fontSize='xl' color={'black'}>
+              Rent NFTs from our platform and amplify your in-game prowess with unparalleled access to the item you have always wanted.
+            </Text>
+          </Box>
+          <Box flex="1" p={5}>
+            <Image sx={{ filter: 'grayscale(100%)' }} src="images/playing.jpg" alt="Playing game" height={'480px'}
+              borderRadius="40" />
+          </Box>
+        </Flex>
+      </VStack>
+      <FAQ />
+      <Footer />
+    </Box>
   );
 }

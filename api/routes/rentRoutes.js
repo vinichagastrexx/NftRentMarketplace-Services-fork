@@ -1,12 +1,12 @@
 const express = require('express');
-const router = express.Router();
-const RentController = require('../src/controllers/rentController');
-const authMiddleware = require('../src/middlewares/auth')
+const RentController = require('../src/controllers/rentController')
+const rentController = new RentController();
 
-router.post('/start-rent', authMiddleware, RentController.startRent);
-router.get('/get-active-by-rentee/:rentee', authMiddleware, RentController.getActiveByRentee);
-router.get('/get-last-day', RentController.getRentsLastDay);
-router.get('/get-all-by-rentee/:rentee', authMiddleware, RentController.getAllByRentee);
-router.post('/finish-rent', authMiddleware, RentController.finishRent);
+const router = express.Router();
+
+router.post("/start-rent", (req, res) => rentController.createRent(req, res));
+router.get("/get-active-by-rentee/:rentee", (req, res) => rentController.getActiveByRentee(req, res));
+router.get("/get-all-by-rentee/:rentee", (req, res) => rentController.getAllByRentee(req, res));
+router.post("/finish-rent", (req, res) => rentController.finishRent(req, res));
 
 module.exports = router;

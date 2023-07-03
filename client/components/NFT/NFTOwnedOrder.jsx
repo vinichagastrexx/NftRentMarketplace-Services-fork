@@ -16,10 +16,10 @@ import { useSigner } from '@thirdweb-dev/react';
 import { ThirdwebSDK } from '@thirdweb-dev/sdk';
 import {
   NFT_RENT_MARKETPLACE_ADDRESS,
-  NFT_ADDRESS,
+  NFT_CS_ADDRESS,
+  NFT_BBG_ADDRESS,
 } from '../../const/addresses';
 import React, { useState } from 'react';
-
 
 export default function NFTOwnedOrder({ nft }) {
   const toast = useToast();
@@ -28,16 +28,29 @@ export default function NFTOwnedOrder({ nft }) {
   if (signer) {
     sdk = ThirdwebSDK.fromSigner(signer);
   }
-
   const [isLoading, setIsLoading] = useState(false);
   const addItemToPool = async () => {
     setIsLoading(true);
     try {
-      //todo -> improve to not send two tx
-      const nftContract = await sdk.getContract(NFT_ADDRESS, 'nft-collection');
-      await nftContract.call('approve', [NFT_RENT_MARKETPLACE_ADDRESS, parseInt(nft.metadata.id)])
-      const marketplaceContract = await sdk.getContract(NFT_RENT_MARKETPLACE_ADDRESS);
-      await marketplaceContract.call('addItemToPool', [parseInt(nft.metadata.id)]);
+      let nftContract;
+      if (nft.contract === NFT_CS_ADDRESS) {
+        nftContract = await sdk.getContract(NFT_CS_ADDRESS, 'nft-collection');
+      } else if (nft.contract === NFT_BBG_ADDRESS) {
+        nftContract = await sdk.getContract(NFT_BBG_ADDRESS, 'nft-collection');
+      } else {
+        throw new Error('Unknown NFT contract address');
+      }
+
+      await nftContract.call('approve', [
+        NFT_RENT_MARKETPLACE_ADDRESS,
+        parseInt(nft.metadata.id),
+      ]);
+      const marketplaceContract = await sdk.getContract(
+        NFT_RENT_MARKETPLACE_ADDRESS,
+      );
+      await marketplaceContract.call('addItemToPool', [
+        parseInt(nft.metadata.id), nft.contract
+      ]);
       toast({
         title: 'Success',
         description: 'Your item is in pool for rent!',
@@ -62,7 +75,7 @@ export default function NFTOwnedOrder({ nft }) {
   return (
     <VStack align="stretch" padding={'10px'} columns={2} spacing={6}>
       <Box marginTop={'10%'}>
-        <Heading textAlign={'center'} fontFamily={'Bayon'} size="xl" mt={2}>
+        <Heading textAlign={'center'} fontFamily={'Manrope'} size="xl" mt={2}>
           {nft.metadata.name}
         </Heading>
       </Box>
@@ -76,14 +89,14 @@ export default function NFTOwnedOrder({ nft }) {
         </Box>
         <Button
           _hover={{
-            bg: darken('#FBAA0B', 15),
+            bg: darken('#66E383', 15),
             transition: 'background-color 0.2s',
           }}
           _active={{
             transform: 'scale(0.98)',
           }}
-          backgroundColor={'#FBAA0B'}
-          fontFamily={'Bayon'}
+          backgroundColor={'#66E383'}
+          fontFamily={'Manrope'}
           fontSize={20}
           letterSpacing={0.5}
           isLoading={isLoading}
@@ -95,17 +108,17 @@ export default function NFTOwnedOrder({ nft }) {
           Add Item to Pool
         </Button>
         <Box>
-          <Text fontFamily={'bayon'} fontSize={20} fontWeight={'bold'}>
+          <Text fontFamily={'Manrope'} fontSize={20} fontWeight={'bold'}>
             Description:
           </Text>
-          <Text fontFamily={'big shoulders text'} mb={1} fontSize={16}>
+          <Text fontFamily={'Manrope'} mb={1} fontSize={16}>
             {nft.metadata.description}
           </Text>
         </Box>
         <Box>
           <Text
             marginBottom={4}
-            fontFamily={'bayon'}
+            fontFamily={'Manrope'}
             fontSize={20}
             fontWeight={'bold'}
           >
@@ -126,14 +139,14 @@ export default function NFTOwnedOrder({ nft }) {
                   <Text
                     letterSpacing={0.3}
                     fontSize={'small'}
-                    fontFamily={'Bayon'}
+                    fontFamily={'Manrope'}
                     fontWeight={'bold'}
                     textTransform={'capitalize'}
                   >
                     {value.trait_type}
                   </Text>
                   <Text
-                    fontFamily={'big shoulders text'}
+                    fontFamily={'Dela Gothic One'}
                     fontSize={'medium'}
                     textTransform={'uppercase'}
                   >
@@ -151,29 +164,46 @@ export default function NFTOwnedOrder({ nft }) {
 
 export const getStaticProps = async (context) => {
   const tokenId = context.params?.tokenId;
-  const sdk = new ThirdwebSDK('mumbai');
-  const contract = await sdk.getContract(NFT_ADDRESS);
-  const nft = await contract.erc721.get(tokenId);
+  const sdk = new ThirdwebSDK('avalanche-fuji');
+
+  const contractCS = await sdk.getContract(NFT_CS_ADDRESS);
+  const nftCS = await contractCS.erc721.get(tokenId);
+
+  const contractBBG = await sdk.getContract(NFT_BBG_ADDRESS);
+  const nftBBG = await contractBBG.erc721.get(tokenId);
+
   return {
     props: {
-      nft,
+      nftCS,
+      nftBBG,
     },
     revalidate: 1,
   };
 };
 
 export const getStaticPaths = async () => {
-  const sdk = new ThirdwebSDK('mumbai');
-  const contract = await sdk.getContract(NFT_ADDRESS, 'nft-collection');
-  const nfts = await contract.getAll();
-  const paths = nfts.map((nft) => {
-    return {
-      params: {
-        contractAddress: NFT_ADDRESS,
-        tokenId: nft.metadata.id,
-      },
-    };
-  });
+  const sdk = new ThirdwebSDK('avalanche-fuji');
+
+  const contractAddresses = [NFT_CS_ADDRESS, NFT_BBG_ADDRESS];
+
+  let paths = [];
+
+  for (const contractAddress of contractAddresses) {
+    const contract = await sdk.getContract(contractAddress, 'nft-collection');
+    const nfts = await contract.getAll();
+
+    const contractPaths = nfts.map((nft) => {
+      return {
+        params: {
+          contractAddress: contractAddress,
+          tokenId: nft.metadata.id,
+        },
+      };
+    });
+
+    paths = [...paths, ...contractPaths];
+  }
+
   return {
     paths,
     fallback: 'blocking',

@@ -1,82 +1,27 @@
-require("@nomicfoundation/hardhat-toolbox")
-require("hardhat-contract-sizer")
-require("@openzeppelin/hardhat-upgrades")
-require("./tasks")
-require("@chainlink/env-enc").config()
-const { networks } = require("./config/networks")
+require("@nomiclabs/hardhat-waffle")
 
-// Enable gas reporting (optional)
-const REPORT_GAS = process.env.REPORT_GAS?.toLowerCase() === "true" ? true : false
-
-const SOLC_SETTINGS = {
-  optimizer: {
-    enabled: true,
-    runs: 1_000,
-  },
+const env = {
+  AVALANCHE_PRIVATE_KEY: "9bcdcecec956d01178a1320ff0cbe362eb59f8fe711642703b7419966320df52",
+  FUJI_RPC_URL:
+    "https://avalanche-fuji.rpc.thirdweb.com/ed043a51ae23b0db3873f5a38b77ab28175fa496f15d3c53cf70401be89b622a",
+    LACHAIN_PRIVATE_KEY: "9d7aaed6be947661b1ef2610a21e21fe3299fbd838c06de11ac244b88a5dae43"
 }
 
-/** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
-  defaultNetwork: "hardhat",
-  solidity: {
-    compilers: [
-      {
-        version: "0.8.9",
-        settings: SOLC_SETTINGS,
-      },
-      {
-        version: "0.8.7",
-        settings: SOLC_SETTINGS,
-      },
-      {
-        version: "0.8.0",
-        settings: SOLC_SETTINGS,
-      },
-      {
-        version: "0.7.0",
-        settings: SOLC_SETTINGS,
-      },
-      {
-        version: "0.6.6",
-        settings: SOLC_SETTINGS,
-      },
-      {
-        version: "0.4.24",
-        settings: SOLC_SETTINGS,
-      },
-    ],
-  },
+  defaultNetwork: "fuji",
   networks: {
-    hardhat: {
+    hardhat: {},
+    fuji: {
+      url: env.FUJI_RPC_URL,
+      accounts: [`0x${env.AVALANCHE_PRIVATE_KEY}`],
+      gasPrice: 225000000000,
+      chainId: 43113,
     },
-    ...networks,
+    lachain: {
+      url: "https://rpc1.mainnet.lachain.network/",
+      chainId: 274,
+      accounts: [`0x${env.LACHAIN_PRIVATE_KEY}`],
+    }
   },
-  etherscan: {
-    // npx hardhat verify --network <NETWORK> <CONTRACT_ADDRESS> <CONSTRUCTOR_PARAMETERS>
-    // to get exact network names: npx hardhat verify --list-networks
-    apiKey: {
-      sepolia: networks.ethereumSepolia.verifyApiKey,
-      polygonMumbai: networks.polygonMumbai.verifyApiKey,
-      avalancheFujiTestnet: networks.avalancheFuji.verifyApiKey,
-    },
-  },
-  gasReporter: {
-    enabled: REPORT_GAS,
-    currency: "USD",
-    outputFile: "gas-report.txt",
-    noColors: true,
-  },
-  contractSizer: {
-    runOnCompile: false,
-    only: ["AutomatedFunctionsConsumer", "FunctionsBillingRegistry"],
-  },
-  paths: {
-    sources: "./contracts",
-    tests: "./test",
-    cache: "./build/cache",
-    artifacts: "./build/artifacts",
-  },
-  mocha: {
-    timeout: 200000, // 200 seconds max for running tests
-  },
+  solidity: "0.8.18",
 }

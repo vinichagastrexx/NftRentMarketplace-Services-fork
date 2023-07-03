@@ -1,105 +1,42 @@
-const SxTApi = require('./sxtApi');
-const env = require('../../config/env')
-
 class ItemService {
-  static async getByOwner({ accessToken, owner }) {
-    const resourceId = `${env.sxtSchema}`
-    const sqlText = `SELECT * FROM ${env.sxtSchema}.ITEMS WHERE ${env.sxtSchema}.ITEMS.OWNER = '${owner}'`;
-    const response = await SxTApi.dql({
-      resourceId,
-      sqlText,
-      accessToken,
-    });
-    return response;
+  constructor(itemModel) {
+    this.itemModel = itemModel;
   }
 
-  static async getIdleByOwner({ accessToken, owner }) {
-    const resourceId = `${env.sxtSchema}.ITEMS`
-    const sqlText = `SELECT * FROM ${env.sxtSchema}.ITEMS WHERE ${env.sxtSchema}.ITEMS.OWNER = '${owner}' AND ${env.sxtSchema}.ITEMS.ISINPOOL = false`;
-    const response = await SxTApi.dql({
-      resourceId,
-      sqlText,
-      accessToken,
-    });
-    return response;
+  async getItemByNftId(nftId) {
+    return await this.itemModel.getItemByNftId({ nftId });
   }
 
-  static async createItem({ accessToken, nftId, categoryId, owner }) {
-    const resourceId = `${env.sxtSchema}.ITEMS`
-    const sqlText = `INSERT INTO ${env.sxtSchema}.ITEMS (nftId, categoryId, owner, rentee, isInPool) VALUES (${nftId}, ${categoryId}, '${owner}', NULL, false)`;
-
-    const response = await SxTApi.dml({
-      resourceId,
-      sqlText,
-      accessToken,
-    });
-    return response;
+  async createItem(itemData) {
+    return await this.itemModel.createItem(itemData);
   }
 
-  static async getItemByNftId({ accessToken, nftId }) {
-    const resourceId = `${env.sxtSchema}.ITEMS`
-    const sqlText = `SELECT * FROM ${env.sxtSchema}.ITEMS WHERE nftId = '${nftId}';`;
-    const response = await SxTApi.dql({
-      resourceId,
-      sqlText,
-      accessToken,
-    });
-    return response;
+  async getByOwner(owner) {
+    return await this.itemModel.getByOwner({ owner });
   }
 
-  static async rentItem({ accessToken, nftId, rentee }) {
-    const resourceId = `${env.sxtSchema}.ITEMS`
-    const sqlText = `UPDATE ${env.sxtSchema}.ITEMS SET rentee = '${rentee}' WHERE nftId = ${nftId};`;
-    const response = await SxTApi.dml({
-      resourceId,
-      sqlText,
-      accessToken,
-    });
-    return response;
+  async getIdleByOwner(owner) {
+    return await this.itemModel.getIdleByOwner({ owner });
   }
 
-  static async finishRent({ accessToken, nftId }) {
-    const resourceId = `${env.sxtSchema}.ITEMS`
-    const sqlText = `UPDATE ${env.sxtSchema}.ITEMS SET rentee = NULL WHERE nftId = ${nftId};`;
-    const response = await SxTApi.dml({
-      resourceId,
-      sqlText,
-      accessToken,
-    });
-    return response;
+  async rentItem(itemId, rentee) {
+    return await this.itemModel.rentItem({ itemId, rentee });
   }
 
-  static async addToPool({ accessToken, nftId }) {
-    const resourceId = `${env.sxtSchema}.ITEMS`
-    const sqlText = `UPDATE ${env.sxtSchema}.ITEMS SET isInPool = true WHERE nftId = ${nftId};`;
-    const response = await SxTApi.dml({
-      resourceId,
-      sqlText,
-      accessToken,
-    });
-    return response;
+  async finishRent(itemId) {
+    return await this.itemModel.finishRent({ itemId });
   }
 
-  static async getItemsInPoolByUser({ accessToken, owner }) {
-    const resourceId = `${env.sxtSchema}.ITEMS`
-    const sqlText = `SELECT * FROM ${env.sxtSchema}.ITEMS WHERE ${env.sxtSchema}.ITEMS.OWNER = '${owner}' AND ISINPOOL = true AND RENTEE IS NULL;`;
-    const response = await SxTApi.dql({
-      resourceId,
-      sqlText,
-      accessToken,
-    });
-    return response;
+  async addToPool(itemId) {
+    return await this.itemModel.addToPool({ itemId });
   }
 
-  static async getItemsRentedByUser({ accessToken, owner }) {
-    const resourceId = `${env.sxtSchema}.ITEMS`
-    const sqlText = `SELECT * FROM ${env.sxtSchema}.ITEMS WHERE ${env.sxtSchema}.ITEMS.OWNER = '${owner}' AND ISINPOOL = true AND RENTEE IS NOT NULL;`;
-    const response = await SxTApi.dql({
-      resourceId,
-      sqlText,
-      accessToken,
-    });
-    return response;
+  async getItemsInPoolByUser(owner) {
+    return await this.itemModel.getItemsInPoolByUser({ owner });
+  }
+
+  async getItemsRentedByUser(owner) {
+    return await this.itemModel.getItemsRentedByUser({ owner });
   }
 }
 

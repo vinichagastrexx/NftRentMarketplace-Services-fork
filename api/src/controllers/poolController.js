@@ -1,26 +1,48 @@
-const PoolService = require('../services/poolService')
+const PoolService = require("../services/poolService");
 
 class PoolController {
-  static async getAll(req, res) {
-    const accessToken = req.accessToken;
-    const pools = await PoolService.getAll({ accessToken });
-
-    res.status(200).json({ pools });
+  constructor() {
+    this.poolService = new PoolService();
   }
 
-  static async getById(req, res) {
-    const accessToken = req.accessToken;
-    const pool = await PoolService.getById({ accessToken, poolId: req.params.poolId });
+  async getAll(_, res) {
+    try {
+      const pools = await this.poolService.getAll();
+      res.status(200).json({ pools });
+    } catch (error) {
+      console.error('Error getting all pools: ', error.stack);
+      res.status(500).json({ error: 'Server error.' });
+    }
 
-    res.status(200).json({ pool });
   }
 
-  static async createPool(req, res) {
-    const accessToken = req.accessToken;
-    const { poolId, basePrice } = req.body;
-    const pool = await PoolService.createPool({ accessToken, poolId, basePrice });
+  async getById(req, res) {
+    const { id } = req.params;
+    try {
+      const pool = await this.poolService.getById(id);
+      res.status(200).json({ pool });
+    }
+    catch (error) {
+      console.error('Error getting pool by ID: ', error.stack);
+      res.status(500).json({ error: 'Server error.' });
+    }
+  }
 
-    res.status(200).json({ pool });
+  async createPool(req, res) {
+    const poolData = req.body;
+    const requiredFields = ['categoryId', 'basePrice', 'gameId'];
+    for (const field of requiredFields) {
+      if (!poolData[field]) {
+        return res.status(400).json({ error: `Field ${field} is required.` });
+      }
+    }
+    try {
+      const pool = await this.poolService.createPool(poolData);
+      return res.status(201).json(pool);
+    } catch (error) {
+      console.error('Error creating pool: ', error.stack);
+      res.status(500).json({ error: 'Server error.' });
+    }
   }
 }
 module.exports = PoolController;
