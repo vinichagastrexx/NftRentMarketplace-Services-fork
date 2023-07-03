@@ -4,7 +4,6 @@ const cors = require("cors");
 const itemRoutes = require("./routes/itemRoutes");
 const poolRoutes = require("./routes/poolRoutes");
 const rentRoutes = require("./routes/rentRoutes");
-const recommendationRoutes = require("./routes/recommendationRoutes");
 require("dotenv").config();
 const serverless = require("serverless-http");
 
