@@ -12,7 +12,7 @@ services:
   nft-rent-marketplace-worker:
     container_name: mktplace-worker
     build: 
-      context: ./workers
+      context: ./worker
       dockerfile: Dockerfile
     restart: always
     links:
