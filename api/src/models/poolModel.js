@@ -41,10 +41,10 @@ class PoolModel {
   async getAll() {
     const query = `
     SELECT pools.*, 
-    categories.name AS categoryName,
+    categories.name AS category_name,
     categories.short_description,
-    rarities.name AS rarityName,
-    rarities.id AS rarityId
+    rarities.name AS rarity_name,
+    rarities.id AS rarity_id
     FROM pools 
     INNER JOIN categories 
     ON pools.category_id = categories.id

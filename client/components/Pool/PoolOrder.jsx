@@ -51,12 +51,12 @@ export default function PoolOrder({ pool }) {
 
   useEffect(() => {
     handleRentDaysChange(rentDays);
-  }, [handleRentDaysChange, rentDays]);
+  }, [rentDays]);
 
   const handleRentDaysChange = async (value) => {
     setRentDays(value);
     const contract = await sdk.getContract(NFT_RENT_MARKETPLACE_ADDRESS);
-    const price = await contract.call('getRentQuote', [pool.categoryid, value]);
+    const price = await contract.call('getRentQuote', [pool.category_id, value]);
     if (price?.rentQuoteDollar._hex) {
       const poolUSDPriceBigNumber = ethers.BigNumber.from(
         price.rentQuoteDollar._hex,
@@ -79,11 +79,11 @@ export default function PoolOrder({ pool }) {
       const contract = await sdk.getContract(NFT_RENT_MARKETPLACE_ADDRESS);
       const result = await contract.call(
         'startRent',
-        [pool.categoryid, Number(rentDays)],
+        [pool.category_id, Number(rentDays)],
         { value: poolMATICPrice },
       );
       const nftId = result.receipt.events[0].args.itemNftId.toNumber();
-      const nft = await getNft(nftId, pool.gameid);
+      const nft = await getNft(nftId, pool.game_id);
       setNft(nft);
       onOpen();
     } catch (error) {
@@ -116,18 +116,18 @@ export default function PoolOrder({ pool }) {
     <VStack spacing={6} align="stretch" padding={'10px'}>
       <Box marginTop={'10%'}>
         <Heading fontFamily={'Manrope'} size="xl" mt={2}>
-          {pool.categoyname} Pool
+          {pool.category_name} Pool
         </Heading>
         <Text
           fontSize={20}
           fontFamily={'Manrope'}
           fontWeight={'bold'}
         >
-          Rarity: {pool.rarityname}
+          Rarity: {pool.rarity_name}
         </Text>
       </Box>
       <Box>
-        <Image src={pool.imageurl} alt={pool.categoryname} />
+        <Image src={pool.image_url} alt={pool.category_name} />
       </Box>
       <Box>
         <Text fontSize={20} fontFamily={'Manrope'} fontWeight={'bold'}>

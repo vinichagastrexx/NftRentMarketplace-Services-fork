@@ -36,7 +36,7 @@ export default function PoolGrid({ isLoading, data }) {
           ))
         ) : data && data.length > 0 ? (
           data.map((pool) => (
-            <div key={pool.categoryid} onClick={() => handlePoolClick(pool)}>
+            <div key={pool.category_id} onClick={() => handlePoolClick(pool)}>
               <PoolCard pool={pool}></PoolCard>
             </div>
           ))

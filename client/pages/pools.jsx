@@ -49,10 +49,10 @@ export default function Pools() {
 
   if (error) return <div>{error.message}</div>;
   const filteredPools = selectedGameId
-    ? data?.pools.filter((pool) => pool.gameid === Number(selectedGameId))
+    ? data?.pools.filter((pool) => pool.game_id === Number(selectedGameId))
     : data?.pools;
 
-  const gameIds = [...new Set(data?.pools.map((pool) => pool.gameid))];
+  const gameIds = [...new Set(data?.pools.map((pool) => pool.game_id))];
 
   return (
     <Container maxW={'90%'} p={5}>
