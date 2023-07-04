@@ -13,7 +13,7 @@ class NFTRentMarketplaceEventWorker {
   }
 
   async init() {
-    this.sdk = await ThirdwebSDK.fromPrivateKey(this.privateKey, 'avalanche-fuji');
+    this.sdk = await ThirdwebSDK.fromPrivateKey(this.privateKey, 'mumbai');
     this.contract = await this.sdk.getContract(this.contractAddress);
     this.contract.events.addEventListener('RentStarted', this.onRentStarted.bind(this));
     this.contract.events.addEventListener('PoolCreated', this.onPoolCreated.bind(this));
