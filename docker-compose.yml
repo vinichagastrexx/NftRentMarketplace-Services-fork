@@ -8,6 +8,8 @@ services:
     ports:
       - "80:80"
     restart: always
+    env_file:
+      - .env
 
   nft-rent-marketplace-worker:
     container_name: mktplace-worker
@@ -17,6 +19,8 @@ services:
     restart: always
     links:
       - nft-rent-marketplace-api
+    env_file:
+      - .env
 
   nft-rent-marketplace-client:
     build: 
@@ -27,3 +31,5 @@ services:
     restart: always
     links:
       - nft-rent-marketplace-api
+    env_file:
+      - .env
