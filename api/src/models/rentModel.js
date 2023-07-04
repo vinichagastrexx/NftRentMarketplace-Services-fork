@@ -7,13 +7,13 @@ class RentModel {
 
   async createRent({ id, initDate, expirationDate, priceBlockchain, ownerAddress, renteeAddress, poolId, itemId }) {
     const query = `
-      INSERT INTO rents (id, init_date, expiration_date, price_blockchain, owner_address, rentee_address, pool_id, item_id, status)
+      INSERT INTO rents (id, init_date, expiration_date, price_blockchain, owner_address, rentee_address, pool_id, item_id, rent_status_id)
       VALUES ($1, $2, $3, $4, $5, $6, $7, ${RENT_STATUS_ENUM.ACTIVE})
       RETURNING *;
     `;
 
     try {
-      const result = await this.pool.query(query, [id, initDate, expirationDate, priceUSD, priceBlockchain, ownerAddress, renteeAddress, poolId, itemId, rentStatusId]);
+      const result = await this.pool.query(query, [id, initDate, expirationDate, priceBlockchain, ownerAddress, renteeAddress, poolId, itemId]);
       return result.rows[0];
     } catch (error) {
       console.error('Error creating rent: ', error.stack);
@@ -39,7 +39,7 @@ class RentModel {
     const query = `
       SELECT *
       FROM rents
-      WHERE owner_address = $1 AND status = ${RENT_STATUS_ENUM.ACTIVE};
+      WHERE owner_address = $1 AND rent_status_id = ${RENT_STATUS_ENUM.ACTIVE};
     `;
 
     try {
@@ -54,7 +54,7 @@ class RentModel {
     const query = `
       SELECT *
       FROM rents
-      WHERE rentee_address = $1 AND status = ${RENT_STATUS_ENUM.ACTIVE};
+      WHERE rentee_address = $1 AND rent_status_id = ${RENT_STATUS_ENUM.ACTIVE};
     `;
 
     try {
@@ -68,7 +68,7 @@ class RentModel {
   async finishRent(id) {
     const query = `
       UPDATE rents
-      SET status = ${RENT_STATUS_ENUM.FINISHED}
+      SET rent_status_id = ${RENT_STATUS_ENUM.FINISHED}
       WHERE id = $1
       RETURNING *;
     `;

@@ -162,7 +162,7 @@ export default function Inventory() {
             </Flex>
           </AccordionButton>
           <AccordionPanel paddingLeft={10} pb={4}>
-            {rentedItems?.rents.length > 0 ? (
+            {rentedItems?.rents?.length > 0 ? (
               <Text fontSize={25} fontFamily={'Manrope'}>
                 These are the items you are currently renting from other players
                 for use in the game.
@@ -183,7 +183,7 @@ export default function Inventory() {
                 [...Array(3)].map((_, index) => (
                   <Skeleton key={index} height={'150px'} width={'250px'} />
                 ))
-              ) : rentedItems?.rents.length > 0 ? (
+              ) : rentedItems?.rents?.length > 0 ? (
                 rentedItems?.rents?.map((rentedItem) => (
                   <RentedNFT
                     key={rentedItem.nftid}
