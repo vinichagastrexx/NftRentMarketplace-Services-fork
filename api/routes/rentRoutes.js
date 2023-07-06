@@ -1,6 +1,14 @@
 const express = require('express');
-const RentController = require('../src/controllers/rentController')
-const rentController = new RentController();
+const RentController = require('../src/controllers/rentController');
+const ItemModel = require('../src/models/itemModel');
+const ItemService = require('../src/services/itemService');
+const RentService = require('../src/services/rentService');
+
+const rentModel = new rentModel();
+const rentService = new RentService(rentModel);
+const itemModel = new ItemModel();
+const itemService = new ItemService(itemModel);
+const rentController = new RentController(rentService, itemService);
 
 const router = express.Router();
 

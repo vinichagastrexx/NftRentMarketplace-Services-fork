@@ -1,5 +1,7 @@
+const pool = require('../../helpers/pgConnection');
+const camelize = require('camelize');
 class ItemModel {
-  constructor(pool) {
+  constructor() {
     this.pool = pool;
   }
 
@@ -7,35 +9,35 @@ class ItemModel {
     const query = `
     SELECT * 
     FROM items 
-    WHERE nftId = $1;
+    WHERE nft_id = $1;
   `;
 
     try {
       const result = await this.pool.query(query, [nftId]);
-      return result.rows;
+      return camelize(result.rows);
     } catch (error) {
       console.error("Error getting item by NFT ID: ", error.stack);
       throw error;
     }
   }
 
-  async createItem({ itemId, nftId, categoryId, owner, gameId, nftContractAddress, rarityId, blockchainId }) {
+  async createItem({ itemId, categoryId, owner, gameId, nftContractAddress, nftId, rarityId, blockchainId }) {
     const query = `
-    INSERT INTO items (id, nft_id, category_id, owner_address, rentee_address, is_in_pool, game_id, nft_contract_address, rarity_id, blockchain_id, is_rented) 
+    INSERT INTO items (id, category_id, owner_address, rentee_address, is_in_pool, game_id, nft_contract_address, nft_id, rarity_id, blockchain_id, is_rented) 
     VALUES ($1, $2, $3, NULL, false, $4, $5, $6, $7, $8, false)
     RETURNING *;
   `;
 
     try {
-      const result = await this.pool.query(query, [itemId, nftId, categoryId, owner, gameId, nftContractAddress, rarityId, blockchainId]);
-      return result.rows[0];
+      const result = await this.pool.query(query, [itemId, categoryId, owner, gameId, nftContractAddress, nftId, rarityId, blockchainId]);
+      return camelize(result.rows[0]);
     } catch (error) {
       console.error("Error creating item: ", error.stack);
       throw error;
     }
   }
 
-  getByOwner(owner) {
+  async getByOwner(owner) {
     const query = `
       SELECT *
       FROM items
@@ -43,7 +45,7 @@ class ItemModel {
     `;
     try {
       const result = this.pool.query(query, [owner]);
-      return result.rows;
+      return camelize(result.rows);
     }
     catch (error) {
       console.error("Error getting items by owner: ", error.stack);
@@ -51,7 +53,7 @@ class ItemModel {
     }
   }
 
-  getIdleByOwner(owner) {
+  async getIdleByOwner(owner) {
     const query = `
       SELECT *
       FROM items
@@ -59,7 +61,7 @@ class ItemModel {
     `;
     try {
       const result = this.pool.query(query, [owner]);
-      return result.rows;
+      return camelize(result.rows);
     }
     catch (error) {
       console.error("Error getting idle items by owner: ", error.stack);
@@ -67,7 +69,7 @@ class ItemModel {
     }
   }
 
-  rentItem(itemId, rentee) {
+  async rentItem(itemId, rentee) {
     const query = `
       UPDATE items
       SET rentee_address = $1, is_rented = true
@@ -75,7 +77,7 @@ class ItemModel {
     `;
     try {
       const result = this.pool.query(query, [rentee, itemId]);
-      return result.rows;
+      return camelize(result.rows);
     }
     catch (error) {
       console.error("Error renting item: ", error.stack);
@@ -83,7 +85,7 @@ class ItemModel {
     }
   }
 
-  finishRent(itemId) {
+  async finishRent(itemId) {
     const query = `
       UPDATE items
       SET rentee_address = NULL, is_rented = false
@@ -91,7 +93,7 @@ class ItemModel {
     `;
     try {
       const result = this.pool.query(query, [itemId]);
-      return result.rows;
+      return camelize(result.rows);
     }
     catch (error) {
       console.error("Error finishing rent: ", error.stack);
@@ -99,7 +101,7 @@ class ItemModel {
     }
   }
 
-  addToPool(itemId) {
+  async addToPool(itemId) {
     const query = `
       UPDATE items
       SET is_in_pool = true
@@ -107,7 +109,7 @@ class ItemModel {
     `;
     try {
       const result = this.pool.query(query, [itemId]);
-      return result.rows;
+      return camelize(result.rows);
     }
     catch (error) {
       console.error("Error adding item to pool: ", error.stack);
@@ -115,7 +117,7 @@ class ItemModel {
     }
   }
 
-  getItemsInPoolByUser(owner) {
+  async getItemsInPoolByUser(owner) {
     const query = `
       SELECT *
       FROM items
@@ -123,7 +125,7 @@ class ItemModel {
     `;
     try {
       const result = this.pool.query(query, [owner]);
-      return result.rows;
+      return camelize(result.rows);
     }
     catch (error) {
       console.error("Error getting items in pool by owner: ", error.stack);
@@ -131,7 +133,7 @@ class ItemModel {
     }
   }
 
-  getItemsRentedByUser(owner) {
+  async getItemsRentedByUser(owner) {
     const query = `
       SELECT *
       FROM items
@@ -139,7 +141,7 @@ class ItemModel {
     `;
     try {
       const result = this.pool.query(query, [owner]);
-      return result.rows;
+      return camelize(result.rows);
     }
     catch (error) {
       console.error("Error getting items rented by owner: ", error.stack);

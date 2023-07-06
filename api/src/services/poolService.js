@@ -1,8 +1,6 @@
-const PoolModel = require("../models/poolModel");
-
 class PoolService {
-  constructor() {
-    this.poolModel = new PoolModel();
+  constructor(poolModel) {
+    this.poolModel = poolModel;
   }
 
   async getAll() {

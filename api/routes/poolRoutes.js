@@ -1,6 +1,11 @@
 const express = require('express');
-const PoolController = require('../src/controllers/poolController')
-const poolController = new PoolController();
+const PoolController = require('../src/controllers/poolController');
+const PoolModel = require('../src/models/poolModel');
+const PoolService = require('../src/services/poolService');
+
+const poolModel = new PoolModel();
+const poolService = new PoolService(poolModel);
+const poolController = new PoolController(poolService);
 
 const router = express.Router();
 

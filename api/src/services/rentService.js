@@ -1,8 +1,6 @@
-const RentModel = require('../models/rentModel');
-
 class RentService {
-  constructor() {
-    this.rentModel = new RentModel();
+  constructor(rentModel) {
+    this.rentModel = rentModel;
   }
 
   async createRent(rentData) {

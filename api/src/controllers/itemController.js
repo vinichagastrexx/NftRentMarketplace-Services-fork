@@ -31,7 +31,7 @@ class ItemController {
       return res.status(400).json({ error: 'Item data is required.' });
     }
 
-    const requiredFields = ['itemId', 'nftId', 'categoryId', 'owner', 'gameId', 'nftContractAddress', 'rarityId', 'blockchainId'];
+    const requiredFields = ['id', 'categoryId', 'ownerAddress', 'gameId', 'nftContractAddress', 'nftId', 'rarityId', 'blockchainId'];
     for (const field of requiredFields) {
       if (!itemData[field]) {
         return res.status(400).json({ error: `Field ${field} is required.` });
@@ -44,29 +44,28 @@ class ItemController {
         return res.status(500).json({ error: 'Failed to create item.' });
       }
 
-      res.json(newItem);
+      res.status(201).json(newItem);
     } catch (error) {
       console.error('Error creating item: ', error.stack);
       res.status(500).json({ error: 'Server error.' });
     }
   }
 
-
   async getByOwner(req, res) {
-    const { owner } = req.params;
+    const { ownerAddress } = req.params;
 
-    if (!owner) {
-      return res.status(400).json({ error: 'Owner is required.' });
+    if (!ownerAddress) {
+      return res.status(400).json({ error: 'Owner adress is required.' });
     }
 
     try {
-      const items = await this.itemService.getByOwner(owner);
+      const items = await this.itemService.getByOwner(ownerAddress);
 
       if (!items) {
         return res.status(404).json({ error: 'Items not found.' });
       }
 
-      res.json(items);
+      res.status(200).json(items);
     } catch (error) {
       console.error('Error getting items by owner: ', error.stack);
       res.status(500).json({ error: 'Server error.' });
@@ -74,20 +73,20 @@ class ItemController {
   }
 
   async getIdleByOwner(req, res) {
-    const { owner } = req.params;
+    const { ownerAddress } = req.params;
 
-    if (!owner) {
-      return res.status(400).json({ error: 'Owner is required.' });
+    if (!ownerAddress) {
+      return res.status(400).json({ error: 'Owner adress is required.' });
     }
 
     try {
-      const items = await this.itemService.getIdleByOwner(owner);
+      const items = await this.itemService.getIdleByOwner(ownerAddress);
 
       if (!items) {
         return res.status(404).json({ error: 'Items not found.' });
       }
 
-      res.json(items);
+      res.status(200).json(items);
     } catch (error) {
       console.error('Error getting idle items by owner: ', error.stack);
       res.status(500).json({ error: 'Server error.' });
@@ -95,26 +94,27 @@ class ItemController {
   }
 
   async addToPool(req, res) {
-    const { itemId } = req.params;
+    const { nftId } = req.params;
 
-    if (!itemId) {
-      return res.status(400).json({ error: 'Item ID is required.' });
+    if (!nftId) {
+      return res.status(400).json({ error: 'Nft ID is required.' });
     }
 
     try {
-      const item = await this.itemService.getItemByNftId(itemId);
+      const item = await this.itemService.getItemByNftId(nftId);
 
 
       if (!item) {
         return res.status(404).json({ error: 'Item not found.' });
       }
 
-      if (item.is_in_pool) {
+      if (item.isInPool) {
         return res.status(400).json({ error: 'Item is already in pool.' });
       }
 
-      const updatedItem = await this.itemService.addToPool(itemId);
-      res.json(updatedItem);
+      const updatedItem = await this.itemService.addToPool(item.id);
+
+      res.status(200).json(updatedItem);
     } catch (error) {
       console.error('Error adding item to pool: ', error.stack);
       res.status(500).json({ error: 'Server error.' });
@@ -122,15 +122,16 @@ class ItemController {
   }
 
   async getItemsInPoolByUser(req, res) {
-    const { owner } = req.params;
+    const { ownerAddress } = req.params;
 
-    if (!owner) {
+    if (!ownerAddress) {
       return res.status(400).json({ error: 'Owner address is required.' });
     }
 
     try {
-      const items = await this.itemService.getItemsInPoolByUser(owner);
-      res.json(items);
+      const items = await this.itemService.getItemsInPoolByUser(ownerAddress);
+
+      res.status(200).json(items);
     } catch (error) {
       console.error('Error getting items in pool by user: ', error.stack);
       res.status(500).json({ error: 'Server error.' });
@@ -138,14 +139,14 @@ class ItemController {
   }
 
   async getItemsRentedByUser(req, res) {
-    const { owner } = req.params;
-    if (!owner) {
+    const { ownerAddress } = req.params;
+    if (!ownerAddress) {
       return res.status(400).json({ error: 'Owner address is required.' });
     }
 
     try {
-      const items = await this.itemService.getItemsRentedByUser(owner);
-      res.json(items);
+      const items = await this.itemService.getItemsRentedByUser(ownerAddress);
+      res.status(200).json(items);
     } catch (error) {
       console.error('Error getting items rented by user: ', error.stack);
       res.status(500).json({ error: 'Server error.' });

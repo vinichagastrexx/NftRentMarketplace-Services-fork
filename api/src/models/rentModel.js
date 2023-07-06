@@ -1,5 +1,7 @@
 const pool = require('../../helpers/pgConnection');
 const { RENT_STATUS_ENUM } = require('../../enums/rentStatus');
+const camelize = require('camelize');
+
 class RentModel {
   constructor() {
     this.pool = pool;
@@ -14,7 +16,7 @@ class RentModel {
 
     try {
       const result = await this.pool.query(query, [id, initDate, expirationDate, priceBlockchain, ownerAddress, renteeAddress, poolId, itemId]);
-      return result.rows[0];
+      return camelize(result.rows[0]);
     } catch (error) {
       console.error('Error creating rent: ', error.stack);
     }
@@ -29,7 +31,7 @@ class RentModel {
 
     try {
       const result = await this.pool.query(query, [id]);
-      return result.rows;
+      return camelize(result.rows);
     } catch (error) {
       console.error('Error getting rent by ID: ', error.stack);
     }
@@ -44,7 +46,7 @@ class RentModel {
 
     try {
       const result = await this.pool.query(query, [ownerAddress]);
-      return result.rows;
+      return camelize(result.rows);
     } catch (error) {
       console.error('Error getting active rents by owner: ', error.stack);
     }
@@ -59,7 +61,7 @@ class RentModel {
 
     try {
       const result = await this.pool.query(query, [renteeAddress]);
-      return result.rows;
+      return camelize(result.rows);
     } catch (error) {
       console.error('Error getting active rents by rentee: ', error.stack);
     }
@@ -75,7 +77,7 @@ class RentModel {
 
     try {
       const result = await this.pool.query(query, [id]);
-      return result.rows;
+      return camelize(result.rows);
     } catch (error) {
       console.error('Error finishing rent: ', error.stack);
     }
@@ -90,7 +92,7 @@ class RentModel {
 
     try {
       const result = await this.pool.query(query, [renteeAddress]);
-      return result.rows;
+      return camelize(result.rows);
     } catch (error) {
       console.error('Error getting all rents by rentee: ', error.stack);
     }
