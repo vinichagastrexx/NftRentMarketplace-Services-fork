@@ -7,15 +7,15 @@ class RentModel {
     this.pool = pool;
   }
 
-  async createRent({ id, initDate, expirationDate, priceBlockchain, ownerAddress, renteeAddress, poolId, itemId }) {
+  async createRent({ id, initDate, expirationDate, priceBlockchain, ownerAddress, renteeAddress, categoryId, itemId }) {
     const query = `
-      INSERT INTO rents (id, init_date, expiration_date, price_blockchain, owner_address, rentee_address, pool_id, item_id, rent_status_id)
+      INSERT INTO rents (id, init_date, expiration_date, price_blockchain, owner_address, rentee_address, category_id, item_id, rent_status_id)
       VALUES ($1, $2, $3, $4, $5, $6, $7, ${RENT_STATUS_ENUM.ACTIVE})
       RETURNING *;
     `;
 
     try {
-      const result = await this.pool.query(query, [id, initDate, expirationDate, priceBlockchain, ownerAddress, renteeAddress, poolId, itemId]);
+      const result = await this.pool.query(query, [id, initDate, expirationDate, priceBlockchain, ownerAddress, renteeAddress, categoryId, itemId]);
       return camelize(result.rows[0]);
     } catch (error) {
       console.error('Error creating rent: ', error.stack);
@@ -67,16 +67,16 @@ class RentModel {
     }
   }
 
-  async finishRent(id) {
+  async finishRent({ id, finishDate }) {
     const query = `
       UPDATE rents
-      SET rent_status_id = ${RENT_STATUS_ENUM.FINISHED}
+      SET rent_status_id = ${RENT_STATUS_ENUM.FINISHED}, finish_date = $2
       WHERE id = $1
       RETURNING *;
     `;
 
     try {
-      const result = await this.pool.query(query, [id]);
+      const result = await this.pool.query(query, [id, finishDate]);
       return camelize(result.rows);
     } catch (error) {
       console.error('Error finishing rent: ', error.stack);

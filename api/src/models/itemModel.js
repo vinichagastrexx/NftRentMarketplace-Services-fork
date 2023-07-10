@@ -21,7 +21,7 @@ class ItemModel {
     }
   }
 
-  async createItem({ itemId, categoryId, owner, gameId, nftContractAddress, nftId, rarityId, blockchainId }) {
+  async createItem({ id, categoryId, ownerAddress, gameId, nftContractAddress, nftId, rarityId, blockchainId }) {
     const query = `
     INSERT INTO items (id, category_id, owner_address, rentee_address, is_in_pool, game_id, nft_contract_address, nft_id, rarity_id, blockchain_id, is_rented) 
     VALUES ($1, $2, $3, NULL, false, $4, $5, $6, $7, $8, false)
@@ -29,7 +29,7 @@ class ItemModel {
   `;
 
     try {
-      const result = await this.pool.query(query, [itemId, categoryId, owner, gameId, nftContractAddress, nftId, rarityId, blockchainId]);
+      const result = await this.pool.query(query, [id, categoryId, ownerAddress, gameId, nftContractAddress, nftId, rarityId, blockchainId]);
       return camelize(result.rows[0]);
     } catch (error) {
       console.error("Error creating item: ", error.stack);
@@ -37,14 +37,14 @@ class ItemModel {
     }
   }
 
-  async getByOwner(owner) {
+  async getByOwner(ownerAddress) {
     const query = `
       SELECT *
       FROM items
       WHERE items.owner_address = $1;
     `;
     try {
-      const result = this.pool.query(query, [owner]);
+      const result = await this.pool.query(query, [ownerAddress]);
       return camelize(result.rows);
     }
     catch (error) {
@@ -53,14 +53,33 @@ class ItemModel {
     }
   }
 
-  async getIdleByOwner(owner) {
+  async getById(itemId) {
+    const query = `
+      SELECT *
+      FROM items
+      WHERE items.id = $1;
+    `;
+    try {
+      const result = await this.pool.query(query, [itemId]);
+      if (result.rows.length > 0) {
+        return camelize(result.rows[0]);
+      }
+      return null;
+    }
+    catch (error) {
+      console.error("Error getting item by Id: ", error.stack);
+      throw error;
+    }
+  }
+
+  async getIdleByOwner(ownerAddress) {
     const query = `
       SELECT *
       FROM items
       WHERE items.owner_address = $1 AND items.is_in_pool = false;
     `;
     try {
-      const result = this.pool.query(query, [owner]);
+      const result = await this.pool.query(query, [ownerAddress]);
       return camelize(result.rows);
     }
     catch (error) {
@@ -69,14 +88,14 @@ class ItemModel {
     }
   }
 
-  async rentItem(itemId, rentee) {
+  async rentItem({ itemId, renteeAddress }) {
     const query = `
       UPDATE items
       SET rentee_address = $1, is_rented = true
       WHERE id = $2;
     `;
     try {
-      const result = this.pool.query(query, [rentee, itemId]);
+      const result = await this.pool.query(query, [renteeAddress, itemId]);
       return camelize(result.rows);
     }
     catch (error) {
@@ -92,7 +111,7 @@ class ItemModel {
       WHERE id = $1;
     `;
     try {
-      const result = this.pool.query(query, [itemId]);
+      const result = await this.pool.query(query, [itemId]);
       return camelize(result.rows);
     }
     catch (error) {
@@ -108,7 +127,7 @@ class ItemModel {
       WHERE id = $1;
     `;
     try {
-      const result = this.pool.query(query, [itemId]);
+      const result = await this.pool.query(query, [itemId]);
       return camelize(result.rows);
     }
     catch (error) {
@@ -117,14 +136,14 @@ class ItemModel {
     }
   }
 
-  async getItemsInPoolByUser(owner) {
+  async getItemsInPoolByUser(ownerAddress) {
     const query = `
       SELECT *
       FROM items
       WHERE items.owner_address = $1 AND items.is_in_pool = true;
     `;
     try {
-      const result = this.pool.query(query, [owner]);
+      const result = await this.pool.query(query, [ownerAddress]);
       return camelize(result.rows);
     }
     catch (error) {
@@ -133,14 +152,14 @@ class ItemModel {
     }
   }
 
-  async getItemsRentedByUser(owner) {
+  async getItemsRentedByUser(ownerAddress) {
     const query = `
       SELECT *
       FROM items
       WHERE items.owner_address = $1 AND items.is_rented = true;
     `;
     try {
-      const result = this.pool.query(query, [owner]);
+      const result = await this.pool.query(query, [ownerAddress]);
       return camelize(result.rows);
     }
     catch (error) {

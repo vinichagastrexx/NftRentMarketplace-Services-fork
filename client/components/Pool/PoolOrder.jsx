@@ -33,6 +33,8 @@ import {
 import NFTCard from '../NFT/NFTCard';
 import { ethers } from 'ethers';
 import NEXTLink from 'next/link';
+import { URLS } from '../../config/urls';
+import axios from 'axios';
 
 export default function PoolOrder({ pool }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -44,9 +46,7 @@ export default function PoolOrder({ pool }) {
   }
   const [isLoading, setIsLoading] = useState(false);
   const [nft, setNft] = useState(null);
-  const [poolUSDPrice, setPoolUSDPrice] = useState(0);
-  const [poolMATICPrice, setPoolMATICPrice] = useState(0);
-  const [poolMATICFormatedPrice, setPoolMATICFormatedPrice] = useState(0);
+  const [poolPrice, setPoolPrice] = useState(0);
   const [rentDays, setRentDays] = useState(1);
 
   useEffect(() => {
@@ -56,19 +56,14 @@ export default function PoolOrder({ pool }) {
   const handleRentDaysChange = async (value) => {
     setRentDays(value);
     const contract = await sdk.getContract(NFT_RENT_MARKETPLACE_ADDRESS);
-    const price = await contract.call('getRentQuote', [pool.category_id, value]);
-    if (price?.rentQuoteDollar._hex) {
-      const poolUSDPriceBigNumber = ethers.BigNumber.from(
-        price.rentQuoteDollar._hex,
+    const price = await contract.call('getRentQuote', [pool.categoryId, value]);
+    if (price?._hex) {
+      const poolPrice = ethers.BigNumber.from(
+        price?._hex,
       );
-      const poolMATICPriceBigNumber = ethers.BigNumber.from(
-        price.rentQuoteMatic._hex,
+      setPoolPrice(
+        poolPrice
       );
-      setPoolUSDPrice(ethers.utils.formatUnits(poolUSDPriceBigNumber));
-      setPoolMATICFormatedPrice(
-        ethers.utils.formatUnits(poolMATICPriceBigNumber),
-      );
-      setPoolMATICPrice(price.rentQuoteMatic);
     } else {
       console.error('No quote has returned');
     }
@@ -79,11 +74,13 @@ export default function PoolOrder({ pool }) {
       const contract = await sdk.getContract(NFT_RENT_MARKETPLACE_ADDRESS);
       const result = await contract.call(
         'startRent',
-        [pool.category_id, Number(rentDays)],
-        { value: poolMATICPrice },
+        [pool.categoryId, Number(rentDays)],
+        { value: poolPrice },
       );
-      const nftId = result.receipt.events[0].args.itemNftId.toNumber();
-      const nft = await getNft(nftId, pool.game_id);
+      const itemId = result.receipt.events[0].args.itemId.toNumber();
+      const item = axios.get(`${URLS.ITEMS}/${itemId}`);
+      const nftId = item?.nftId;
+      const nft = await getNft(nftId, pool.gameId);
       setNft(nft);
       onOpen();
     } catch (error) {
@@ -116,25 +113,25 @@ export default function PoolOrder({ pool }) {
     <VStack spacing={6} align="stretch" padding={'10px'}>
       <Box marginTop={'10%'}>
         <Heading fontFamily={'Manrope'} size="xl" mt={2}>
-          {pool.category_name} Pool
+          {pool.categoryName} Pool
         </Heading>
         <Text
           fontSize={20}
           fontFamily={'Manrope'}
           fontWeight={'bold'}
         >
-          Rarity: {pool.rarity_name}
+          Rarity: {pool.rarityName}
         </Text>
       </Box>
       <Box>
-        <Image src={pool.image_url} alt={pool.category_name} />
+        <Image src={pool.imageUrl} alt={pool.categoryName} />
       </Box>
       <Box>
         <Text fontSize={20} fontFamily={'Manrope'} fontWeight={'bold'}>
           Description:
         </Text>
         <Text mb={2} fontFamily={'Manrope'}>
-          {pool.short_description}
+          {pool.shortDescription}
         </Text>
         <Box>
           <Flex direction="row" gap={10} justify="flex-start" mb={3}>
@@ -167,10 +164,7 @@ export default function PoolOrder({ pool }) {
                 Price:
               </Text>
               <Text mt={2} fontSize={20} fontFamily={'Dela Gothic One'}>
-                USD {Number(poolUSDPrice).toFixed(2)}
-              </Text>
-              <Text mt={2} fontSize={20} fontFamily={'Dela Gothic One'}>
-                AVAX {poolMATICFormatedPrice}
+                OAS {Number(poolPrice).toFixed(2)}
               </Text>
             </Flex>
           </Box>

@@ -1,4 +1,5 @@
 const pool = require('../../helpers/pgConnection');
+const camelize = require('camelize');
 
 class PoolModel {
   constructor() {
@@ -9,13 +10,13 @@ class PoolModel {
     const imageUrl = `https://nft-rent-marketplace.s3.us-east-2.amazonaws.com/categories/${categoryId}.png`
     const query = `
       INSERT INTO pools (category_id, game_id, base_price, image_url, is_active)
-      VALUES ($1, $2, $3, '${imageUrl}', false)
+      VALUES ($1, $2, $3, '${imageUrl}', true)
       RETURNING *;
     `;
 
     try {
       const result = await this.pool.query(query, [categoryId, gameId, basePrice]);
-      return result.rows[0];
+      return camelize(result.rows[0]);
     } catch (error) {
       console.error('Error creating pool: ', error.stack);
     }
@@ -32,7 +33,7 @@ class PoolModel {
 
     try {
       const result = await this.pool.query(query, [id]);
-      return result.rows;
+      return camelize(result.rows);
     } catch (error) {
       console.error('Error getting pool by ID: ', error.stack);
     }
@@ -54,7 +55,7 @@ class PoolModel {
 
     try {
       const result = await this.pool.query(query);
-      return result.rows;
+      return camelize(result.rows);
     } catch (error) {
       console.error('Error getting all pools: ', error.stack);
     }
