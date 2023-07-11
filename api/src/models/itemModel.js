@@ -5,15 +5,15 @@ class ItemModel {
     this.pool = pool;
   }
 
-  async getItemByNftId(nftId) {
+  async getItemByNftId({ nftId, nftContractAddress }) {
     const query = `
     SELECT * 
     FROM items 
-    WHERE nft_id = $1;
+    WHERE nft_id = $1 and nft_contract_address = $2;
   `;
 
     try {
-      const result = await this.pool.query(query, [nftId]);
+      const result = await this.pool.query(query, [nftId, nftContractAddress]);
       return camelize(result.rows[0]);
     } catch (error) {
       console.error("Error getting item by NFT ID: ", error.stack);

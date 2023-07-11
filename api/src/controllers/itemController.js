@@ -4,13 +4,13 @@ class ItemController {
   }
 
   async getItemByNftId(req, res) {
-    const { nftId } = req.params;
-    if (!nftId) {
-      return res.status(400).json({ error: 'NFT ID is required.' });
+    const { nftId, nftContractAddress } = req.params;
+    if (!nftId || !nftContractAddress) {
+      return res.status(400).json({ error: 'NFT ID and NFT Contract Address is required.' });
     }
 
     try {
-      const item = await this.itemService.getItemByNftId(nftId);
+      const item = await this.itemService.getItemByNftId({ nftId, nftContractAddress });
       if (!item) {
         return res.status(404).json({ error: 'Item not found.' });
       }
@@ -87,13 +87,14 @@ class ItemController {
   }
 
   async addToPool(req, res) {
-    const { nftId } = req.params;
-    if (!nftId) {
-      return res.status(400).json({ error: 'Nft ID is required.' });
+    const { nftId, nftContractAddress } = req.params;
+
+    if (!nftId || !nftContractAddress) {
+      return res.status(400).json({ error: 'Nft ID and NFT Contract Address is required.' });
     }
 
     try {
-      const item = await this.itemService.getItemByNftId(nftId);
+      const item = await this.itemService.getItemByNftId({ nftId, nftContractAddress });
       if (!item) {
         return res.status(404).json({ error: 'Item not found.' });
       }

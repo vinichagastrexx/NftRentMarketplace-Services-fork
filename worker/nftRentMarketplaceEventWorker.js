@@ -25,7 +25,9 @@ class NFTRentMarketplaceEventWorker {
 
 
   async onRentStarted(event) {
-    const item = await axios.get(`${this.nftRentMarketplaceApi}/items/get-by-nft-id/${Number(event.data.itemNftId._hex)}`)
+    const nftId = Number(`${event.data.itemNftId._hex}`)
+    const nftContractAddress = event.data.nftContractAddress
+    const item = await axios.get(`${this.nftRentMarketplaceApi}/items/get-by-nft-id/${nftId}/${nftContractAddress}`)
     try {
       const payload = {
         id: Number(`${event.data.rentId._hex}`),
@@ -91,8 +93,9 @@ class NFTRentMarketplaceEventWorker {
 
   async onItemAddedToPool(event) {
     try {
-      const nftId = Number(`${event.data.nftId._hex}`)
-      await axios.put(`${this.nftRentMarketplaceApi}/items/add-to-pool/${nftId}`);
+      const nftId = Number(`${event.data.itemNftId._hex}`)
+      const nftContractAddress = event.data.nftContractAddress
+      await axios.post(`${this.nftRentMarketplaceApi}/items/add-to-pool/${nftId}/${nftContractAddress}`);
     } catch (error) {
       console.error('Error:', error.message);
     }
