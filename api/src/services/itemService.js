@@ -4,13 +4,14 @@ class ItemService {
   }
 
   async getItemByNftId(nftId) {
+    nftId = Number(nftId)
     return await this.itemModel.getItemByNftId(nftId);
   }
-
+  
   async getById(itemId) {
     return await this.itemModel.getById(itemId);
   }
-
+  
   async createItem(itemData) {
     return await this.itemModel.createItem(itemData);
   }
@@ -32,6 +33,7 @@ class ItemService {
   }
 
   async addToPool(itemId) {
+    itemId = Number(itemId)
     return await this.itemModel.addToPool(itemId);
   }
 

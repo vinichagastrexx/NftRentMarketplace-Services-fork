@@ -24,7 +24,6 @@ class RentController {
       }
 
       await this.itemService.rentItem(rent.itemId, rent.renteeAddress);
-
       return res.status(201).json(rent);
     } catch (error) {
       console.error('Error creating rent: ', error.stack);
@@ -77,6 +76,7 @@ class RentController {
     if (!renteeAddress) {
       return res.status(400).json({ error: 'Rentee adress is required.' });
     }
+
     try {
       const rents = await this.rentService.getActiveByRentee(renteeAddress);
       if (!rents) {

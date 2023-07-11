@@ -10,7 +10,7 @@ const poolController = new PoolController(poolService);
 const router = express.Router();
 
 router.get("/get-all", (req, res) => poolController.getAll(req, res));
-router.get("/:poolId", (req, res) => poolController.getById(req, res));
+router.get("/:categoryId", (req, res) => poolController.getById(req, res));
 router.post("/create-pool", (req, res) => poolController.createPool(req, res));
 
 module.exports = router;

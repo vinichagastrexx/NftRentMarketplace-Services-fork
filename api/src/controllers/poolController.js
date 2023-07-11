@@ -18,13 +18,13 @@ class PoolController {
   }
 
   async getById(req, res) {
-    const { id } = req.params;
-    if (!id) {
-      return res.status(400).json({ error: 'Pool id is required.' });
+    const { categoryId } = req.params;
+    if (!categoryId) {
+      return res.status(400).json({ error: 'Category id is required.' });
     }
 
     try {
-      const pool = await this.poolService.getById(id);
+      const pool = await this.poolService.getById(categoryId);
       if (!pool) {
         return res.status(404).json({ error: 'Pool not found.' });
       }

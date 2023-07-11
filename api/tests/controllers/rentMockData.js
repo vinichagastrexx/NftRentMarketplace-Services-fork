@@ -5,7 +5,7 @@ const newRentData = {
   priceBlockchain: 100,
   ownerAddress: 'owner123',
   renteeAddress: 'rentee123',
-  poolId: 1,
+  categoryId: 1,
   itemId: 123,
 }
 
@@ -16,10 +16,10 @@ const rentData = {
   priceBlockchain: 100,
   ownerAddress: 'owner123',
   renteeAddress: 'rentee123',
-  poolId: 1,
+  categoryId: 1,
   itemId: 123,
 }; 
 
-const requiredFields = ['id', 'initDate', 'expirationDate', 'priceBlockchain', 'ownerAddress', 'renteeAddress', 'poolId', 'itemId'];
+const requiredFields = ['id', 'initDate', 'expirationDate', 'priceBlockchain', 'ownerAddress', 'renteeAddress', 'categoryId', 'itemId'];
 
 module.exports = {newRentData, rentData, requiredFields};

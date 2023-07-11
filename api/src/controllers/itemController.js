@@ -5,14 +5,12 @@ class ItemController {
 
   async getItemByNftId(req, res) {
     const { nftId } = req.params;
-
     if (!nftId) {
       return res.status(400).json({ error: 'NFT ID is required.' });
     }
 
     try {
       const item = await this.itemService.getItemByNftId(nftId);
-
       if (!item) {
         return res.status(404).json({ error: 'Item not found.' });
       }
@@ -26,7 +24,6 @@ class ItemController {
 
   async createItem(req, res) {
     const itemData = req.body;
-
     if (!itemData) {
       return res.status(400).json({ error: 'Item data is required.' });
     }
@@ -53,14 +50,12 @@ class ItemController {
 
   async getByOwner(req, res) {
     const { ownerAddress } = req.params;
-
     if (!ownerAddress) {
-      return res.status(400).json({ error: 'Owner adress is required.' });
+      return res.status(400).json({ error: 'Owner address is required.' });
     }
 
     try {
       const items = await this.itemService.getByOwner(ownerAddress);
-
       if (!items) {
         return res.status(404).json({ error: 'Items not found.' });
       }
@@ -74,14 +69,12 @@ class ItemController {
 
   async getIdleByOwner(req, res) {
     const { ownerAddress } = req.params;
-
     if (!ownerAddress) {
-      return res.status(400).json({ error: 'Owner adress is required.' });
+      return res.status(400).json({ error: 'Owner address is required.' });
     }
 
     try {
       const items = await this.itemService.getIdleByOwner(ownerAddress);
-
       if (!items) {
         return res.status(404).json({ error: 'Items not found.' });
       }
@@ -95,15 +88,12 @@ class ItemController {
 
   async addToPool(req, res) {
     const { nftId } = req.params;
-
     if (!nftId) {
       return res.status(400).json({ error: 'Nft ID is required.' });
     }
 
     try {
       const item = await this.itemService.getItemByNftId(nftId);
-
-
       if (!item) {
         return res.status(404).json({ error: 'Item not found.' });
       }
@@ -123,13 +113,15 @@ class ItemController {
 
   async getItemsInPoolByUser(req, res) {
     const { ownerAddress } = req.params;
-
     if (!ownerAddress) {
       return res.status(400).json({ error: 'Owner address is required.' });
     }
 
     try {
       const items = await this.itemService.getItemsInPoolByUser(ownerAddress);
+      if (!items) {
+        return res.status(404).json({ error: 'Items in pool by user not found.' });
+      }
 
       res.status(200).json(items);
     } catch (error) {
@@ -146,6 +138,10 @@ class ItemController {
 
     try {
       const items = await this.itemService.getItemsRentedByUser(ownerAddress);
+      if (!items) {
+        return res.status(404).json({ error: 'Items rented by user not found.' });
+      }
+
       res.status(200).json(items);
     } catch (error) {
       console.error('Error getting items rented by user: ', error.stack);
