@@ -1,32 +1,37 @@
 const ItemController = require('../../src/controllers/itemController');
 const ItemService = require('../../src/services/itemService');
-const { requiredFields, mockItem, mockNewItem, mockUpdateItem } = require('./itemMockData');
+const { mockNewItem, resMockNewItem, requiredFields, mockItemIsInPool, mockItemIsRented } = require('./itemMockData');
 
 jest.mock('../../src/services/itemService');
 
 let itemController;
 let itemService;
+let res;
 
 beforeEach(() => {
   itemService = new ItemService();
   itemController = new ItemController(itemService);
+  res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
 });
 
 describe('ItemController', () => {
   describe('getItemByNftId', () => {
-    it('should return 400 if no nftId is provided', async () => {
+    const nftId = 123;
+    const nftContractAddress = 'asd';
+    it('should return 400 if no nftId or nftContractAddress is provided', async () => {
       const req = { params: {} };
-      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
 
       await itemController.getItemByNftId(req, res);
 
       expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith({ error: 'NFT ID is required.' });
+      expect(res.json).toHaveBeenCalledWith({ error: 'NFT ID and NFT Contract Address are required.' });
     });
 
     it('should return 404 if item is not found', async () => {
-      const req = { params: { nftId: 123 } };
-      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+      const req = { params: { nftId, nftContractAddress } };
 
       jest.spyOn(itemService, 'getItemByNftId').mockResolvedValue(null);
 
@@ -37,8 +42,7 @@ describe('ItemController', () => {
     });
 
     it('should return 500 if a server error occurs', async () => {
-      const req = { params: { nftId: 123 } };
-      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+      const req = { params: { nftId, nftContractAddress } };
 
       jest.spyOn(itemService, 'getItemByNftId').mockRejectedValue(new Error('Test error'));
 
@@ -49,25 +53,20 @@ describe('ItemController', () => {
     });
 
     it('should return 200 and the item if it is found', async () => {
-      const req = { params: { nftId: 123 } };
-      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+      const req = { params: { nftId, nftContractAddress } };
 
-      jest.spyOn(itemService, 'getItemByNftId').mockResolvedValue(mockItem);
+      jest.spyOn(itemService, 'getItemByNftId').mockResolvedValue(resMockNewItem);
 
       await itemController.getItemByNftId(req, res);
 
       expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.json).toHaveBeenCalledWith(mockItem);
+      expect(res.json).toHaveBeenCalledWith(resMockNewItem);
     });
   });
 
   describe('createItem', () => {
     it('should return 400 if item data is not provided', async () => {
       const req = { body: null };
-      const res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
 
       await itemController.createItem(req, res);
 
@@ -89,7 +88,6 @@ describe('ItemController', () => {
         mockMissingItem[field] = null;
 
         const req = { body: mockMissingItem };
-        const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
 
         await itemController.createItem(req, res);
 
@@ -100,7 +98,6 @@ describe('ItemController', () => {
     });
     it('should return 500 if failed to create item', async () => {
       const req = { body: mockNewItem };
-      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
 
       jest.spyOn(itemService, 'createItem').mockResolvedValue(null);
 
@@ -111,7 +108,6 @@ describe('ItemController', () => {
     });
     it('should return 500 if an error occurs', async () => {
       const req = { body: mockNewItem };
-      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
 
       jest.spyOn(itemService, 'createItem').mockRejectedValue(new Error('Test error'));
 
@@ -122,14 +118,13 @@ describe('ItemController', () => {
     });
     it('should return 201 and the new item if it is created', async () => {
       const req = { body: mockNewItem };
-      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
 
-      jest.spyOn(itemService, 'createItem').mockResolvedValue(mockNewItem);
+      jest.spyOn(itemService, 'createItem').mockResolvedValue(resMockNewItem);
 
       await itemController.createItem(req, res);
 
       expect(res.status).toHaveBeenCalledWith(201);
-      expect(res.json).toHaveBeenCalledWith(mockNewItem);
+      expect(res.json).toHaveBeenCalledWith(resMockNewItem);
     });
   });
 
@@ -137,10 +132,6 @@ describe('ItemController', () => {
     const ownerAddress = 'Ana123';
     it('should return 400 if owner address is not provided', async () => {
       const req = { params: {} };
-      const res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
 
       await itemController.getByOwner(req, res);
 
@@ -150,10 +141,6 @@ describe('ItemController', () => {
 
     it('should return 404 if items are not found', async () => {
       const req = { params: { ownerAddress } };
-      const res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
 
       jest.spyOn(itemService, 'getByOwner').mockResolvedValue(null);
 
@@ -165,10 +152,6 @@ describe('ItemController', () => {
 
     it('should return 500 if a server error occurs', async () => {
       const req = { params: { ownerAddress } };
-      const res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
 
       jest.spyOn(itemService, 'getByOwner').mockRejectedValue(new Error('Test error'));
 
@@ -180,14 +163,10 @@ describe('ItemController', () => {
 
     it('should return 200 and items owned by the specified owner', async () => {
       const req = { params: { ownerAddress } };
-      const res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
 
       const items = [
-        mockItem,
-        mockNewItem,
+        mockItemIsInPool,
+        mockItemIsRented,
       ];
 
       jest.spyOn(itemService, 'getByOwner').mockResolvedValue(items);
@@ -203,10 +182,6 @@ describe('ItemController', () => {
     const ownerAddress = 'Ana123';
     it('should return 400 if owner address is not provided', async () => {
       const req = { params: {} };
-      const res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
 
       await itemController.getIdleByOwner(req, res);
 
@@ -216,10 +191,6 @@ describe('ItemController', () => {
 
     it('should return 404 if items are not found', async () => {
       const req = { params: { ownerAddress } };
-      const res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
 
       jest.spyOn(itemService, 'getIdleByOwner').mockResolvedValue(null);
 
@@ -231,10 +202,6 @@ describe('ItemController', () => {
 
     it('should return 500 if a server error occurs', async () => {
       const req = { params: { ownerAddress } };
-      const res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
 
       jest.spyOn(itemService, 'getIdleByOwner').mockRejectedValue(new Error('Test error'));
 
@@ -246,41 +213,33 @@ describe('ItemController', () => {
 
     it('should return 200 and idle items owned by the specified owner', async () => {
       const req = { params: { ownerAddress } };
-      const res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
 
-      jest.spyOn(itemService, 'getIdleByOwner').mockResolvedValue([mockItem]);
+      const items = [
+        resMockNewItem,
+        mockItemIsInPool
+      ]
+      jest.spyOn(itemService, 'getIdleByOwner').mockResolvedValue(items);
 
       await itemController.getIdleByOwner(req, res);
 
-      expect(res.json).toHaveBeenCalledWith([mockItem]);
+      expect(res.json).toHaveBeenCalledWith(items);
     });
 
     });
 
   describe('addToPool', () => {
-    const nftId = 456;
+    const itemId = 456;
     it('should return 400 if nft ID is not provided', async () => {
       const req = { params: {} };
-      const res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
 
       await itemController.addToPool(req, res);
 
       expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith({ error: 'Nft ID is required.' });
+      expect(res.json).toHaveBeenCalledWith({ error: 'Item ID is required.' });
     });
 
     it('should return 404 if item is not found', async () => {
-      const req = { params: { nftId } };
-      const res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
+      const req = { params: { itemId } };
 
       jest.spyOn(itemService, 'getItemByNftId').mockResolvedValue(null);
 
@@ -291,13 +250,9 @@ describe('ItemController', () => {
     });
 
     it('should return 400 if item is already in pool', async () => {
-      const req = { params: { nftId } };
-      const res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
+      const req = { params: { itemId } };
 
-      jest.spyOn(itemService, 'getItemByNftId').mockResolvedValue(mockItem);
+      jest.spyOn(itemService, 'getById').mockResolvedValue(mockItemIsInPool);
 
       await itemController.addToPool(req, res);
 
@@ -306,13 +261,9 @@ describe('ItemController', () => {
     });
 
     it('should return 500 if a server error occurs', async () => {
-      const req = { params: { nftId } };
-      const res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
+      const req = { params: { itemId } };
 
-      jest.spyOn(itemService, 'getItemByNftId').mockResolvedValue(mockNewItem);
+      jest.spyOn(itemService, 'getById').mockResolvedValue(resMockNewItem);
       jest.spyOn(itemService, 'addToPool').mockRejectedValue(new Error('Test error'));
 
       await itemController.addToPool(req, res);
@@ -322,20 +273,16 @@ describe('ItemController', () => {
     });
 
     it('should return 200 and the item if it is added to the pool', async () => {
-      const req = { params: { nftId } };
-      const res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
+      const req = { params: { itemId } };
 
-      jest.spyOn(itemService, 'getItemByNftId').mockResolvedValue(mockNewItem);
+      jest.spyOn(itemService, 'getById').mockResolvedValue(resMockNewItem);
 
-      jest.spyOn(itemService, 'addToPool').mockResolvedValue(mockUpdateItem);
+      jest.spyOn(itemService, 'addToPool').mockResolvedValue(mockItemIsInPool);
 
       await itemController.addToPool(req, res);
 
       expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.json).toHaveBeenCalledWith(mockUpdateItem);
+      expect(res.json).toHaveBeenCalledWith(mockItemIsInPool);
     });
   });
 
@@ -343,10 +290,6 @@ describe('ItemController', () => {
     const ownerAddress = 'Ana123';
     it('should return 400 if owner address is not provided', async () => {
       const req = { params: {} };
-      const res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
 
       await itemController.getItemsInPoolByUser(req, res);
 
@@ -356,7 +299,6 @@ describe('ItemController', () => {
 
     it('should return 404 if item is not found', async () => {
       const req = { params: { ownerAddress } };
-      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
 
       jest.spyOn(itemService, 'getItemsInPoolByUser').mockResolvedValue(null);
 
@@ -368,10 +310,6 @@ describe('ItemController', () => {
 
     it('should return 500 if a server error occurs', async () => {
       const req = { params: { ownerAddress } };
-      const res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
 
       jest.spyOn(itemService, 'getItemsInPoolByUser').mockRejectedValue(new Error('Test error'));
 
@@ -383,29 +321,23 @@ describe('ItemController', () => {
 
     it('should return 200 and the items in pool for the specified owner', async () => {
       const req = { params: { ownerAddress } };
-      const res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
-
-      jest.spyOn(itemService, 'getItemsInPoolByUser').mockResolvedValue([mockItem]);
+      const items = [
+        mockItemIsInPool,
+      ]
+      jest.spyOn(itemService, 'getItemsInPoolByUser').mockResolvedValue(items);
 
       await itemController.getItemsInPoolByUser(req, res);
       
       expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.json).toHaveBeenCalledWith([mockItem]);
+      expect(res.json).toHaveBeenCalledWith(items);
     });
 
   });
 
   describe('getItemsRentedByUser', () => {
     const ownerAddress = 'Ana123';
-    it('should return 400 if owner address is missing', async () => {
+    it('should return 400 if owner address is not provided', async () => {
       const req = { params: {} };
-      const res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
 
       await itemController.getItemsRentedByUser(req, res);
 
@@ -415,7 +347,6 @@ describe('ItemController', () => {
 
     it('should return 404 if item is not found', async () => {
       const req = { params: { ownerAddress } };
-      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
 
       jest.spyOn(itemService, 'getItemsRentedByUser').mockResolvedValue(null);
 
@@ -427,17 +358,13 @@ describe('ItemController', () => {
 
     it('should return 200 and items rented by the specified owner', async () => {
       const req = { params: { ownerAddress } };
-      const res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
 
-      jest.spyOn(itemService, 'getItemsRentedByUser').mockResolvedValue([mockItem]);
+      jest.spyOn(itemService, 'getItemsRentedByUser').mockResolvedValue([mockItemIsRented]);
 
       await itemController.getItemsRentedByUser(req, res);
 
       expect(res.status).toHaveBeenCalledWith(200)
-      expect(res.json).toHaveBeenCalledWith([mockItem]);
+      expect(res.json).toHaveBeenCalledWith([mockItemIsRented]);
     });
 
     it('should return 500 if a server error occurs', async () => {
@@ -453,6 +380,51 @@ describe('ItemController', () => {
 
       expect(res.status).toHaveBeenCalledWith(500);
       expect(res.json).toHaveBeenCalledWith({ error: 'Server error.' });
+    });
+  });
+
+    describe('getById', () => {
+    const id = 'Ana123';
+    it('should return 400 if item id is not provided', async () => {
+      const req = { params: {} };
+
+      await itemController.getById(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({ error: 'Item id is required.' });
+    });
+
+    it('should return 404 if item is not found', async () => {
+      const req = { params: { id } };
+
+      jest.spyOn(itemService, 'getById').mockResolvedValue(null);
+
+      await itemController.getById(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({ error: 'Item not found.' });
+    });
+
+    it('should return 500 if a server error occurs', async () => {
+      const req = { params: { id } };
+
+      jest.spyOn(itemService, 'getById').mockRejectedValue(new Error('Test error'));
+
+      await itemController.getById(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({ error: 'Server error.' });
+    });
+
+    it('should return 200 and items rented by the specified owner', async () => {
+      const req = { params: { id } };
+
+      jest.spyOn(itemService, 'getById').mockResolvedValue(resMockNewItem);
+
+      await itemController.getById(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(200)
+      expect(res.json).toHaveBeenCalledWith(resMockNewItem);
     });
   });
 });

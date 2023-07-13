@@ -6,7 +6,7 @@ class ItemController {
   async getItemByNftId(req, res) {
     const { nftId, nftContractAddress } = req.params;
     if (!nftId || !nftContractAddress) {
-      return res.status(400).json({ error: 'NFT ID and NFT Contract Address is required.' });
+      return res.status(400).json({ error: 'NFT ID and NFT Contract Address are required.' });
     }
 
     try {
@@ -87,14 +87,14 @@ class ItemController {
   }
 
   async addToPool(req, res) {
-    const { nftId, nftContractAddress } = req.params;
+    const { itemId } = req.params;
 
-    if (!nftId || !nftContractAddress) {
-      return res.status(400).json({ error: 'Nft ID and NFT Contract Address is required.' });
+    if (!itemId) {
+      return res.status(400).json({ error: 'Item ID is required.' });
     }
 
     try {
-      const item = await this.itemService.getItemByNftId({ nftId, nftContractAddress });
+      const item = await this.itemService.getById(itemId);
       if (!item) {
         return res.status(404).json({ error: 'Item not found.' });
       }
@@ -103,7 +103,7 @@ class ItemController {
         return res.status(400).json({ error: 'Item is already in pool.' });
       }
 
-      const updatedItem = await this.itemService.addToPool(item.id);
+      const updatedItem = await this.itemService.addToPool(itemId);
 
       res.status(200).json(updatedItem);
     } catch (error) {
@@ -158,6 +158,9 @@ class ItemController {
 
     try {
       const item = await this.itemService.getById(id);
+      if (!item) {
+        return res.status(404).json({ error: 'Item not found.' });
+      }
       res.status(200).json(item);
     } catch (error) {
       console.error('Error getting item by id: ', error.stack);

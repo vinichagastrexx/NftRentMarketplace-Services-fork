@@ -10,7 +10,7 @@ const itemController = new ItemController(itemService);
 const router = express.Router();
 
 router.post('/create-item', (req, res) => itemController.createItem(req, res));
-router.put('/add-to-pool/:nftId/:nftContractAddress', (req, res) => itemController.addToPool(req, res));
+router.put('/add-to-pool/:itemId', (req, res) => itemController.addToPool(req, res));
 router.get('/get-in-pool/:ownerAddress', (req, res) => itemController.getItemsInPoolByUser(req, res));
 router.get('/get-rented/:ownerAddress', (req, res) => itemController.getItemsRentedByUser(req, res));
 router.get('/get-owned/:ownerAddress', (req, res) => itemController.getByOwner(req, res));
