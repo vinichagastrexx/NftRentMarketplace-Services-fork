@@ -22,8 +22,8 @@ class RentController {
       if (!rent) {
         return res.status(500).json({ error: 'Failed to create rent.' });
       }
-
-      await this.itemService.rentItem(rent.itemId, rent.renteeAddress);
+      const { itemId, renteeAddress } = rent;
+      await this.itemService.rentItem({ itemId, renteeAddress });
       return res.status(201).json(rent);
     } catch (error) {
       console.error('Error creating rent: ', error.stack);
@@ -54,7 +54,7 @@ class RentController {
     const { ownerAddress } = req.params;
 
     if (!ownerAddress) {
-      return res.status(400).json({ error: 'Owner adress is required.' });
+      return res.status(400).json({ error: 'Owner address is required.' });
     }
 
     try {
@@ -74,7 +74,7 @@ class RentController {
     const { renteeAddress } = req.params;
 
     if (!renteeAddress) {
-      return res.status(400).json({ error: 'Rentee adress is required.' });
+      return res.status(400).json({ error: 'Rentee address is required.' });
     }
 
     try {
@@ -91,20 +91,25 @@ class RentController {
   }
 
   async finishRent(req, res) {
-    const { id, finishDate, itemId } = req.body;
+    const finishedRentData = req.body;
+    if (!finishedRentData) {
+      return res.status(400).json({ error: 'Finished rent data is required.' });
+    }
+    
     const requiredFields = ['id', 'finishDate', 'itemId'];
     for (const field of requiredFields) {
-      if (!rentData[field]) {
+      if (!finishedRentData[field]) {
         return res.status(400).json({ error: `Field ${field} is required.` });
       }
     }
-
+    
     try {
+      const { id, finishDate, itemId } = finishedRentData;
       const rent = await this.rentService.finishRent({ id, finishDate });
       if (!rent) {
         return res.status(500).json({ error: 'Failed to finish rent.' });
       }
-      this.itemService.finishRent(itemId);
+      await this.itemService.finishRent(itemId);
 
       return res.status(200).json(rent);
     } catch (error) {

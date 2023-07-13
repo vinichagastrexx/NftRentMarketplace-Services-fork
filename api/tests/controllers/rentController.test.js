@@ -1,7 +1,7 @@
 const RentController = require('../../src/controllers/rentController');
 const RentService = require('../../src/services/rentService');
 const ItemService = require('../../src/services/itemService');
-const { newRentData, rentData, requiredFields } = require('./rentMockData');
+const { newRentData, rentData, requiredFields, finishedRentData, resFinishedRentData, requiredFieldsFinishRent } = require('./rentMockData');
 
 jest.mock('../../src/services/rentService');
 jest.mock('../../src/services/itemService');
@@ -230,28 +230,44 @@ describe('RentController', () => {
   });
 
   describe('finishRent', () => {
-    const id = 1;
-    it('should return 400 if Rentee ID is not provided', async () => {
-      const req = { params: {} }
+    it('should return 400 if finished rent data is not provided', async () => {
+      const req = { body: null }
       await rentController.finishRent(req, res);
 
       expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith({ error: 'Rentee ID is required.' });
+      expect(res.json).toHaveBeenCalledWith({ error: 'Finished rent data is required.' });
+    });
+
+    it('should return 400 if any required field is missing', async () => {
+      requiredFieldsFinishRent.forEach(async (field) => {
+        const mockMissingFinishedRentData = { 
+          id: 2,
+          finishDate: '2023-07-07',
+          itemId: 123,
+        };
+        mockMissingFinishedRentData[field] = null;
+
+        const req = { body: mockMissingFinishedRentData };
+        await rentController.finishRent(req, res);
+        
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({ error: `Field ${field} is required.` });
+      });
     });
 
     it('should return 500 if failed to finish rent', async () => {
-      const req = { params: { id } }
+      const req = { body: finishedRentData };
+
       jest.spyOn(rentService, 'finishRent').mockResolvedValue(null);
 
       await rentController.finishRent(req, res);
 
-      expect(rentService.finishRent).toHaveBeenCalledWith(id);
       expect(res.status).toHaveBeenCalledWith(500);
       expect(res.json).toHaveBeenCalledWith({ error: 'Failed to finish rent.' });
     });
 
     it('should return 500 if a server error occurs', async () => {
-      const req = { params: { id } };
+      const req = { body: finishedRentData };
 
       jest.spyOn(rentService, 'finishRent').mockRejectedValue(new Error('Test error'));
       
@@ -262,15 +278,15 @@ describe('RentController', () => {
     });
 
     it('should return 200 and finish the rent with the specified ID', async () => {
-      const req = { params: { id } }
+      const req = { body: finishedRentData };
 
-      jest.spyOn(rentService, 'finishRent').mockResolvedValue(rentData);
+      jest.spyOn(rentService, 'finishRent').mockResolvedValue(resFinishedRentData);
       jest.spyOn(itemService, 'finishRent').mockResolvedValue();
       
       await rentController.finishRent(req, res);
 
+      expect(res.json).toHaveBeenCalledWith(resFinishedRentData);
       expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.json).toHaveBeenCalledWith(rentData);
     });
   });
 
