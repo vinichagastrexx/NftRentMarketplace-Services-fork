@@ -1,25 +1,12 @@
+import {
+  Box,
+  Flex, Icon, Link, Text
+} from '@chakra-ui/react';
 import { ConnectWallet, useAddress } from '@thirdweb-dev/react';
 import NextLink from 'next/link';
-import { HiHome } from 'react-icons/hi';
-import { GiLockedChest } from 'react-icons/gi';
-import {
-  Link,
-  Icon,
-  Text,
-  Box,
-  Flex,
-  Image,
-  useDisclosure,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalCloseButton,
-  ModalFooter,
-  Button,
-} from '@chakra-ui/react';
 import { useState } from 'react';
+import { GiLockedChest } from 'react-icons/gi';
+import { HiHome } from 'react-icons/hi';
 
 export function Navbar() {
   const [activeTab, setActiveTab] = useState('');
@@ -81,6 +68,25 @@ export function Navbar() {
             }}
           >
             <Text>Inventory</Text>
+          </Link>
+            <Link
+            as={NextLink}
+            color={activeTab === `profile/${address}` ? '#66E383' : undefined}
+            textDecoration={
+              activeTab === `profile/${address}` ? 'underline' : undefined
+            }
+            onClick={() => setActiveTab(`profile/${address}`)}
+            href={`profile/${address}`}
+            mx={2.5}
+            fontFamily={'Manrope'}
+            fontSize={'22'}
+            _hover={{
+              color: '#66E383',
+              textDecoration: 'underline',
+              transition: 'color 0.2s',
+            }}
+          >
+            <Icon as={GiLockedChest} boxSize={7} />
           </Link>
         </Flex>
         <Flex direction={'row'} alignItems={'center'}>

@@ -16,21 +16,13 @@ import {
   StatLabel,
   StatNumber,
 } from '@chakra-ui/react';
-import { useContract, useNFT, useAddress } from '@thirdweb-dev/react';
+import { useAddress } from '@thirdweb-dev/react';
 import React from 'react';
-import { NFT_ADDRESS } from '../../const/addresses';
 import useSWR from 'swr';
-import NFTCard from '../../components/NFT/NFTCard';
 import { URLS } from '../../config/urls';
+import ProfileNFT from '../../components/NFT/ProfileNFT';
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
-
-function RentedNFT({ nftId }) {
-  const { contract: nftCollection } = useContract(NFT_ADDRESS);
-  const { data: nft } = useNFT(nftCollection, nftId);
-
-  return nft ? <NFTCard key={nft.metadata.id} nft={nft} /> : null;
-}
 
 export default function ProfilePage() {
   const address = useAddress();
@@ -59,7 +51,7 @@ export default function ProfilePage() {
             <Spinner />
           ) : (
             <StatNumber fontSize={30} fontFamily={'Manrope'}>
-              {inPoolItems?.itemsInPool?.length}
+              {inPoolItems?.length}
             </StatNumber>
           )}
         </Stat>
@@ -71,7 +63,7 @@ export default function ProfilePage() {
             <Spinner />
           ) : (
             <StatNumber fontSize={30} fontFamily={'Manrope'}>
-              {rentedOutItems?.itemsRented?.length}
+              {rentedOutItems?.length}
             </StatNumber>
           )}
         </Stat>
@@ -83,7 +75,7 @@ export default function ProfilePage() {
             <Spinner />
           ) : (
             <StatNumber fontSize={30} fontFamily={'Manrope'}>
-              {ownedItems?.itemsOwned?.length}
+              {ownedItems?.length}
             </StatNumber>
           )}
         </Stat>
@@ -130,9 +122,13 @@ export default function ProfilePage() {
                 [...Array(3)].map((_, index) => (
                   <Skeleton key={index} height={'150px'} width={'250px'} />
                 ))
-              ) : rentedOutItems?.itemsRented?.length > 0 ? (
-                rentedOutItems?.itemsRented?.map((rentedItem) => (
-                  <RentedNFT key={rentedItem.NFTID} nftId={rentedItem.NFTID} />
+              ) : rentedOutItems?.length > 0 ? (
+                rentedOutItems?.map((rentedItem) => (
+                  <ProfileNFT 
+                    key={rentedItem.nftId} 
+                    nftId={rentedItem.nftId} 
+                    nftContractAddress={rentedItem.nftContractAddress} 
+                  />
                 ))
               ) : (
                 <Text fontSize={25} fontFamily={'Manrope'}>
@@ -179,9 +175,13 @@ export default function ProfilePage() {
                 [...Array(3)].map((_, index) => (
                   <Skeleton key={index} height={'150px'} width={'250px'} />
                 ))
-              ) : inPoolItems?.itemsInPool?.length > 0 ? (
-                inPoolItems?.itemsInPool?.map((poolItem) => (
-                  <RentedNFT key={poolItem.NFTID} nftId={poolItem.NFTID} />
+              ) : inPoolItems?.length > 0 ? (
+                inPoolItems?.map((poolItem) => (
+                  <ProfileNFT 
+                    key={poolItem.nftId} 
+                    nftId={poolItem.nftId} 
+                    nftContractAddress={poolItem.nftContractAddress} 
+                  />
                 ))
               ) : (
                 <Text fontSize={24} fontFamily={'Manrope'}>

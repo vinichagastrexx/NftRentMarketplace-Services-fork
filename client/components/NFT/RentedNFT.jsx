@@ -16,7 +16,8 @@ export default function RentedNFT({ nftId, rentData }) {
     1: NFT_BBG_ADDRESS,
     2: NFT_CS_ADDRESS,
   }
-  const nftAddress = nftAddresses[rentData.gameId]
+
+  const nftAddress = nftAddresses[rentData.gameid]
   const { contract: nftCollection } = useContract(nftAddress);
   const { data: rentedNft } = useNFT(nftCollection, nftId);
   const { isOpen, onOpen, onClose } = useDisclosure();
