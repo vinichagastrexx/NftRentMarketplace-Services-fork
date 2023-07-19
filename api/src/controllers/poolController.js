@@ -10,7 +10,7 @@ class PoolController {
       if (!pools) {
         return res.status(404).json({ error: 'Pools not found.' });
       }
-      return res.status(200).json({ pools });
+      return res.status(200).json(pools);
     } catch (error) {
       console.error('Error getting all pools: ', error.stack);
       res.status(500).json({ error: 'Server error.' });
@@ -29,7 +29,7 @@ class PoolController {
         return res.status(404).json({ error: 'Pool not found.' });
       }
 
-      return res.status(200).json({ pool });
+      return res.status(200).json(pool);
     } catch (error) {
       console.error('Error getting pool by ID: ', error.stack);
       res.status(500).json({ error: 'Server error.' });

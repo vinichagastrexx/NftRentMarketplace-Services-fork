@@ -1,6 +1,6 @@
 const PoolController = require('../../src/controllers/poolController');
 const PoolService = require('../../src/services/poolService');
-const { newPoolData, poolData, otherPoolData, requiredFields } = require('./poolMockData');
+const {newPoolData, resNewPoolData, poolData, requiredFields} = require('./poolMockData');
 
 
 jest.mock('../../src/services/poolService');
@@ -32,14 +32,14 @@ describe('PoolController', () => {
     });
 
     it('should return 200 and get all pools', async () => {
-      pools = [poolData, otherPoolData];
+      pools = [poolData];
       jest.spyOn(poolService, 'getAll').mockResolvedValue(pools);
 
       await poolController.getAll(req, res);
 
       expect(poolService.getAll).toHaveBeenCalled();
       expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.json).toHaveBeenCalledWith({ pools });
+      expect(res.json).toHaveBeenCalledWith(pools);
     });
 
     it('should return 500 if a server error occurs', async () => {
@@ -54,7 +54,7 @@ describe('PoolController', () => {
 
   });
   describe('getById', () => {
-    const categoryId = 123;
+    const categoryId = 1;
     it('should return 400 if category id is not provided', async () => {
     const req = { params: { categoryId: null } };
 
@@ -82,7 +82,7 @@ describe('PoolController', () => {
       await poolController.getById(req, res);
 
       expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.json).toHaveBeenCalledWith({ pool });
+      expect(res.json).toHaveBeenCalledWith(pool);
     });
 
     it('should return 500 if a server error occurs', async () => {
@@ -125,17 +125,17 @@ describe('PoolController', () => {
     });
 
     it('should return 201 and the new pool if it is created', async () => {
-        const req = { body: poolData };
-        jest.spyOn(poolService, 'createPool').mockResolvedValue(poolData);
+        const req = { body: newPoolData };
+        jest.spyOn(poolService, 'createPool').mockResolvedValue(resNewPoolData);
         
       await poolController.createPool(req, res);
 
       expect(res.status).toHaveBeenCalledWith(201);
-      expect(res.json).toHaveBeenCalledWith(poolData);
+      expect(res.json).toHaveBeenCalledWith(resNewPoolData);
     });
 
     it('should return 500 if failed to create pool', async () => {
-      const req = { body: poolData };
+      const req = { body: newPoolData };
       jest.spyOn(poolService, 'createPool').mockResolvedValue(null);
 
       await poolController.createPool(req, res);
@@ -145,7 +145,7 @@ describe('PoolController', () => {
     });
 
     it('should return 500 if a server error occurs', async () => {
-      const req = { body: poolData };
+      const req = { body: newPoolData };
 
       jest.spyOn(poolService, 'createPool').mockRejectedValue(new Error('Server error.'));
 

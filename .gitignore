@@ -1,9 +1,9 @@
 # vscode
 .vscode
-observacoes.mdx
 
 api/.serverless
 tasks.txt
+todo.md
 
 # hardhat
 artifacts
