@@ -27,6 +27,11 @@ jobs:
         cd api
         npm ci
 
+    - name: Run lint
+      run: |
+        cd api
+        npm run lint
+
     - name: Run tests
       run: |
         cd api

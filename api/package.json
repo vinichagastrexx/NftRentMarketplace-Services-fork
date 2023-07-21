@@ -9,7 +9,8 @@
     "dev": "ts-node server-dev.ts",
     "dev:dev": "nodemon --watch 'src/' --exec 'ts-node server-dev.ts' -e ts",
     "test": "jest",
-    "coverage": "jest --coverage"
+    "coverage": "jest --coverage",
+    "lint": "eslint 'src/**/*.{ts,tsx}'"
   },
   "keywords": [],
   "author": "",
