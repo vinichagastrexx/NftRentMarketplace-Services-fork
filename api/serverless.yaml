@@ -1,4 +1,4 @@
-service: nft-rent-marketplace-api-oasys
+service: nft-rent-marketplace-api
 
 provider:
   name: aws
@@ -17,7 +17,7 @@ provider:
 
 functions:
   app:
-    handler: api/server.handler
+    handler: build/server.handler
     events:
       - http: ANY /
       - http:
