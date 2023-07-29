@@ -1,16 +1,38 @@
-import {
-  Box,
-  Flex, Icon, Link, Text
-} from '@chakra-ui/react';
+import { Box, Flex, Icon, Link, Text, Button } from '@chakra-ui/react';
 import { ConnectWallet, useAddress } from '@thirdweb-dev/react';
 import NextLink from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { GiLockedChest } from 'react-icons/gi';
 import { HiHome } from 'react-icons/hi';
+import { magic } from '../lib/magic';
+import { ethers } from 'ethers';
 
 export function Navbar() {
   const [activeTab, setActiveTab] = useState('');
   const address = useAddress();
+  const [web3, setWeb3] = useState('');
+  const [isConnected, setIsConnected] = useState(false);
+
+  useEffect(() => {
+    const initWeb3 = async () => {
+      const provider = await magic.wallet.getProvider();
+      const web3Provider = new ethers.providers.Web3Provider(provider);
+      setWeb3(web3Provider);
+    };
+
+    initWeb3().catch(console.error);
+  }, []);
+
+  const login = async () => {
+    const accounts = await magic.wallet.connectWithUI();
+    console.log('-----accounts', accounts);
+    setIsConnected(true);
+  };
+
+  const logout = async () => {
+    await magic.wallet.disconnect();
+    setIsConnected(false);
+  };
 
   return (
     <Box maxW={'85%'} m={'auto'} py={'14px'} px={'35px'}>
@@ -69,7 +91,7 @@ export function Navbar() {
           >
             <Text>Inventory</Text>
           </Link>
-            <Link
+          <Link
             as={NextLink}
             color={activeTab === `profile/${address}` ? '#66E383' : undefined}
             textDecoration={
@@ -90,9 +112,18 @@ export function Navbar() {
           </Link>
         </Flex>
         <Flex direction={'row'} alignItems={'center'}>
-          <ConnectWallet style={{ fontFamily: 'Manrope' }} />
+          {/* <ConnectWallet style={{ fontFamily: 'Manrope' }} /> */}
+          {!isConnected ? (
+            <Button style={{ fontFamily: 'Manrope' }} onClick={login}>
+              Login
+            </Button>
+          ) : (
+            <Button style={{ fontFamily: 'Manrope' }} onClick={logout}>
+              Logout
+            </Button>
+          )}
         </Flex>
       </Flex>
-    </Box >
+    </Box>
   );
 }
